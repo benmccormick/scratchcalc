@@ -7,17 +7,31 @@
 
  /*global BigDecimal:false */
 
+/** The Tokenizer module takes a string and splits it up into individual tokens
+*/ 
 var EQTokenizer = (function() {
     var EQT ={};
     var tokenlist = [];
+
+    //Adds a * between implicitly multiplied items
+    var addImplicitMultiplication = function()
+    {
+        //this can be added later.  Multiplication must be explicit for now
+    };
+
+    //Takes the strings and splits it into tokens
     EQT.tokenize = function(expression){
         tokenlist = [];
+
+        // Regexs for each token type
         var numx = /^-?\d+\.?\d*/;
         var spacex = /^\s+/;
         var operx = /^[\+\-\*\/!%\^&|,)\[\]#]/;
         var unopx = /^!/;
         var funcx = /^\w*\(/;
         var varx = /^\w+\d*/;
+
+        //  Goes through the expression and splits it using the regexs
         while(expression.length > 0)
         {
             var last = null;
@@ -78,17 +92,12 @@ var EQTokenizer = (function() {
                 expression = expression.substring(varres[0].length);
                 continue;
             }
-
-
         }
-
-
+        addImplicitMultiplication();
+        return tokenlist;
     };
 
-    EQT.process = function(){
-
-    };
-
+    //Return the token list
     EQT.getList = function(){
         return tokenlist; 
     };
