@@ -22,6 +22,12 @@ test( "Basic Tokenize", function() {
     EQTokenizer.tokenize("10 / 2");
     list = EQTokenizer.getList();
     deepEqual( list,["10","/","2"], "10/2 Test" );
+
+
+    EQTokenizer.tokenize("sin(x)");
+    list = EQTokenizer.getList();
+    deepEqual( list,["sin(","x",")"], "sin Test" );
+
 });
 
 test( "Negative Numbers", function() {
