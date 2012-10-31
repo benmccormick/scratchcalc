@@ -13,12 +13,6 @@ var EQTokenizer = (function() {
     var EQT ={};
     var tokenlist = [];
 
-    //Adds a * between implicitly multiplied items
-    var addImplicitMultiplication = function()
-    {
-        //this can be added later.  Multiplication must be explicit for now
-    };
-
     //Takes the strings and splits it into tokens
     EQT.tokenize = function(expression){
         tokenlist = [];
@@ -100,6 +94,11 @@ var EQTokenizer = (function() {
     //Return the token list
     EQT.getList = function(){
         return tokenlist; 
+    };
+
+    //Adds a * between implicitly multiplied items
+    function addImplicitMultiplication(){
+        //this can be added later.  Multiplication must be explicit for now
     };
 
     return EQT;

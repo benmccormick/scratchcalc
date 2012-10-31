@@ -27,34 +27,7 @@ var EQScanner = (function() {
     puncs = [",",")","#"];
     unops = ["!"];
 
-    //Sets the reference for a new token, using existing ref if possible
-    var setReference = function(tok)
-    {
-        currentref = isInSym((tok+"").toLowerCase());
-        var value = (currenttok === "d") ? BigDecimal(tok) : BigDecimal("0");
-        if(currentref === null)
-        {
-            currentref = sym.length;
-            sym.push({
-                symbol:currenttok,
-                text: (tok+"").toLowerCase(),
-                value: value
-            });
-        }
-    };
-    //Check to see if a token is already in the symbol table
-    var isInSym = function(tok)
-    {
-        /*Return the reference if the token is in the symbol table.
-        returns null otherwise*/
-        for (var i = sym.length - 1; i >= 0; i--) {
-            if(sym[i].text === tok)
-            {
-                return i;
-            }
-        }
-        return null;
-    };
+    
 
     //Takes a new set of tokens to process
     EQS.newExpression = function(tokenarr){
@@ -121,6 +94,36 @@ var EQScanner = (function() {
     EQS.setVar = function(varname, val){
         vars[varname] = val;
     };
+
+    //Sets the reference for a new token, using existing ref if possible
+    function setReference(tok){
+        currentref = isInSym((tok+"").toLowerCase());
+        var value = (currenttok === "d") ? BigDecimal(tok) : BigDecimal("0");
+        if(currentref === null)
+        {
+            currentref = sym.length;
+            sym.push({
+                symbol:currenttok,
+                text: (tok+"").toLowerCase(),
+                value: value
+            });
+        }
+    }
+    //Check to see if a token is already in the symbol table
+    function isInSym(tok){
+        /*Return the reference if the token is in the symbol table.
+        returns null otherwise*/
+        for (var i = sym.length - 1; i >= 0; i--) {
+            if(sym[i].text === tok)
+            {
+                return i;
+            }
+        }
+        return null;
+    }
+
+
+    
     return EQS;
 }());
 
