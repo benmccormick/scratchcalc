@@ -83,6 +83,7 @@ var EQScanner = (function() {
         if(currenttok.indexOf("Error:") === -1){
             setReference(tok);
         }
+        // Return the tokensymbol and a reference to it
         return {
             token:currenttok,
             ref: currentref
