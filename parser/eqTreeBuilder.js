@@ -63,16 +63,16 @@ var EQTreeBuilder = (function() {
                 return true;
             }
             if(instr.charAt(0) === "s"){
-                //We're doing a shift
+                //We"re doing a shift
                 shifts(instr.substring(1),ctok.ref);
             }
             else if(instr.charAt(0) === "r"){
-                //we're doing a reduce
+                //we"re doing a reduce
                 reduce(instr.substring(1));
             }
             else
             {
-                //Shouldn't hit this case
+                //Shouldn"t hit this case
                 //TODO: Add better error handling here!
                 return false;
             }
@@ -120,7 +120,7 @@ var EQTreeBuilder = (function() {
     }
 
     function balanceTree(treeroot){
-        return "";
+        return treeroot;
     }
 
     function handleEqStack(ref){
@@ -137,6 +137,92 @@ var EQTreeBuilder = (function() {
         prods = tablePlaceHolder.productions;
         prodsteps = tablePlaceHolder.prodstep;
     }
+
+
+    //Node Constructors
+
+    var FuncNode = function(ref){
+        var that = this;
+        this.type = "f";
+        this.name = ref.text;
+        this.numChildren = 1;
+        this.value = function(){
+            switch(that.name) {
+                case "sin(":
+                    return BigDecimal(Math.sin(that.child.value()));
+                case "cos(":
+                    return BigDecimal(Math.cos(that.child.value()));
+            default:
+                return Math.sin(that.child.value());
+            }
+        };
+        this.priority = 10;
+        this.toString = function(){
+            return this.name + this.child.toString();
+        };
+        this.child = null;
+        this.setChild = function(child){
+            this.child = child;
+        };
+
+    };
+
+    var DigitNode = function(ref){
+        this.type = "d";
+        this.name = ref.value;
+        this.numChildren = 0;
+        this.value = function(){
+            return BigDecimal(this.name);
+        };
+        this.priority = 100;
+        this.toString = function(){
+            return ref.value;
+        };
+        
+    };
+
+    var VarNode = function(ref){
+        this.type = "v";
+        this.name;
+        this.numChildren;
+        this.value
+        this.priority;
+        this.toString;
+        
+    };
+
+    var UnOpNode = function(ref){
+        this.type;
+        this.name;
+        this.numChildren;
+        this.value
+        this.priority;
+        this.toString;
+        
+    };
+
+    var BiFuncNode = function(ref){
+        this.type;
+        this.name;
+        this.numChildren;
+        this.value
+        this.priority;
+        this.toString;
+        
+    };
+
+    var BinOpNode = function(ref){
+        this.type;
+        this.name;
+        this.numChildren;
+        this.value
+        this.priority;
+        this.toString;
+        
+    };
+
+
+
 
 
 
