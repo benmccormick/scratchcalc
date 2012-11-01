@@ -7,18 +7,22 @@
 
 var EQParser = (function(){
     var EQP ={};
-
-
+    var result;
+    EQP.init = function(){
+        EQTreeBuilder.init();
+    }
 
     EQP.parse = function(expression){
-
-        return {
-            value: 2,
-            tree: {},
-            expression: expression
-        };
+        var tokens = EQTokenizer.tokenize("#"+expression+"#");
+        EQScanner.newExpression(tokens);
+        result = EQTreeBuilder.process(EQScanner);
+        return result;
     };
 
+    EQP.getResult = function(){
+        return result;
+    }
+    return EQP;
 }());
 
 

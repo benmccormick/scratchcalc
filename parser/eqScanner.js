@@ -77,7 +77,7 @@ var EQScanner = (function() {
 
     //Returns true if the scanner has tokens, false otherwise
     EQS.hasTokens = function(){
-        return !tokens.length;
+        return tokens.length;
     };
 
     //Gets token data from the reference

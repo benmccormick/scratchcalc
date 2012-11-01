@@ -23,7 +23,7 @@ var tablePlaceHolder = (function(){
     ["r6" ,"r6" ,"" ,"" ,"" ,"" ,"r6" ,"r6" ,"r6" ,"" ,"" ]
     ];
     var terms = ["#","b","f","n","d","v","u",",",")","=","$"];
-    
+    var prodstep = ["",2,"","",5,"","","",9,"","",12,"",14,"","",""];
     var productions = [{result:null,components:null,text:null},
     {result:'S',components:["S","b","S"],
         text:"(1) <Segment> > <Segment> <binop> <Segment>"},
@@ -43,7 +43,8 @@ var tablePlaceHolder = (function(){
     return {
         table: table,
         terms: terms,
-        productions:productions
+        productions:productions,
+        prodstep:prodstep
     };
 
 }());
