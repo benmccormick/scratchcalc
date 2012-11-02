@@ -7,6 +7,8 @@
 
  /*global BigDecimal:false tablePlaceHolder:true */
 
+
+
 var EQTreeBuilder = (function() {
     var EQB ={};        //the internal treebuilder object
     var myScan = {};    // the scanner
@@ -138,10 +140,10 @@ var EQTreeBuilder = (function() {
         prodsteps = tablePlaceHolder.prodstep;
     }
 
-
     //Node Constructors
 
-    var FuncNode = function(ref){
+    var FuncNode = function(ref,child){
+    	//Unary Function Node
         var that = this;
         this.type = "f";
         this.name = ref.text;
@@ -158,16 +160,16 @@ var EQTreeBuilder = (function() {
         };
         this.priority = 10;
         this.toString = function(){
-            return this.name + this.child.toString();
+            return this.name + this.child.toString()+")";
         };
-        this.child = null;
-        this.setChild = function(child){
-            this.child = child;
-        };
-
+        this.child = child;
+    	this.setChild = function(cnode){
+    		this.child = cnode;
+    	}
     };
 
     var DigitNode = function(ref){
+    	//Digit Node
         this.type = "d";
         this.name = ref.value;
         this.numChildren = 0;
@@ -181,51 +183,153 @@ var EQTreeBuilder = (function() {
         
     };
 
-    var VarNode = function(ref){
+    var VarNode = function(ref,varVal){
+    	//Variable Node
+        var varValue = varVal;
         this.type = "v";
-        this.name;
-        this.numChildren;
-        this.value
-        this.priority;
-        this.toString;
+        this.nam =ref.text;
+        this.numChildren = 0;
+        this.value = function(){
+        	return varValue;
+        }
+        this.priority = 90;
+        this.toString = function(){
+        	return ref.text;
+        };
+        this.setValue = function(value){
+        	varValue = value;
+        }
         
     };
 
-    var UnOpNode = function(ref){
-        this.type;
-        this.name;
-        this.numChildren;
-        this.value
-        this.priority;
-        this.toString;
+    var UnOpNode = function(ref,child){
+        this.type = 'u';
+        this.name = ref.text;
+        this.numChildren = 1;
+        this.value = function(){
+        	//Right now factorial is the only choice so we calculate that.  Will add a switch statement later
+        	
+            return factorial(this.child.value());
+        }
+        this.priority = 6;
+        this.toString = function(){
+        	return this.child.toString()+""+this.name;
+        };
+    	this.child = child;
+    	this.setChild = function(cnode){
+    		this.child = cnode;
+    	}
         
     };
 
-    var BiFuncNode = function(ref){
-        this.type;
-        this.name;
-        this.numChildren;
-        this.value
-        this.priority;
-        this.toString;
+    var BiFuncNode = function(ref, lchild,rchild){
+        this.type ='n';
+        this.name = ref.text;
+        this.numChildren = 2;
+        this.value = function(){
+	        switch(this.name){
+	        	
+
+	        	case "max(": 
+	                var child1 =this.lchild.value();
+	                var child2 =this.rchild.value();
+	                return(child1.compareTo(child2) > 0) ? child1 : child2;
+	                
+		        case "min(": 
+	                var child1 =this.lchild.value();
+	                var child2 =this.rchild.value();
+	                return(child1.compareTo(child2) < 0) ? child1 : child2;
+	                
+		        case "perm(": 
+		            var value = factorial(this.lchild.value()).divide(
+		            	factorial(this.lchild.value().subtract(
+		            	this.rchild.value())));
+		            return value;
+		        
+		        case "comb(": 
+		            var value = factorial(this.lchild.value()).divide(
+		                factorial(this.rchild.value()).multiply(factorial(
+		                this.lchild.value().subtract(this.rchild.value()))));
+		            return value;
+
+		        default:
+		        	//Should throw error here:
+		        	return new BigDecimal(0);
+	    	}
+    	};
+        this.priority = 10;
+        this.toString = function(){
+        	return this.name + this.lchild.toString() + "," + 
+        		this.rchild.toString() + ")";
+        };
+        this.lchild = lchild;
+        this.rchild = rchild;
+        this.setChildren = function(left,right){
+        	this.lchild = left;
+        	this.rchild = right;
+        };
         
     };
 
-    var BinOpNode = function(ref){
-        this.type;
-        this.name;
-        this.numChildren;
-        this.value
-        this.priority;
-        this.toString;
+    
+    var BinOpNode = function(ref, lchild, rchild){
+        var priority;
+        switch(this.name){
+        		case "+":
+        			priority = 0;
+        			break;
+        		case "-":
+        			priority = 0;
+        			break;
+        		case "*":
+        			priority = 5;
+        			break;
+        		case "/":
+        			priority = 5;
+        			break;
+        	}
+
+
+        this.type ="b";
+        this.name =ref.text;
+        this.numChildren = 2;
+        this.value = function(){
+        	switch(this.name){
+        		case "+":
+        			return lchild.value().add(rchild.value);
+        		case "-":
+        			return lchild.value().subtract(rchild.value);
+        		case "*":
+        			return lchild.value().multiply(rchild.value);
+        		case "/":
+        			return lchild.value().divide(rchild.value);
+        	}
+        }
+        this.priority = priority;
+        this.toString = function(){
+        	return this.lchild.toString() + this.name + this.rchild.toString();
+        };
+        this.lchild = lchild;
+        this.rchild= rchild;
+        this.setChildren = function(left,right){
+        	this.lchild = left;
+        	this.rchild = right;
+        }
         
     };
 
 
-
+    function factorial(val){
+    	//gets the factorial of a number
+    	var num = new BigDecimal(1);
+        for(var i=1; i<=val; i++)
+        {
+            num=num.multiply(new BigDecimal(i));
+        }
+        return num;
+    }
 
 
 
     return EQB;
 }());
-
