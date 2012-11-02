@@ -98,7 +98,8 @@ var EQScanner = (function() {
     //Sets the reference for a new token, using existing ref if possible
     function setReference(tok){
         currentref = isInSym((tok+"").toLowerCase());
-        var value = (currenttok === "d") ? BigDecimal(tok) : BigDecimal("0");
+        var value = (currenttok === "d") ? new BigDecimal(tok) : 
+            new BigDecimal("0");
         if(currentref === null)
         {
             currentref = sym.length;

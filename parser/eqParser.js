@@ -5,12 +5,14 @@
  * @author Ben McCormick
  **/
 
+ /*global EQScanner:false EQTreeBuilder:false EQTokenizer:false EQParser:true*/
+
 var EQParser = (function(){
     var EQP ={};
     var result;
     EQP.init = function(){
         EQTreeBuilder.init();
-    }
+    };
 
     EQP.parse = function(expression){
         var tokens = EQTokenizer.tokenize("#"+expression+"#");
@@ -21,7 +23,7 @@ var EQParser = (function(){
 
     EQP.getResult = function(){
         return result;
-    }
+    };
     return EQP;
 }());
 

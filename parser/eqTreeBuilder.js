@@ -84,7 +84,7 @@ var EQTreeBuilder = (function() {
         stack.push(ctok);
         stack.push(cstate+"");
 
-        if(ref != -1 && myScan.getRefData(ref).value != null){
+        if(ref !== -1 && myScan.getRefData(ref).value !== null){
             eqStack.push(createNode(ref));
         }
         cstate = instr.substring(1);
@@ -149,9 +149,9 @@ var EQTreeBuilder = (function() {
         this.value = function(){
             switch(that.name) {
                 case "sin(":
-                    return BigDecimal(Math.sin(that.child.value()));
+                    return new BigDecimal(Math.sin(that.child.value()));
                 case "cos(":
-                    return BigDecimal(Math.cos(that.child.value()));
+                    return new BigDecimal(Math.cos(that.child.value()));
             default:
                 return Math.sin(that.child.value());
             }
@@ -172,7 +172,7 @@ var EQTreeBuilder = (function() {
         this.name = ref.value;
         this.numChildren = 0;
         this.value = function(){
-            return BigDecimal(this.name);
+            return new BigDecimal(this.name);
         };
         this.priority = 100;
         this.toString = function(){

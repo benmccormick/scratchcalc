@@ -24,7 +24,7 @@ var EQTokenizer = (function() {
         var unopx = /^!/;
         var funcx = /^\w*\(/;
         var varx = /^\w+\d*/;
-
+        var ZERO = new BigDecimal("0");
         //  Goes through the expression and splits it using the regexs
         while(expression.length > 0)
         {
@@ -36,9 +36,9 @@ var EQTokenizer = (function() {
             var numres = numx.exec(expression);
             if(numres)
             {
-                var number = BigDecimal(numres[0]);
+                var number = new BigDecimal(numres[0]);
                 expression = expression.substring(numres[0].length);
-                if(number.compareTo(BigDecimal("0"))< 0 &&// if  negative number
+                if(number.compareTo(ZERO)< 0 &&// if  negative number
                     last !== null && //list isn't empty
                     (last === ")" || numx.exec(last) !== null ||
                     varx.exec(last) !== null)) //isn't a subtraction
@@ -99,7 +99,7 @@ var EQTokenizer = (function() {
     //Adds a * between implicitly multiplied items
     function addImplicitMultiplication(){
         //this can be added later.  Multiplication must be explicit for now
-    };
+    }
 
     return EQT;
 }());
