@@ -1,17 +1,20 @@
 /**
  * EQScanner - An Equation Token Scanner for Javascript
  * 
- *
  * @author Ben McCormick
  **/
 
+ /*global BigDecimal:false */
+
+/*The Scanner module goes through the tokens, identifies them by their class
+ *and saves a reference for future lookup */
 var EQScanner = (function() {
-    var EQS ={};
-    var tokens = [];
-    var sym = [];
-    var currenttok = "x";
-    var currentref = null;
-    var vars = {};
+    var EQS ={};            //the scanner object
+    var tokens = [];        //holds the tokens being processed
+    var sym = [];           //symbol table for saving references
+    var currenttok = "x";   //current token being processed
+    var currentref = null;  //reference to the current token
+    var vars = {};          //a map of variables
 
     // For now these are going to be in code.  Should be moved 
     // To a props file at some point
@@ -24,6 +27,7 @@ var EQScanner = (function() {
     puncs = [",",")","#"];
     unops = ["!"];
 
+    //Sets the reference for a new token, using existing ref if possible
     var setReference = function(tok)
     {
         currentref = isInSym((tok+"").toLowerCase());
@@ -38,7 +42,7 @@ var EQScanner = (function() {
             });
         }
     };
-
+    //Check to see if a token is already in the symbol table
     var isInSym = function(tok)
     {
         /*Return the reference if the token is in the symbol table.
@@ -52,15 +56,17 @@ var EQScanner = (function() {
         return null;
     };
 
+    //Takes a new set of tokens to process
     EQS.newExpression = function(tokenarr){
 
         tokens = tokenarr.reverse();
     };
 
-    EQS.scanNext = function(tokenarr){
+    //Scans the next token, adds it to the symbol table and returns a reference
+    //if it is already in the symbol table, it returns the reference
+    EQS.scanNext = function(){
         var tok = nextToken();
-        if(!tok)
-        {
+        if(!tok){
             return null;
         }
         var numx = /^[\-+]?[0-9]*\.?[0-9]+$/;
@@ -74,42 +80,44 @@ var EQScanner = (function() {
                     ($.inArray(tok,puncs) !== -1) ? tok :
                     (varx.exec(tok)) ? "v" : errorHandle(tok);
 
-        if(currenttok.indexOf("Error:") === -1)
-        {
+        if(currenttok.indexOf("Error:") === -1){
             setReference(tok);
         }
-        return currenttok;
+        // Return the tokensymbol and a reference to it
+        return {
+            token:currenttok,
+            ref: currentref
+        };
 
     };
 
+    //Gets the next token from the token array
     var nextToken = function(){
         //if there are tokens, remove and return the next one
         return (tokens.length) ? tokens.pop() : null;   
     };
 
+    //Builds the error string
     var errorHandle = function(tok){
         return "Error: Invalid token - " +tok;
-    }
+    };
 
+    //Returns true if the scanner has tokens, false otherwise
     EQS.hasTokens = function(){
-
         return !tokens.length;
     };
 
-    EQS.getRef = function(){
-
-        return currentref;
-    };
-
+    //Gets token data from the reference
     EQS.getRefData = function(index){
         return sym[index];
     };
 
+    //Gets a variables value
     EQS.getVar = function(varname){
-
         return vars[varname];
     };
 
+    //Sets a variables value
     EQS.setVar = function(varname, val){
         vars[varname] = val;
     };
