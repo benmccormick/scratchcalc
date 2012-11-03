@@ -30,8 +30,8 @@
     <body>
         <h3>ScratchCalc Basic Test</h3>
         <div class="snapped">
-            <input class="in" type="text"/>
-            <input class="out" type="text"/>
+            <textarea class="in" rows="100"></textarea>
+            <div class="out"></div>
         </div>
         <script type='text/javascript' src='ext/jquery.js'></script>
         <script type='text/javascript' src='ext/bigdecimal.js'></script>
@@ -42,7 +42,7 @@
         <script type='text/javascript' src='parser/eqParser.js'></script>
         <script type='text/javascript'>
             var typingTimer;                //timer identifier
-            var doneTypingInterval = 500;  //time in ms, 5 second for example
+            var doneTypingInterval = 0;  //time in ms, 5 second for example
             EQParser.init();
             //on keyup, start the countdown
             $('.in').keyup(function(){
@@ -58,7 +58,7 @@
             function doneTyping () {
                 var input = $('.in').val();
                 var output = EQParser.parse(input);
-                $('.out').attr("value",output);
+                $('.out').html(output);
             }
         </script>
 

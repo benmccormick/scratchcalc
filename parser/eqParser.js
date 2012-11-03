@@ -16,6 +16,10 @@ var EQParser = (function(){
 
     EQP.parse = function(expression){
         var tokens = EQTokenizer.tokenize("#"+expression+"#");
+        if(!tokens) //Invalid Token
+        {
+            return "#Invalid Token#";
+        }
         EQScanner.newExpression(tokens);
         result = EQTreeBuilder.process(EQScanner);
         if(!result)

@@ -86,6 +86,7 @@ var EQTokenizer = (function() {
                 expression = expression.substring(varres[0].length);
                 continue;
             }
+            return false;
         }
         addImplicitMultiplication();
         return tokenlist;
