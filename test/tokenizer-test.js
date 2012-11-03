@@ -43,6 +43,10 @@ test( "Negative Numbers", function() {
     list = EQTokenizer.getList();
     deepEqual( list,["3","*","-4"], "3* -4 Test" );
 
+     EQTokenizer.tokenize("300+7-2");
+    list = EQTokenizer.getList();
+    deepEqual( list,["300","+","7","-","2"], "300+7-2 Test" );
+
 
     EQTokenizer.tokenize("(10) - 2");
     list = EQTokenizer.getList();

@@ -6,8 +6,6 @@
         .snapped
         {
             width:320px;
-            height:800px;
-            background-color:blue;
             left:0px;
             position:absolute;
 
@@ -15,14 +13,12 @@
         .in
         {
             width:180px;
-            height:700px;
             left:10px;
             position:absolute;
         }
         .out
         {
             width:100px;
-            height:700px;
             left:210px;
             position:absolute;
 
@@ -32,9 +28,10 @@
 
     </head>
     <body>
+        <h3>ScratchCalc Basic Test</h3>
         <div class="snapped">
-            <input class="in" type="textarea"/>
-            <input class="out" type="textarea"/>
+            <input class="in" type="text"/>
+            <input class="out" type="text"/>
         </div>
         <script type='text/javascript' src='ext/jquery.js'></script>
         <script type='text/javascript' src='ext/bigdecimal.js'></script>
@@ -43,6 +40,27 @@
         <script type='text/javascript' src='parser/eqTokenizer.js'></script>
         <script type='text/javascript' src='parser/eqScanner.js'></script>
         <script type='text/javascript' src='parser/eqParser.js'></script>
+        <script type='text/javascript'>
+            var typingTimer;                //timer identifier
+            var doneTypingInterval = 500;  //time in ms, 5 second for example
+            EQParser.init();
+            //on keyup, start the countdown
+            $('.in').keyup(function(){
+                typingTimer = setTimeout(doneTyping, doneTypingInterval);
+            });
+
+            //on keydown, clear the countdown 
+            $('.in').keydown(function(){
+                clearTimeout(typingTimer);
+            });
+
+            //user is "finished typing," do something
+            function doneTyping () {
+                var input = $('.in').val();
+                var output = EQParser.parse(input);
+                $('.out').attr("value",output);
+            }
+        </script>
 
     </body>
 </html>

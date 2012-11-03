@@ -18,7 +18,11 @@ var EQParser = (function(){
         var tokens = EQTokenizer.tokenize("#"+expression+"#");
         EQScanner.newExpression(tokens);
         result = EQTreeBuilder.process(EQScanner);
-        return result;
+        if(!result)
+        {
+            return "";//Invalid Expression
+        }
+        return result.value().toString();
     };
 
     EQP.getResult = function(){

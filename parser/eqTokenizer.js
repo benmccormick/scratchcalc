@@ -44,7 +44,7 @@ var EQTokenizer = (function() {
                     varx.exec(last) !== null)) //isn't a subtraction
                 {
                     tokenlist.push("-");
-                    tokenlist.push(number+"");
+                    tokenlist.push((number+"").substring(1)+"");
                 }
                 else
                 {

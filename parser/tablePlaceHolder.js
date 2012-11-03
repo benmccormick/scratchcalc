@@ -1,4 +1,4 @@
-//Hold's the table for now.  Will be replaced when we move to working in windows
+//Hold"s the table for now.  Will be replaced when we move to working in windows
 
 
 var tablePlaceHolder = (function(){
@@ -25,17 +25,17 @@ var tablePlaceHolder = (function(){
     var terms = ["#","b","f","n","d","v","u",",",")","=","$"];
     var prodstep = ["",2,"","",5,"","","",9,"","",12,"",14,"","",""];
     var productions = [{result:null,components:null,text:null},
-    {result:'S',components:["S","b","S"],
+    {result:"S",components:["S","b","S"],
         text:"(1) <Segment> > <Segment> <binop> <Segment>"},
-    {result:'S',components:["f","S",")"],
+    {result:"S",components:["f","S",")"],
         text:"(2) <Segment> > function( <Segment> )"},
-    {result:'S',components:["n","S",",","S",")"],
+    {result:"S",components:["n","S",",","S",")"],
         text:"(3) <Segment> > bifunction( <Segment> , <Segment> )"},
-    {result:'S',components:["d"],
+    {result:"S",components:["d"],
         text:"(4) <Segment> > double"},
-    {result:'S',components:["v"],
+    {result:"S",components:["v"],
         text:"(5) <Segment> > variable"},
-    {result:'S',components:["S","u"],
+    {result:"S",components:["S","u"],
         text:"(6) <Segment> > <Segment> <unop>"},
     ];
 

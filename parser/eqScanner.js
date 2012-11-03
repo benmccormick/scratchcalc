@@ -4,7 +4,7 @@
  * @author Ben McCormick
  **/
 
- /*global BigDecimal:false */
+ /*global BigDecimal:false $:true */
 
 /*The Scanner module goes through the tokens, identifies them by their class
  *and saves a reference for future lookup */
@@ -22,7 +22,7 @@ var EQScanner = (function() {
 
     funcs = ["sqr(","sqrt(","log(","ln(","exp(","floor(","ceil(","neg(","rnd(",
             "sin(","cos(","tan(","asin(","acos(","atan(","abs(","("];
-    ops = ["+","-","*","/","%","^","*","|","&"];
+    ops = ["+","-","*","/","%","^","|","&"];
     bifuncs = ["min(","max(","perm(","comb("];
     puncs = [",",")","#"];
     unops = ["!"];
@@ -61,7 +61,6 @@ var EQScanner = (function() {
             token:currenttok,
             ref: currentref
         };
-
     };
 
     //Gets the next token from the token array
@@ -98,8 +97,9 @@ var EQScanner = (function() {
     //Sets the reference for a new token, using existing ref if possible
     function setReference(tok){
         currentref = isInSym((tok+"").toLowerCase());
-        var value = (currenttok === "d") ? new BigDecimal(tok) : 
-            new BigDecimal("0");
+        var value = (currenttok === "d") ? tok : 
+            (puncs.indexOf(currenttok) > -1) ?  null : "0";
+
         if(currentref === null)
         {
             currentref = sym.length;
@@ -110,6 +110,7 @@ var EQScanner = (function() {
             });
         }
     }
+
     //Check to see if a token is already in the symbol table
     function isInSym(tok){
         /*Return the reference if the token is in the symbol table.
@@ -123,8 +124,6 @@ var EQScanner = (function() {
         return null;
     }
 
-
-    
     return EQS;
 }());
 

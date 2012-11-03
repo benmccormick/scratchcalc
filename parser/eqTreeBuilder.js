@@ -12,14 +12,12 @@
 var EQTreeBuilder = (function() {
     var EQB ={};        //the internal treebuilder object
     var myScan = {};    // the scanner
-    var vars = [];      // the variables
     var eqStack = [];   //the stack of equation tree objects
     var stack = [];     //the stack of tokens being processed
     var terms = [];     //the different tokentypes
     var table = [];     //the table describing the parsing technique
     var prods = [];     //a list of productions
     var prodsteps =[];  //a list of the next stages after a reduce
-    var steps = []      //the steps we go through (FOR DEBUG)
     var ctok;           //the current token
     var cstate;         //the current state of the system  
     var instr;          // the instruction for the next step in the table
@@ -35,7 +33,6 @@ var EQTreeBuilder = (function() {
     EQB.process = function(scanner){
         myScan = scanner;
         cstate = 0;
-        steps = [];
         stack = [];
         eqStack = [];
         var index = -1;
@@ -61,8 +58,8 @@ var EQTreeBuilder = (function() {
             }
             if(instr === ("acc")){
                 //Valid equation completed
-                root = balanceTree(eqStack.pop);
-                return true;
+                root = balanceTree(eqStack.pop());
+                return root;
             }
             if(instr.charAt(0) === "s"){
                 //We"re doing a shift
@@ -100,7 +97,7 @@ var EQTreeBuilder = (function() {
     function reduce(level){
         //performs a reduce operation and updates the state
         var cprod = prods[level];
-        handleEqStack(cprod);
+        handleEqStack(level);
         var start = stack.length-1;
         var finish = stack.length- (2 * cprod.components.length);
         var idx;
@@ -121,15 +118,94 @@ var EQTreeBuilder = (function() {
         cstate = prodsteps[cstate];
     }
 
-    function balanceTree(treeroot){
-        return treeroot;
+    function balanceTree(node){
+        //handle order of operations
+        if(node.numChildren === 0){
+            return node;
+        }
+        else
+        if(node.numChildren === 1)
+        {
+            node.setChild(balanceTree(node.child));
+        }
+        else
+        {
+            node.setChildren(balanceTree(node.lchild),balanceTree(node.rchild));
+            var lchild = node.lchild;
+            var rchild = node.rchild;
+            if(lchild.priority <node.priority)
+            {
+                var newlchild = lchild.rchild;
+                lchild.setChildren(lchild.lchild,node);
+                node.lchild = newlchild;
+                return lchild;
+            }
+            if(rchild.priority <node.priority)
+            {
+                var newrchild = rchild.rchild;
+                rchild.setChildren(node,rchild.rchild);
+                node.rchild = newrchild;
+                return rchild;
+            }
+        }   
+        return node;
     }
 
-    function handleEqStack(ref){
-        return "";
+    function handleEqStack(productionNum){
+        var lchild,rchild,child, biFuncNode,binOpNode,func,opNode;
+        switch(productionNum){
+            case "1":
+                rchild = eqStack.pop();
+                binOpNode = eqStack.pop();
+                lchild = eqStack.pop();
+                binOpNode.setChildren(lchild,rchild);
+                eqStack.push(binOpNode);
+            break;
+            case "2":
+                child = eqStack.pop();
+                func = eqStack.pop();
+                func.setChild(child);
+                eqStack.push(func);
+            break;
+            case "3":
+                rchild = eqStack.pop();
+                biFuncNode = eqStack.pop();
+                lchild = eqStack.pop();
+                biFuncNode.setChildren(lchild,rchild);
+                eqStack.push(biFuncNode);
+            break;
+            case "6":
+                opNode = eqStack.pop();
+                child = eqStack.pop();
+                opNode.setChild(child);
+                eqStack.push(opNode);
+            break;
+            default:
+                //Some Productions don't require action
+        }
     }
 
     function createNode(ref){
+        //Builds a treeNode object from a reference
+        var refval = myScan.getRefData(ref);
+        switch(refval.symbol){
+            case "f":
+                return (new FuncNode(refval));
+            case "d":
+                return (new DigitNode(refval));
+            case "v":
+                var varVal = myScan.getVarVal(refval.text);
+                return (new VarNode(refval,varVal));
+            case "u":
+                return (new UnOpNode(refval));
+            case "n":
+                return (new BiFuncNode(refval));
+            case "b":
+                return (new BinOpNode(refval));
+            default:
+
+
+        }
         return "";
     }
 
@@ -142,8 +218,8 @@ var EQTreeBuilder = (function() {
 
     //Node Constructors
 
-    var FuncNode = function(ref,child){
-    	//Unary Function Node
+    var FuncNode = function(ref){
+        //Unary Function Node
         var that = this;
         this.type = "f";
         this.name = ref.text;
@@ -154,22 +230,25 @@ var EQTreeBuilder = (function() {
                     return new BigDecimal(Math.sin(that.child.value()));
                 case "cos(":
                     return new BigDecimal(Math.cos(that.child.value()));
+                case "(":
+                    return that.child.value();
             default:
-                return Math.sin(that.child.value());
+                //Error Handling here??
+                return new BigDecimal("0")
             }
         };
         this.priority = 10;
         this.toString = function(){
             return this.name + this.child.toString()+")";
         };
-        this.child = child;
-    	this.setChild = function(cnode){
-    		this.child = cnode;
-    	}
+        this.child = null;
+        this.setChild = function(cnode){
+            this.child = cnode;
+        };
     };
 
     var DigitNode = function(ref){
-    	//Digit Node
+        //Digit Node
         this.type = "d";
         this.name = ref.value;
         this.numChildren = 0;
@@ -184,144 +263,146 @@ var EQTreeBuilder = (function() {
     };
 
     var VarNode = function(ref,varVal){
-    	//Variable Node
+        //Variable Node
         var varValue = varVal;
         this.type = "v";
         this.nam =ref.text;
         this.numChildren = 0;
         this.value = function(){
-        	return varValue;
-        }
+            return varValue;
+        };
         this.priority = 90;
         this.toString = function(){
-        	return ref.text;
+            return ref.text;
         };
         this.setValue = function(value){
-        	varValue = value;
-        }
+            varValue = value;
+        };
         
     };
 
-    var UnOpNode = function(ref,child){
-        this.type = 'u';
+    var UnOpNode = function(ref){
+        //Unary Operation Node
+        this.type = "u";
         this.name = ref.text;
         this.numChildren = 1;
         this.value = function(){
-        	//Right now factorial is the only choice so we calculate that.  Will add a switch statement later
-        	
+            //Right now factorial is the only choice so we calculate that.  
+            //Will add a switch statement later
             return factorial(this.child.value());
-        }
+        };
         this.priority = 6;
         this.toString = function(){
-        	return this.child.toString()+""+this.name;
+            return this.child.toString()+""+this.name;
         };
-    	this.child = child;
-    	this.setChild = function(cnode){
-    		this.child = cnode;
-    	}
-        
+        this.child = null;
+        this.setChild = function(cnode){
+            this.child = cnode;
+        };
     };
 
-    var BiFuncNode = function(ref, lchild,rchild){
-        this.type ='n';
+    var BiFuncNode = function(ref){
+        //Binary Function Node
+        var child1,child2,value;
+        this.type ="n";
         this.name = ref.text;
         this.numChildren = 2;
         this.value = function(){
-	        switch(this.name){
-	        	
+            switch(this.name){
+                
 
-	        	case "max(": 
-	                var child1 =this.lchild.value();
-	                var child2 =this.rchild.value();
-	                return(child1.compareTo(child2) > 0) ? child1 : child2;
-	                
-		        case "min(": 
-	                var child1 =this.lchild.value();
-	                var child2 =this.rchild.value();
-	                return(child1.compareTo(child2) < 0) ? child1 : child2;
-	                
-		        case "perm(": 
-		            var value = factorial(this.lchild.value()).divide(
-		            	factorial(this.lchild.value().subtract(
-		            	this.rchild.value())));
-		            return value;
-		        
-		        case "comb(": 
-		            var value = factorial(this.lchild.value()).divide(
-		                factorial(this.rchild.value()).multiply(factorial(
-		                this.lchild.value().subtract(this.rchild.value()))));
-		            return value;
-
-		        default:
-		        	//Should throw error here:
-		        	return new BigDecimal(0);
-	    	}
-    	};
+                case "max(": 
+                    child1 =this.lchild.value();
+                    child2 =this.rchild.value();
+                    return(child1.compareTo(child2) > 0) ? child1 : child2;
+                    
+                case "min(": 
+                    child1 =this.lchild.value();
+                    child2 =this.rchild.value();
+                    return(child1.compareTo(child2) < 0) ? child1 : child2;
+                    
+                case "perm(": 
+                    value = factorial(this.lchild.value()).divide(
+                        factorial(this.lchild.value().subtract(
+                        this.rchild.value())));
+                    return value;
+                
+                case "comb(": 
+                    value = factorial(this.lchild.value()).divide(
+                        factorial(this.rchild.value()).multiply(factorial(
+                        this.lchild.value().subtract(this.rchild.value()))));
+                    return value;
+                default:
+                    //Should throw error here:
+                    return new BigDecimal(0);
+            }
+        };
         this.priority = 10;
         this.toString = function(){
-        	return this.name + this.lchild.toString() + "," + 
-        		this.rchild.toString() + ")";
+            return this.name + this.lchild.toString() + "," + 
+                this.rchild.toString() + ")";
         };
-        this.lchild = lchild;
-        this.rchild = rchild;
+        this.lchild = null;
+        this.rchild = null;
         this.setChildren = function(left,right){
-        	this.lchild = left;
-        	this.rchild = right;
+            this.lchild = left;
+            this.rchild = right;
         };
         
     };
 
     
-    var BinOpNode = function(ref, lchild, rchild){
+    var BinOpNode = function(ref){
+        //Binary Operation Node
         var priority;
+        this.name =ref.text;
         switch(this.name){
-        		case "+":
-        			priority = 0;
-        			break;
-        		case "-":
-        			priority = 0;
-        			break;
-        		case "*":
-        			priority = 5;
-        			break;
-        		case "/":
-        			priority = 5;
-        			break;
-        	}
+                case "+":
+                    priority = 0;
+                    break;
+                case "-":
+                    priority = 0;
+                    break;
+                case "*":
+                    priority = 5;
+                    break;
+                case "/":
+                    priority = 5;
+                    break;
+            }
 
 
         this.type ="b";
-        this.name =ref.text;
         this.numChildren = 2;
         this.value = function(){
-        	switch(this.name){
-        		case "+":
-        			return lchild.value().add(rchild.value);
-        		case "-":
-        			return lchild.value().subtract(rchild.value);
-        		case "*":
-        			return lchild.value().multiply(rchild.value);
-        		case "/":
-        			return lchild.value().divide(rchild.value);
-        	}
-        }
+            switch(this.name){
+                case "+":
+                    return this.lchild.value().add(this.rchild.value());
+                case "-":
+                    return this.lchild.value().subtract(this.rchild.value());
+                case "*":
+                    return this.lchild.value().multiply(this.rchild.value());
+                case "/":
+                    return this.lchild.value().divide(this.rchild.value());
+            }
+        };
         this.priority = priority;
         this.toString = function(){
-        	return this.lchild.toString() + this.name + this.rchild.toString();
+            return this.lchild.toString() + this.name + this.rchild.toString();
         };
-        this.lchild = lchild;
-        this.rchild= rchild;
+        this.lchild = null;
+        this.rchild= null;
         this.setChildren = function(left,right){
-        	this.lchild = left;
-        	this.rchild = right;
-        }
+            this.lchild = left;
+            this.rchild = right;
+        };
         
     };
 
 
     function factorial(val){
-    	//gets the factorial of a number
-    	var num = new BigDecimal(1);
+        //gets the factorial of a number
+        var num = new BigDecimal(1);
         for(var i=1; i<=val; i++)
         {
             num=num.multiply(new BigDecimal(i));
