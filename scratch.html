@@ -2,36 +2,13 @@
 <html>
     <head>
         <title>Math Test</title>
-    <style>
-        .snapped
-        {
-            width:320px;
-            left:0px;
-            position:absolute;
-
-        }
-        .in
-        {
-            width:180px;
-            left:10px;
-            position:absolute;
-        }
-        .out
-        {
-            width:100px;
-            left:210px;
-            position:absolute;
-
-        }
-
-    </style>
-
+        <link rel="stylesheet" href = "scratch.css">
     </head>
     <body>
-        <h3>ScratchCalc Basic Test</h3>
+        <h3 class="header">ScratchCalc Basic Test</h3>
         <div class="snapped">
-            <textarea class="in" rows="100"></textarea>
-            <div class="out"></div>
+            <textarea class="in calcspace" rows="100"></textarea>
+            <div class="out calcspace"></div>
         </div>
         <script type='text/javascript' src='ext/jquery.js'></script>
         <script type='text/javascript' src='ext/bigdecimal.js'></script>
@@ -56,9 +33,21 @@
 
             //user is "finished typing," do something
             function doneTyping () {
-                var input = $('.in').val();
-                var output = EQParser.parse(input);
-                $('.out').html(output);
+                var input = $('.in').val().split(/\r?\n/g);
+                var output = input.map(EQParser.parse);
+                var old = $('.out').html().split(/\r?\n/g);
+                $('.out').html("");
+                output.forEach(function(str,idx){
+                    if(str !== "" || input[idx] ==="")
+                    {  
+                        $('.out').append("<div>"+str+"</div>")
+                    }
+                    else
+                    {
+                        $('.out').append(old[idx]);
+                    }
+                });
+
             }
         </script>
 

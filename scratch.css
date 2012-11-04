@@ -1,0 +1,59 @@
+body
+{
+background: url(http://1-ps.googleusercontent.com/x/s.html5rocks-hrd.appspot.com/www.html5rocks.com/static/images/wbackground.png.pagespeed.ic.y4quBltJwu.jpg) repeat;
+background-color: #F8F8F8!important;
+}
+
+}
+
+.snapped
+{
+    width:320px;
+    left:0px;
+    position:absolute;
+
+}
+.in
+{
+    width:300px;
+    height:500px;
+    overflow-y:scroll;
+    left:10px;
+    position:absolute;
+    border: 0;
+    background-color: rgba(256, 256, 256, 0.7);
+}
+.out
+{
+    width:300px;
+    height:500px;
+    left:400px;
+    position:absolute;
+    background-color: rgba(256, 256, 256, 0.7);
+}
+
+.header
+{
+    font-family: "Segoe UI Light";
+    font-size: 48px;
+}
+
+.calcspace
+{
+    font: 20px/25px "Consolas";
+
+}
+
+
+::-webkit-scrollbar-thumb:vertical {
+    height:9px;
+    background:#000;
+}
+
+::-webkit-scrollbar {
+    width:8px;
+    height:10px;
+    background-color: #FFF;
+    margin-right:5px;
+
+}
