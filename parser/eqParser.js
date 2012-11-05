@@ -9,9 +9,12 @@
 
 var EQParser = (function(){
     var EQP ={};
+    var varMap = {};
     var result;
     EQP.init = function(){
+        EQTokenizer.init(varMap);
         EQTreeBuilder.init();
+        EQScanner.init(varMap);
     };
 
     EQP.parse = function(expression){

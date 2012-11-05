@@ -12,6 +12,11 @@
 var EQTokenizer = (function() {
     var EQT ={};
     var tokenlist = [];
+    var vars = {};
+
+    EQT.init = function(varMap){
+        vars = varMap;
+    }
 
     //Takes the strings and splits it into tokens
     EQT.tokenize = function(expression){
@@ -82,7 +87,10 @@ var EQTokenizer = (function() {
             var varres = varx.exec(expression);
             if(varres)
             {
-                tokenlist.push(varres[0]);
+                //Only push text if its a valid variable.  Else ignore
+                if(vars[varres[0]]){
+                    tokenlist.push(varres[0]);
+                }
                 expression = expression.substring(varres[0].length);
                 continue;
             }

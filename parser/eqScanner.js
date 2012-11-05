@@ -14,8 +14,7 @@ var EQScanner = (function() {
     var sym = [];           //symbol table for saving references
     var currenttok = "x";   //current token being processed
     var currentref = null;  //reference to the current token
-    var vars = {};          //a map of variables
-
+    var vars ={};          //a map of variables
     // For now these are going to be in code.  Should be moved 
     // To a props file at some point
     var funcs, ops, bifuncs, puncs, unops;
@@ -28,6 +27,9 @@ var EQScanner = (function() {
     unops = ["!"];
 
     
+    EQS.init = function(varMap){
+        vars = varMap;
+    };
 
     //Takes a new set of tokens to process
     EQS.newExpression = function(tokenarr){

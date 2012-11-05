@@ -40,15 +40,20 @@
                 output.forEach(function(str,idx){
                     if(str !== "" || input[idx] ==="")
                     {  
-                        $('.out').append("<div>"+str+"</div>")
+                        $('.out').append(
+                            "<div class=\"outln\">"+str+"</div>");
                     }
                     else
-                    {
+                    {   
                         $('.out').append(old[idx]);
                     }
+                    $('.out').scrollTop($('.in').scrollTop());
                 });
-
             }
+
+            $('.in').on('scroll', function () {
+            $('.out').scrollTop($(this).scrollTop());
+});
         </script>
 
     </body>
