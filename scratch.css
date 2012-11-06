@@ -50,9 +50,10 @@ background-color: #F8F8F8!important;
     font-size: 48px;
 }
 
-.calcspace
+.calcspace .out
 {
     font: 20px/25px "Consolas";
+    color:black;
 
 }
 

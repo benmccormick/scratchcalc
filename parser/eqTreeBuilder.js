@@ -126,7 +126,16 @@ var EQTreeBuilder = (function() {
         else
         if(node.numChildren === 1)
         {
-            node.setChild(balanceTree(node.child));
+            if (node.child.priority < node.priority) {
+                var newroot = node.child;
+                var target = node.child.rchild;
+                newroot.rchild = node;
+                node.child = target;
+                return newroot;
+            }
+            else {
+                node.setChild(balanceTree(node.child));
+            }
         }
         else
         {
@@ -402,10 +411,10 @@ var EQTreeBuilder = (function() {
 
     function factorial(val){
         //gets the factorial of a number
-        var num = new BigDecimal(1);
+        var num = new BigDecimal("1");
         for(var i=1; i<=val; i++)
         {
-            num=num.multiply(new BigDecimal(i));
+            num=num.multiply(new BigDecimal(i+""));
         }
         return num;
     }

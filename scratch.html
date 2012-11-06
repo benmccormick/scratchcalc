@@ -32,20 +32,18 @@
             });
 
             //user is "finished typing," do something
-            function doneTyping () {
+            function doneTyping() {
                 var input = $('.in').val().split(/\r?\n/g);
                 var output = input.map(EQParser.parse);
-                var old = $('.out').html().split(/\r?\n/g);
+                var old = $('.out').html().split(/\n/g);
                 $('.out').html("");
-                output.forEach(function(str,idx){
-                    if(str !== "" || input[idx] ==="")
-                    {  
+                output.forEach(function (str, idx) {
+                    if (str !== "" || input[idx] === "") {
                         $('.out').append(
-                            "<div class=\"outln\">"+str+"</div>");
+                            "<div class=\"outln\">" + str + "</div>\n");
                     }
-                    else
-                    {   
-                        $('.out').append(old[idx]);
+                    else {
+                        $('.out').append(old[idx]+"\n");
                     }
                     $('.out').scrollTop($('.in').scrollTop());
                 });
