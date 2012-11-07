@@ -7,7 +7,11 @@
     <body>
         <h3 class="header">ScratchCalc Basic Test</h3>
         <div class="snapped">
-            <textarea class="in calcspace" rows="100"></textarea>
+            <textarea class="in calcspace" rows="100">
+2+1
+Monthly Bill 49.99*12
+4!
+cos(0)</textarea>
             <div class="out calcspace"></div>
         </div>
         <script type='text/javascript' src='ext/jquery.js'></script>
@@ -52,6 +56,7 @@
             $('.in').on('scroll', function () {
             $('.out').scrollTop($(this).scrollTop());
 });
+        (doneTyping());
         </script>
 
     </body>

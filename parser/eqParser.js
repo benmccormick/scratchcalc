@@ -32,9 +32,20 @@ var EQParser = (function(){
         return result.value().toString();
     };
 
+    EQP.setPrecision = function(prec){
+        EQTreeBuilder.setPrecision(prec);
+    };
+
     EQP.getResult = function(){
         return result;
     };
+
+    EQP.setVar = function(variable, value)
+    {
+        varMap[variable] = value;
+    };
+
+
     return EQP;
 }());
 

@@ -5,7 +5,7 @@
  * @author Ben McCormick
  **/
 
- /*global BigDecimal:false tablePlaceHolder:true */
+ /*global BigDecimal:false tablePlaceHolder:true RoundingMode:false*/
 
 
 
@@ -22,6 +22,7 @@ var EQTreeBuilder = (function() {
     var cstate;         //the current state of the system  
     var instr;          // the instruction for the next step in the table
     var root;           // the tree root
+    var precision = 5;  // The decimal precision for division
 
     //Eventually will load table from a file.  For now just defines it in code
     
@@ -76,6 +77,11 @@ var EQTreeBuilder = (function() {
                 return false;
             }
         }
+    };
+
+    EQB.setPrecision = function(prec)
+    {
+        precision = prec;
     };
 
     function shifts(level,ref){
@@ -243,7 +249,7 @@ var EQTreeBuilder = (function() {
                     return that.child.value();
             default:
                 //Error Handling here??
-                return new BigDecimal("0")
+                return new BigDecimal("0");
             }
         };
         this.priority = 10;
@@ -339,7 +345,8 @@ var EQTreeBuilder = (function() {
                 case "comb(": 
                     value = factorial(this.lchild.value()).divide(
                         factorial(this.rchild.value()).multiply(factorial(
-                        this.lchild.value().subtract(this.rchild.value()))));
+                        this.lchild.value().subtract(this.rchild.value()))),
+                        precision, RoundingMode.DOWN());
                     return value;
                 default:
                     //Should throw error here:
@@ -392,7 +399,8 @@ var EQTreeBuilder = (function() {
                 case "*":
                     return this.lchild.value().multiply(this.rchild.value());
                 case "/":
-                    return this.lchild.value().divide(this.rchild.value());
+                    return this.lchild.value().divide(this.rchild.value(),
+                        precision,RoundingMode.DOWN());
             }
         };
         this.priority = priority;

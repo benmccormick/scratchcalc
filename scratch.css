@@ -15,7 +15,7 @@ background-color: #F8F8F8!important;
 }
 .in
 {
-    width:300px;
+    width:700px;
     height:500px;
     overflow-y:scroll;
     overflow-x:hidden;
@@ -28,7 +28,7 @@ background-color: #F8F8F8!important;
 {
     width:300px;
     height:500px;
-    left:400px;
+    left:800px;
     overflow-y:scroll;
     overflow-x:hidden;
     position:absolute;

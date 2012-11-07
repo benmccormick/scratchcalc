@@ -1,6 +1,9 @@
 /*global ok:false EQTokenizer:false test:false equal:false
     deepEqual:false*/
 
+EQParser.init();
+EQParser.setVar("x",5);
+
 test( "Tokenizer Exists", function() {
     ok( (EQTokenizer), "Tokenizer Exists" );
 });
