@@ -21,10 +21,10 @@ var EQScanner = (function() {
 
     funcs = ["sqr(","sqrt(","log(","ln(","exp(","floor(","ceil(","neg(","rnd(",
             "sin(","cos(","tan(","asin(","acos(","atan(","abs(","("];
-    ops = ["+","-","*","/","%","^","|","&"];
+    ops = ["+","-","*","/","^","|","&"];
     bifuncs = ["min(","max(","perm(","comb("];
     puncs = [",",")","#"];
-    unops = ["!"];
+    unops = ["!","%"];
 
     
     EQS.init = function(varMap){

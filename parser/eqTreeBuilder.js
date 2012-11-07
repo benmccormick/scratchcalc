@@ -302,9 +302,23 @@ var EQTreeBuilder = (function() {
         this.name = ref.text;
         this.numChildren = 1;
         this.value = function(){
+            switch (this.name){
+                case "!":
+                    return factorial(this.child.value());
+                case "%":
+                    //Consider throwing an error if the child 
+                    //is not a var or digit
+                    var node = this.child.value().divide(new BigDecimal("100"),
+                        precision,RoundingMode.DOWN());
+                    node.isPercentage = true;
+                    return node;
+                default:
+                    //Add better error handling here
+                    return null;
+
+            }
             //Right now factorial is the only choice so we calculate that.  
             //Will add a switch statement later
-            return factorial(this.child.value());
         };
         this.priority = 6;
         this.toString = function(){
@@ -393,9 +407,30 @@ var EQTreeBuilder = (function() {
         this.value = function(){
             switch(this.name){
                 case "+":
-                    return this.lchild.value().add(this.rchild.value());
+                    var sum;
+                    if(this.rchild.value().isPercentage)
+                    {
+                        sum =  this.lchild.value().add(
+                            this.rchild.value().multiply(this.lchild.value()));
+                    }
+                    else
+                    {
+                        sum = this.lchild.value().add(this.rchild.value());
+                    }
+                    return sum;
                 case "-":
-                    return this.lchild.value().subtract(this.rchild.value());
+                    var difference;
+                    if(this.rchild.value().isPercentage)
+                    {
+                        difference =  this.lchild.value().subtract(
+                            this.rchild.value().multiply(this.lchild.value()));
+                    }
+                    else
+                    {
+                        difference = this.lchild.value().subtract(
+                            this.rchild.value());
+                    }
+                    return difference;
                 case "*":
                     return this.lchild.value().multiply(this.rchild.value());
                 case "/":

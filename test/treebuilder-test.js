@@ -85,3 +85,15 @@ test( "Division", function() {
     deepEqual( result.toString(), "3.33333", 
         "Negative number division test 2" );
 });
+
+test( "Factorial", function() {
+    var result = EQParser.parse("3!");
+    deepEqual( result.toString(), "6", "3! test" );
+
+
+    result = EQParser.parse("1!");
+    deepEqual( result.toString(), "1", "1! test" );
+
+    result = EQParser.parse("2 + 3! + 5");
+    deepEqual( result.toString(), "13", "Adding to factorial test" );
+});
