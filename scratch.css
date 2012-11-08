@@ -43,6 +43,25 @@ background-color: #F8F8F8!important;
 
 }
 
+.inln {
+    width:600px;
+    height:25px;
+    display:block;
+}
+
+.empty{
+    height:100%;
+    width:600;
+}
+
+.cursor
+{
+   width:1px;
+   height:25px;
+   background-color:black;
+}
+?
+
 .explanation
 {
     width:610px;

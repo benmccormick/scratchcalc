@@ -15,12 +15,12 @@
             <a href="https://bitbucket.org/scratchapps/scratchcalc/issues?status=new&status=open">here</a>.</p>
         </div>
         <div class="snapped">
-            <textarea class="in calcspace" rows="100">
-200 dollar cost +10% sales tax
-Monthly Bill 49.99*12
-4!
-10/3
-cos(0)</textarea>
+            <div class="cursor"></div>
+            <div class="in calcspace" rows="100">
+                <div class="inln" data-line="1">123456</div>
+                <div class="inln" data-line="2">123456</div>
+                <div class="empty"></div>
+            </div>
             <div class="out calcspace"></div>
         </div>
         <script type='text/javascript' src='ext/jquery.js'></script>
@@ -30,10 +30,51 @@ cos(0)</textarea>
         <script type='text/javascript' src='parser/eqTokenizer.js'></script>
         <script type='text/javascript' src='parser/eqScanner.js'></script>
         <script type='text/javascript' src='parser/eqParser.js'></script>
+        <script type='text/javascript' src='parser/calcFramework.js'></script>
         <script type='text/javascript'>
+            String.prototype.splice = function( idx, rem, s ) {
+                return (this.slice(0,idx) + s + this.slice(idx + Math.abs(rem)));
+            };
+            calcFramework.addLine();
+            var offset = $(".in").offset();
+            var currentline = 1;
+            var currentindex=0;
+            $(".cursor").offset(offset);
+            $(".empty").bind('click',function(e){
+                //Take care of this later... for when we click below currentline
+
+            });
+            $(".inln").bind('click',function(e){
+                currentline = $(e.currentTarget).data("line");
+                var linelength = e.currentTarget.innerHTML.length;
+                var xpos = e.pageX;
+                var diff = xpos-offset.left;
+                var pos = Math.min(linelength, diff/11|0);
+                var output = pos ;
+                $(".cursor").offset({ top:offset.top + (currentline-1)*25 , left: offset.left+(pos *11) });
+                currentindex=pos;
+            });
+
+            $(document).keyup(function(e){
+                var keyVal = String.fromCharCode(e.keyCode);
+                var cline =  $('.inln').filter( function() { 
+                    return $(this).data("line") == currentline; 
+                });
+                var input = cline.html()+"";
+                input = input.splice(currentindex,0,keyVal);
+                cline.html(input);
+                var cursorOffset = $(".cursor").offset();
+                cursorOffset.left += 11; 
+                $(".cursor").offset(cursorOffset);  
+                currentindex++;          
+            });
+
+
+
+            /*
             var typingTimer;                //timer identifier
             var doneTypingInterval = 0;  //time in ms, 5 second for example
-            EQParser.init();
+            
             //on keyup, start the countdown
             $('.in').keyup(function(){
                 typingTimer = setTimeout(doneTyping, doneTypingInterval);
@@ -66,6 +107,7 @@ cos(0)</textarea>
             $('.out').scrollTop($(this).scrollTop());
 });
         (doneTyping());
+        */
         </script>
 
     </body>
