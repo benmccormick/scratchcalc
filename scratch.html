@@ -2,39 +2,26 @@
 <html>
     <head>
         <title>Math Test</title>
-    <style>
-        .snapped
-        {
-            width:320px;
-            height:800px;
-            background-color:blue;
-            left:0px;
-            position:absolute;
-
-        }
-        .in
-        {
-            width:180px;
-            height:700px;
-            left:10px;
-            position:absolute;
-        }
-        .out
-        {
-            width:100px;
-            height:700px;
-            left:210px;
-            position:absolute;
-
-        }
-
-    </style>
-
+        <link rel="stylesheet" href = "scratch.css">
     </head>
     <body>
+        <h3 class="header">ScratchCalc Basic Test</h3>
+        <div class ="explanation">
+            <p>This is an early preview of my new project.  Please experiment with it, 
+                but know it is not a complete product yet,
+            and has many known bugs and unimplemented features, and probably many unknown bugs
+            and features I haven't thought of.  If you try it and see something that doesn't work
+            that you think should work, please let me know by opening up an issue 
+            <a href="https://bitbucket.org/scratchapps/scratchcalc/issues?status=new&status=open">here</a>.</p>
+        </div>
         <div class="snapped">
-            <input class="in" type="textarea"/>
-            <input class="out" type="textarea"/>
+            <textarea class="in calcspace" rows="100">
+200 dollar cost +10% sales tax
+Monthly Bill 49.99*12
+4!
+10/3
+cos(0)</textarea>
+            <div class="out calcspace"></div>
         </div>
         <script type='text/javascript' src='ext/jquery.js'></script>
         <script type='text/javascript' src='ext/bigdecimal.js'></script>
@@ -42,5 +29,44 @@
         <script type='text/javascript' src='parser/eqTreeBuilder.js'></script>
         <script type='text/javascript' src='parser/eqTokenizer.js'></script>
         <script type='text/javascript' src='parser/eqScanner.js'></script>
+        <script type='text/javascript' src='parser/eqParser.js'></script>
+        <script type='text/javascript'>
+            var typingTimer;                //timer identifier
+            var doneTypingInterval = 0;  //time in ms, 5 second for example
+            EQParser.init();
+            //on keyup, start the countdown
+            $('.in').keyup(function(){
+                typingTimer = setTimeout(doneTyping, doneTypingInterval);
+            });
+
+            //on keydown, clear the countdown 
+            $('.in').keydown(function(){
+                clearTimeout(typingTimer);
+            });
+
+            //user is "finished typing," do something
+            function doneTyping() {
+                var input = $('.in').val().split(/\r?\n/g);
+                var output = input.map(EQParser.parse);
+                var old = $('.out').html().split(/\n/g);
+                $('.out').html("");
+                output.forEach(function (str, idx) {
+                    if (str !== "" || input[idx] === "") {
+                        $('.out').append(
+                            "<div class=\"outln\">" + str + "</div>\n");
+                    }
+                    else {
+                        $('.out').append(old[idx]+"\n");
+                    }
+                    $('.out').scrollTop($('.in').scrollTop());
+                });
+            }
+
+            $('.in').on('scroll', function () {
+            $('.out').scrollTop($(this).scrollTop());
+});
+        (doneTyping());
+        </script>
+
     </body>
 </html>

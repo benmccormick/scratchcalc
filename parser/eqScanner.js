@@ -4,7 +4,7 @@
  * @author Ben McCormick
  **/
 
- /*global BigDecimal:false */
+ /*global BigDecimal:false $:true */
 
 /*The Scanner module goes through the tokens, identifies them by their class
  *and saves a reference for future lookup */
@@ -14,46 +14,21 @@ var EQScanner = (function() {
     var sym = [];           //symbol table for saving references
     var currenttok = "x";   //current token being processed
     var currentref = null;  //reference to the current token
-    var vars = {};          //a map of variables
-
+    var vars ={};          //a map of variables
     // For now these are going to be in code.  Should be moved 
     // To a props file at some point
     var funcs, ops, bifuncs, puncs, unops;
 
     funcs = ["sqr(","sqrt(","log(","ln(","exp(","floor(","ceil(","neg(","rnd(",
             "sin(","cos(","tan(","asin(","acos(","atan(","abs(","("];
-    ops = ["+","-","*","/","%","^","*","|","&"];
+    ops = ["+","-","*","/","^","|","&"];
     bifuncs = ["min(","max(","perm(","comb("];
     puncs = [",",")","#"];
-    unops = ["!"];
+    unops = ["!","%"];
 
-    //Sets the reference for a new token, using existing ref if possible
-    var setReference = function(tok)
-    {
-        currentref = isInSym((tok+"").toLowerCase());
-        var value = (currenttok === "d") ? BigDecimal(tok) : BigDecimal("0");
-        if(currentref === null)
-        {
-            currentref = sym.length;
-            sym.push({
-                symbol:currenttok,
-                text: (tok+"").toLowerCase(),
-                value: value
-            });
-        }
-    };
-    //Check to see if a token is already in the symbol table
-    var isInSym = function(tok)
-    {
-        /*Return the reference if the token is in the symbol table.
-        returns null otherwise*/
-        for (var i = sym.length - 1; i >= 0; i--) {
-            if(sym[i].text === tok)
-            {
-                return i;
-            }
-        }
-        return null;
+    
+    EQS.init = function(varMap){
+        vars = varMap;
     };
 
     //Takes a new set of tokens to process
@@ -88,7 +63,6 @@ var EQScanner = (function() {
             token:currenttok,
             ref: currentref
         };
-
     };
 
     //Gets the next token from the token array
@@ -104,7 +78,7 @@ var EQScanner = (function() {
 
     //Returns true if the scanner has tokens, false otherwise
     EQS.hasTokens = function(){
-        return !tokens.length;
+        return tokens.length;
     };
 
     //Gets token data from the reference
@@ -121,6 +95,37 @@ var EQScanner = (function() {
     EQS.setVar = function(varname, val){
         vars[varname] = val;
     };
+
+    //Sets the reference for a new token, using existing ref if possible
+    function setReference(tok){
+        currentref = isInSym((tok+"").toLowerCase());
+        var value = (currenttok === "d") ? tok : 
+            (puncs.indexOf(currenttok) > -1) ?  null : "0";
+
+        if(currentref === null)
+        {
+            currentref = sym.length;
+            sym.push({
+                symbol:currenttok,
+                text: (tok+"").toLowerCase(),
+                value: value
+            });
+        }
+    }
+
+    //Check to see if a token is already in the symbol table
+    function isInSym(tok){
+        /*Return the reference if the token is in the symbol table.
+        returns null otherwise*/
+        for (var i = sym.length - 1; i >= 0; i--) {
+            if(sym[i].text === tok)
+            {
+                return i;
+            }
+        }
+        return null;
+    }
+
     return EQS;
 }());
 

@@ -12,12 +12,11 @@
 var EQTokenizer = (function() {
     var EQT ={};
     var tokenlist = [];
+    var vars = {};
 
-    //Adds a * between implicitly multiplied items
-    var addImplicitMultiplication = function()
-    {
-        //this can be added later.  Multiplication must be explicit for now
-    };
+    EQT.init = function(varMap){
+        vars = varMap;
+    }
 
     //Takes the strings and splits it into tokens
     EQT.tokenize = function(expression){
@@ -27,10 +26,10 @@ var EQTokenizer = (function() {
         var numx = /^-?\d+\.?\d*/;
         var spacex = /^\s+/;
         var operx = /^[\+\-\*\/!%\^&|,)\[\]#]/;
-        var unopx = /^!/;
+        var unopx = /^[!%]/;
         var funcx = /^\w*\(/;
         var varx = /^\w+\d*/;
-
+        var ZERO = new BigDecimal("0");
         //  Goes through the expression and splits it using the regexs
         while(expression.length > 0)
         {
@@ -42,15 +41,15 @@ var EQTokenizer = (function() {
             var numres = numx.exec(expression);
             if(numres)
             {
-                var number = BigDecimal(numres[0]);
+                var number = new BigDecimal(numres[0]);
                 expression = expression.substring(numres[0].length);
-                if(number.compareTo(BigDecimal("0"))< 0 &&// if  negative number
+                if(number.compareTo(ZERO)< 0 &&// if  negative number
                     last !== null && //list isn't empty
                     (last === ")" || numx.exec(last) !== null ||
                     varx.exec(last) !== null)) //isn't a subtraction
                 {
                     tokenlist.push("-");
-                    tokenlist.push(number+"");
+                    tokenlist.push((number+"").substring(1)+"");
                 }
                 else
                 {
@@ -88,10 +87,14 @@ var EQTokenizer = (function() {
             var varres = varx.exec(expression);
             if(varres)
             {
-                tokenlist.push(varres[0]);
+                //Only push text if its a valid variable.  Else ignore
+                if(vars[varres[0]]){
+                    tokenlist.push(varres[0]);
+                }
                 expression = expression.substring(varres[0].length);
                 continue;
             }
+            return false;
         }
         addImplicitMultiplication();
         return tokenlist;
@@ -101,6 +104,11 @@ var EQTokenizer = (function() {
     EQT.getList = function(){
         return tokenlist; 
     };
+
+    //Adds a * between implicitly multiplied items
+    function addImplicitMultiplication(){
+        //this can be added later.  Multiplication must be explicit for now
+    }
 
     return EQT;
 }());
