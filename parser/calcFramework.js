@@ -10,7 +10,7 @@
 
 
 var calcFramework = (function () {
-    var lines = [];
+    var lines = [null];
     var idx = 0; //for loops
     EQParser.init();
     var cF = {};
@@ -18,13 +18,14 @@ var calcFramework = (function () {
     cF.getLine = function (index) {
         //returns the specified line
         return lines[index];
-    }
+    };
 
 
     cF.addLine = function (index) {
         //adds a line to the calc
         var newLine = new Line(index);
-        if (index === null || typeof index === "undefined" ||index >= lines.length) {
+        if (index === null || typeof index === "undefined" || 
+            index >= lines.length) {
             lines.push(newLine);
         }
         else {
