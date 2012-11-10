@@ -14,24 +14,27 @@
             that you think should work, please let me know by opening up an issue 
             <a href="https://bitbucket.org/scratchapps/scratchcalc/issues?status=new&status=open">here</a>.</p>
         </div>
+        <div class="cursor"></div>
         <div class="snapped">
-            <div class="cursor"></div>
             <div class="in calcspace" rows="100">
-                <div class="inln" data-line="1">123456</div>
-                <div class="inln" data-line="2">123456</div>
+                <div class="inln" data-line="1"></div>
+               <!-- <div class="inln" data-line="2"></div> -->
                 <div class="empty"></div>
             </div>
-            <div class="out calcspace"></div>
+            <div class="out calcspace">
+                <div class="outln" data-line="1"></div>
+            </div>
         </div>
         <script type='text/javascript' src='ext/jquery.js'></script>
+        <script type="text/javascript" src="editor/toolkit.js"></script>
         <script type='text/javascript' src='ext/bigdecimal.js'></script>
         <script type='text/javascript' src='parser/tablePlaceHolder.js'></script>
         <script type='text/javascript' src='parser/eqTreeBuilder.js'></script>
         <script type='text/javascript' src='parser/eqTokenizer.js'></script>
         <script type='text/javascript' src='parser/eqScanner.js'></script>
         <script type='text/javascript' src='parser/eqParser.js'></script>
+        <script type="text/javascript" src="editor/markupGen.js"></script>
         <script type='text/javascript' src='parser/calcFramework.js'></script>
         <script type='text/javascript' src='editor/editor.js'></script>
-
     </body>
 </html>
