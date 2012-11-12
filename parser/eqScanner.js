@@ -98,8 +98,9 @@ var EQScanner = (function() {
 
     //Sets the reference for a new token, using existing ref if possible
     function setReference(tok){
+        var decimalValue;
         currentref = isInSym((tok+"").toLowerCase());
-        var value = (currenttok === "d") ? tok : 
+        var value = (currenttok === "d") ?  tok: 
             (puncs.indexOf(currenttok) > -1) ?  null : "0";
 
         if(currentref === null)

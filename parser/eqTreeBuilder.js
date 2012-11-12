@@ -132,7 +132,8 @@ var EQTreeBuilder = (function() {
         else
         if(node.numChildren === 1)
         {
-            if (node.child.priority < node.priority) {
+            if (node.child.priority < node.priority && node.priority !== 10) {
+                //trying to get both !,% and functions working right.
                 var newroot = node.child;
                 var target = node.child.rchild;
                 newroot.rchild = node;
@@ -209,7 +210,7 @@ var EQTreeBuilder = (function() {
             case "d":
                 return (new DigitNode(refval));
             case "v":
-                var varVal = myScan.getVarVal(refval.text);
+                var varVal = myScan.getVar(refval.text);
                 return (new VarNode(refval,varVal));
             case "u":
                 return (new UnOpNode(refval));

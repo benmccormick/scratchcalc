@@ -60,7 +60,7 @@ background-color: #F8F8F8!important;
    background-color:black;
    position:absolute;
 }
-?
+
 
 .explanation
 {
@@ -87,6 +87,29 @@ background-color: #F8F8F8!important;
     color:black;
 
 }
+
+
+.number
+{
+    color: green;
+}
+
+.operator
+{
+    color: blue;
+}
+
+
+.function
+{
+    color:orange;
+}
+
+.variable
+{
+    color:purple;
+}
+
 
 
 ::-webkit-scrollbar-thumb:vertical {

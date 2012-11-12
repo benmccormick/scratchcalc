@@ -10,14 +10,31 @@
 
 
 var markupGen = (function () {
-    var mG = {}
+    var mG = {};
 
     mG.markup = function(expression){
-        return expression.replace(/\s/g,"&nbsp;");
+
+        var output = expression.replace(/\s/g,"&nbsp;");
+        //Removed & for now because it breaks &nbsp;  should add again later
+        output = output.replace(/[\+\-\*\/!%\^|,\[\]!#]/g,
+            "<span class=\"operator\">$&</span>");
+        output = output.replace(/\d+/g,"<span class=\"number\">$&</span>");
+        output = output.replace(/\w+\(/g,"<span class=\"function\">$&</span>");
+        output = output.replace(/\)/g,"<span class=\"function\">$&</span>");
+        output = output.replace(/\w+\d*/g,returnTextValue);
+        return output;
     };
 
-    function generateMarkup(scanner){
-
+    function returnTextValue(vartext){
+        var spantext = "<span class=\"variable\">"+vartext+"</span>";
+        if(EQScanner.getVar(vartext))
+        {
+            return spantext;
+        }
+        else
+        {
+            return vartext;
+        }
 
     }
 

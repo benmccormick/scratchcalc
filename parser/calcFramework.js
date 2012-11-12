@@ -70,7 +70,8 @@ var calcFramework = (function () {
     }
 
     Line.prototype.output = function () {
-        return EQParser.parse(this.input);
+
+        return EQParser.parse(this.input,10);
     };
     
     Line.prototype.formatted = function () {

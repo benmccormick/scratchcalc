@@ -9,7 +9,9 @@
 
 var EQParser = (function(){
     var EQP ={};
-    var varMap = {};
+    var varMap = {
+        "pi":new BigDecimal("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679")
+    };
     var result;
     EQP.init = function(){
         EQTokenizer.init(varMap);
@@ -17,11 +19,15 @@ var EQParser = (function(){
         EQScanner.init(varMap);
     };
 
-    EQP.parse = function(expression){
+    EQP.parse = function(expression,precision){
         var tokens = EQTokenizer.tokenize("#"+expression+"#");
         if(!tokens) //Invalid Token
         {
             return "#Invalid Token#";
+        }
+        if(precision)
+        {
+            EQP.setPrecision(precision);
         }
         EQScanner.newExpression(tokens);
         result = EQTreeBuilder.process(EQScanner);
@@ -29,7 +35,7 @@ var EQParser = (function(){
         {
             return "";//Invalid Expression
         }
-        return result.value().toString();
+        return  result.value().toString();
     };
 
     EQP.setPrecision = function(prec){
