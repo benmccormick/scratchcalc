@@ -15,7 +15,7 @@ var calcFramework = (function () {
     var idx = 0; //for loops
     EQParser.init();
     var cF = {};
-    var MAXWIDTH = 5;
+    var MAXWIDTH = 5,MAXOUTWIDTH=5;
 
     cF.getLine = function (index) {
         //returns the specified line
@@ -51,6 +51,10 @@ var calcFramework = (function () {
         MAXWIDTH = width;
     };
 
+    cF.setOutWidth = function(width){
+        MAXOUTWIDTH = width;
+    };
+
     cF.getLineWidth = function(){
         return MAXWIDTH;
     };
@@ -71,7 +75,8 @@ var calcFramework = (function () {
 
     Line.prototype.output = function () {
 
-        return EQParser.parse(this.input,10);
+        var out = EQParser.parse(this.input,10);
+        return  out.chunk(MAXOUTWIDTH).join("<br>");
     };
     
     Line.prototype.formatted = function () {

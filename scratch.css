@@ -13,26 +13,49 @@ background-color: #F8F8F8!important;
     position:absolute;
 
 }
+
+.nums
+{
+    width:80px;
+    height:500px;
+    overflow:hidden;
+    left:10px;
+    position:absolute;
+    border: 0;
+    background-color: rgba(256, 256, 256, 0.7);
+}
+
+
+
 .in
 {
     width:600px;
     height:500px;
     overflow-y:scroll;
     overflow-x:hidden;
-    left:10px;
+    left:100px;
     position:absolute;
     border: 0;
     background-color: rgba(256, 256, 256, 0.7);
 }
+
 .out
 {
     width:300px;
     height:500px;
     left:800px;
-    overflow-y:scroll;
-    overflow-x:hidden;
+    overflow:hidden;
     position:absolute;
     background-color: rgba(256, 256, 256, 0.7);
+}
+
+
+.linenum
+{
+    width:50px;
+    min-height:25px;
+    display:block;
+
 }
 
 .outln
@@ -46,6 +69,7 @@ background-color: #F8F8F8!important;
 .inln {
     width:600px;
     min-height:25px;
+    display:block;
 }
 
 .empty{
@@ -109,8 +133,6 @@ background-color: #F8F8F8!important;
 {
     color:purple;
 }
-
-
 
 ::-webkit-scrollbar-thumb:vertical {
     height:9px;

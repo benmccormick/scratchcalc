@@ -10,6 +10,19 @@
     var LINEHEIGHT = 25;
     var LINEWIDTH = 50;
     calcFramework.setLineWidth(LINEWIDTH);
+
+
+
+    //Sync Scrolling
+    $(".in").on("scroll", function () {
+        $(".out").scrollTop($(this).scrollTop());
+        $(".nums").scrollTop($(this).scrollTop());
+    });
+
+
+
+
+
     // Prevent the backspace key from navigating back.
 
     var keys = [];
@@ -60,14 +73,14 @@
 
     });
 
-    $(".inln").bind("click",function(e){
+    $(".in").on("click",".inln",function(e){
         currentline = $(e.currentTarget).data("line");
-        var linelength = e.currentTarget.innerHTML.length;
+        var linelength = getLineLength(currentline);
         var xpos = e.pageX;
         var diff = xpos-offset.left;
+        var topOffset = $(this).offset().top;
         var pos = Math.min(linelength, diff/FONTWIDTH|0);
-        var output = pos ;
-        $(".cursor").offset({ top:offset.top + (currentline-1)*LINEHEIGHT , 
+        $(".cursor").offset({ top:topOffset , 
             left: offset.left+(pos *FONTWIDTH) });
         currentindex=pos;
     });
@@ -171,6 +184,7 @@
         linediv.html(cline.formatted());
         moveCursor(currentline,currentindex+1);
         updateOut(currentline);
+        lineupLines();
     });
 
     function getLineLength(index){
@@ -190,8 +204,14 @@
         });
     }
 
-     function getOutLineDiv(linenum){
+    function getOutLineDiv(linenum){
        return $(".outln").filter( function() { 
+            return $(this).data("line") == linenum; 
+        });
+    }
+
+    function getLineNumDiv(linenum){
+       return $(".linenum").filter( function() { 
             return $(this).data("line") == linenum; 
         });
     }
@@ -209,28 +229,40 @@
         // Remove a line from the editor
         var lineDiv = getLineDiv(line);
         var outlineDiv = getOutLineDiv(line);
+        var linenumDiv = getLineNumDiv(line);
         lineDiv.remove();
         outlineDiv.remove();
+        linenumDiv.remove();
         for(var idx = line+1;  idx<calcFramework.getNumLines(); idx++ ){
             getLineDiv(idx).data("line",(idx-1));
             getOutLineDiv(idx).data("line",(idx-1));
+            getLineNumDiv(idx).data("line",(idx-1));
         }
         lineupLines();
 
     }
 
     function lineupLines(){
-        var lineDiv,outlineDiv,outOffset;
-        for( var idx = 1; idx<calcFramework.getNumLines(); idx++ ){
+        var lineDiv,outlineDiv,outOffset,
+            inOffset,topheight,lineNumDiv,numOffset;
+        for( var idx = 1; idx<=calcFramework.getNumLines(); idx++ ){
             lineDiv = getLineDiv(idx);
+            inOffset = lineDiv.offset();
             outlineDiv =getOutLineDiv(idx);
             outOffset = outlineDiv.offset();
+            lineNumDiv=getLineNumDiv(idx);
+            numOffset = lineNumDiv.offset();
             if(outOffset)  
             {
                 //sometimes can't find output div.  possibly harmless?
                 //just ignoring for now, but may need to fix
-                outOffset.top = lineDiv.offset().top;
+                topheight =  Math.max(inOffset.top, outOffset.top);
+                outOffset.top = topheight;
+                inOffset.top = topheight;
+                numOffset.top = topheight;
                 outlineDiv.offset(outOffset);
+                lineDiv.offset(inOffset);
+                lineNumDiv.offset(numOffset);
             }
         }
     }
@@ -241,6 +273,7 @@
         for(var idx = line;  idx<calcFramework.getNumLines(); idx++ ){
            getLineDiv(idx).data("line",(idx+1));
            getOutLineDiv(idx).data("line",(idx+1));
+           getLineNumDiv(idx).data("line",(idx+1));
         }
         if(line > 1)
         {
@@ -248,12 +281,16 @@
                 "<div class=\"inln\" data-line=\""+line+"\"></div>");
             getOutLineDiv(line-1).after(
                 "<div class=\"outln\" data-line=\""+line+"\"></div>");
+             getLineNumDiv(line-1).after(
+                "<div class=\"linenum\" data-line=\""+line+"\">"+line+"</div>");
         }
         else
         {
              getLineDiv(1).before("<div class=\"inln\" data-line=\"1\"></div>");
              getOutLineDiv(1).before(
                 "<div class=\"outln\" data-line=\"1\"></div>");
+             getLineNumDiv(1).before(
+                "<div class=\"linenum\" data-line=\"1\">1</div>");
         }
         
         lineupLines();
@@ -291,6 +328,28 @@
             top:lineOffset.top + LINEHEIGHT * foldnum,
             left:lineOffset.left + (FONTWIDTH * perceivedIndex)
         };    
+
+        var inputBottom =$(".in").offset().top+$(".in").height();
+        var inputTop =$(".in").offset().top;
+        var extralength =1;
+        
+        //if we're out of the box, scroll to where we are and try again
+        if(cursorOffset.top >= inputBottom){
+            extralength = cursorOffset.top - inputBottom;
+            $(".in").scrollTop($(".in").scrollTop()+extralength+LINEHEIGHT);
+            moveCursor(line,index);
+            return;
+        }
+
+        if(cursorOffset.top < inputTop){
+            extralength = inputTop-cursorOffset.top ;
+            $(".in").scrollTop($(".in").scrollTop()-extralength-LINEHEIGHT);
+            moveCursor(line,index);
+            return;
+        }
+
+
+
         $(".cursor").offset(cursorOffset);
     }
 
