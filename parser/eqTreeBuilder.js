@@ -185,8 +185,8 @@ var EQTreeBuilder = (function() {
             break;
             case "3":
                 rchild = eqStack.pop();
-                biFuncNode = eqStack.pop();
                 lchild = eqStack.pop();
+                biFuncNode = eqStack.pop();
                 biFuncNode.setChildren(lchild,rchild);
                 eqStack.push(biFuncNode);
             break;
@@ -245,6 +245,8 @@ var EQTreeBuilder = (function() {
                 case "sin(":
                     return new BigDecimal(Math.sin(that.child.value()));
                 case "cos(":
+                    return new BigDecimal(Math.cos(that.child.value()));
+                case "tan(":
                     return new BigDecimal(Math.cos(that.child.value()));
                 case "(":
                     return that.child.value();
@@ -400,6 +402,8 @@ var EQTreeBuilder = (function() {
                 case "/":
                     priority = 5;
                     break;
+                default:
+                    priority = 5;
             }
 
 
@@ -437,6 +441,12 @@ var EQTreeBuilder = (function() {
                 case "/":
                     return this.lchild.value().divide(this.rchild.value(),
                         precision,RoundingMode.DOWN());
+                case "^":
+                    //There will  be some precision lost here.
+                    //Not ideal.
+                    return new BigDecimal(Math.pow(
+                        this.lchild.value().doubleValue(),
+                    (this.rchild.value().doubleValue())));
             }
         };
         this.priority = priority;
