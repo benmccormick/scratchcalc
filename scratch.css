@@ -134,6 +134,19 @@ background-color: #F8F8F8!important;
     color:purple;
 }
 
+
+.currentline
+{
+    border: 1px solid grey;
+
+}
+
+.currentnum
+{
+    color:teal;
+
+}
+
 ::-webkit-scrollbar-thumb:vertical {
     height:9px;
     background:#000;

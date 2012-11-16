@@ -97,9 +97,7 @@
             if(currentindex > 0){
                 cline.input = input.splice(currentindex-1,1);
                 linediv.html(cline.formatted());
-                cursorOffset.left -= FONTWIDTH; 
-                $(".cursor").offset(cursorOffset);
-                currentindex--;  
+                moveCursor(currentline,currentindex-1);
             }
             else if(currentline > 1){
                     prevline = calcFramework.getLine(currentline-1);
@@ -233,11 +231,12 @@
         lineDiv.remove();
         outlineDiv.remove();
         linenumDiv.remove();
-        for(var idx = line+1;  idx<calcFramework.getNumLines(); idx++ ){
+        for(var idx = line+1;  idx<=calcFramework.getNumLines(); idx++ ){
             getLineDiv(idx).data("line",(idx-1));
             getOutLineDiv(idx).data("line",(idx-1));
-            getLineNumDiv(idx).data("line",(idx-1));
+            getLineNumDiv(idx).data("line",(idx-1)).html(idx-1);
         }
+        calcFramework.removeLine(line);
         lineupLines();
 
     }
@@ -252,7 +251,7 @@
             outOffset = outlineDiv.offset();
             lineNumDiv=getLineNumDiv(idx);
             numOffset = lineNumDiv.offset();
-            if(outOffset)  
+            if(outOffset && idx !== 1)  
             {
                 //sometimes can't find output div.  possibly harmless?
                 //just ignoring for now, but may need to fix
@@ -273,7 +272,7 @@
         for(var idx = line;  idx<calcFramework.getNumLines(); idx++ ){
            getLineDiv(idx).data("line",(idx+1));
            getOutLineDiv(idx).data("line",(idx+1));
-           getLineNumDiv(idx).data("line",(idx+1));
+           getLineNumDiv(idx).data("line",(idx+1)).html(idx+1);
         }
         if(line > 1)
         {
@@ -315,8 +314,19 @@
             index = lineLength;
         }
 
+        //update current line classes
+        if(line !== currentline){
+            getLineDiv(currentline).removeClass("currentline");
+            getLineNumDiv(currentline).removeClass("currentnum");
+            getLineDiv(line).addClass("currentline");
+            getLineNumDiv(line).addClass("currentnum");
+        }
         currentline = line;
         currentindex = index;
+
+
+
+
 
         //if the line has to be folded, which fold is the cursor on
         var foldnum = index/calcFramework.getLineWidth()|0;
