@@ -90,7 +90,7 @@
         var cline =  calcFramework.getLine(currentline);
         var input = cline.input;
         var cursorOffset = $(".cursor").offset();
-        var newlinelength,prevDiv,prevline,remains,prevlength;
+        var newlinelength,prevDiv,prevline,remains,prevlength,moveLine;
 
         switch(e.keyCode){
         case 8: //backspace
@@ -110,6 +110,8 @@
             updateOut(currentline);
             break;
         case 13:  //enter
+
+
             remains = input.substring(currentindex);
             cline.input = input.substring(0,currentindex);
             linediv.html(cline.formatted());
@@ -124,9 +126,16 @@
         case 32:  //space
             cline.input = input.splice(currentindex,0," ");
             linediv.html(cline.formatted());
-            cursorOffset.left += FONTWIDTH; 
-            $(".cursor").offset(cursorOffset);  
-            currentindex++;
+            moveCursor(currentline, currentindex + 1);
+
+            break;
+       case 35: //end
+            moveLine = (e.ctrlKey) ? calcFramework.getNumLines() : currentline;
+            moveCursor(moveLine, calcFramework.getLine(moveLine).input.length);
+            break;
+       case 36: //home
+            moveLine = (e.ctrlKey) ? 1 : currentline;
+            moveCursor(moveLine, 0);
             break;
         case 37: //left arrow
             if(currentindex === 0){
@@ -269,7 +278,7 @@
     function addLine(line){
         // Add a new line to the editor
         calcFramework.addLine(line);
-        for(var idx = line;  idx<calcFramework.getNumLines(); idx++ ){
+        for (var idx = calcFramework.getNumLines()-1; idx >=line; idx--) {
            getLineDiv(idx).data("line",(idx+1));
            getOutLineDiv(idx).data("line",(idx+1));
            getLineNumDiv(idx).data("line",(idx+1)).html(idx+1);
