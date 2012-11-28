@@ -61,6 +61,7 @@ background-color: #F8F8F8!important;
 .outln
 {
     width:300px;
+    height:auto;
     min-height:25px;
     display:block;
 
@@ -138,6 +139,7 @@ background-color: #F8F8F8!important;
 .currentline
 {
     border: 1px solid grey;
+    background: rgba(128, 256, 64, 0.2);
 
 }
 

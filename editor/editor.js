@@ -74,15 +74,12 @@
     });
 
     $(".in").on("click",".inln",function(e){
-        currentline = $(e.currentTarget).data("line");
-        var linelength = getLineLength(currentline);
+        var newline = $(e.currentTarget).data("line");
+        var linelength = getLineLength(newline);
         var xpos = e.pageX;
         var diff = xpos-offset.left;
-        var topOffset = $(this).offset().top;
         var pos = Math.min(linelength, diff/FONTWIDTH|0);
-        $(".cursor").offset({ top:topOffset , 
-            left: offset.left+(pos *FONTWIDTH) });
-        currentindex=pos;
+        moveCursor(newline,pos);
     });
 
     $(document).keydown(function(e){
@@ -262,7 +259,13 @@
                 outlineDiv.offset(outOffset);
                 lineDiv.offset(inOffset);
                 lineNumDiv.offset(numOffset);
+
             }
+            lineDiv.height("auto");
+            var outheight = outlineDiv[0].scrollHeight;
+            var lineheight = lineDiv[0].scrollHeight;
+            lineDiv.height(Math.max(outheight,lineheight));
+            
         }
     }
 
