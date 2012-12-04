@@ -20,9 +20,8 @@ var EQScanner = (function() {
     var funcs, ops, bifuncs, puncs, unops;
 
     funcs = ["sqr(","sqrt(","log(","ln(","exp(","floor(","ceil(","neg(","rnd(",
-            "sin(","cos(","tan(","asin(","acos(","atan(","abs(","("];
+            "sin(","cos(","tan(","asin(","acos(","atan(","abs(","(","min(","max(","perm(","comb("];
     ops = ["+","-","*","/","^","|","&"];
-    bifuncs = ["min(","max(","perm(","comb("];
     puncs = [",",")","#"];
     unops = ["!","%"];
 
@@ -48,7 +47,6 @@ var EQScanner = (function() {
         var varx = /^[A-Za-z]+[0-9]*$/;
         //Find the correct category for the current token
         currenttok =($.inArray(tok, funcs) !== -1)? "f" :
-                    ($.inArray(tok,bifuncs) !== -1) ? "n" :
                     ($.inArray(tok,ops) !== -1) ? "b" :
                     ($.inArray(tok,unops) !== -1) ? "u" :
                     (numx.exec(tok)) ? "d" :

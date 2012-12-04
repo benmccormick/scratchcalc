@@ -120,8 +120,8 @@ var EQTreeBuilder = (function() {
                 cstate=table[idx][cstate];
                 break;
             }*/
-        
-        cstate = prodsteps[cstate];
+        var column = terms.indexOf(cprod.result);
+        cstate = table[cstate][column];
     }
 
     function balanceTree(node){
@@ -144,7 +144,7 @@ var EQTreeBuilder = (function() {
                 node.setChild(balanceTree(node.child));
             }
         }
-        else
+        else if(node.type !== "f")
         {
             node.setChildren(balanceTree(node.lchild),balanceTree(node.rchild));
             var lchild = node.lchild;
@@ -168,29 +168,32 @@ var EQTreeBuilder = (function() {
     }
 
     function handleEqStack(productionNum){
-        var lchild,rchild,child, biFuncNode,binOpNode,func,opNode;
+        var lchild,rchild,child,binOpNode,func,opNode,arguments;
         switch(productionNum){
-            case "1":
+            case "3":
                 rchild = eqStack.pop();
                 binOpNode = eqStack.pop();
                 lchild = eqStack.pop();
                 binOpNode.setChildren(lchild,rchild);
                 eqStack.push(binOpNode);
             break;
-            case "2":
+            case "11":
+                arguments = [];
                 child = eqStack.pop();
-                func = eqStack.pop();
-                func.setChild(child);
+                try{
+                    while(child.type !== "f"){
+                        arguments.push(child);
+                        child = eqStack.pop();
+                    }
+                }
+                catch(err){
+                    //add error handling here for not finding a function
+                }
+                func = child;
+                func.setArguments(arguments);
                 eqStack.push(func);
             break;
-            case "3":
-                rchild = eqStack.pop();
-                lchild = eqStack.pop();
-                biFuncNode = eqStack.pop();
-                biFuncNode.setChildren(lchild,rchild);
-                eqStack.push(biFuncNode);
-            break;
-            case "6":
+            case "9":
                 opNode = eqStack.pop();
                 child = eqStack.pop();
                 opNode.setChild(child);
@@ -229,7 +232,6 @@ var EQTreeBuilder = (function() {
         table = tablePlaceHolder.table;
         terms = tablePlaceHolder.terms;
         prods = tablePlaceHolder.productions;
-        prodsteps = tablePlaceHolder.prodstep;
     }
 
     //Node Constructors
@@ -239,29 +241,52 @@ var EQTreeBuilder = (function() {
         var that = this;
         this.type = "f";
         this.name = ref.text;
-        this.numChildren = 1;
+        this.numChildren = 0;
         this.value = function(){
             switch(that.name) {
                 case "sin(":
-                    return new BigDecimal(Math.sin(that.child.value()));
+                    return new BigDecimal(Math.sin(that.arguments[0].value()));
                 case "cos(":
-                    return new BigDecimal(Math.cos(that.child.value()));
+                    return new BigDecimal(Math.cos(that.arguments[0].value()));
                 case "tan(":
-                    return new BigDecimal(Math.cos(that.child.value()));
+                    return new BigDecimal(Math.cos(that.arguments[0].value()));
                 case "(":
-                    return that.child.value();
-            default:
-                //Error Handling here??
-                return new BigDecimal("0");
+                    return that.arguments[0].value();
+                case "max(": 
+                    child1 =that.arguments[0].value();
+                    child2 =that.arguments[1].value();
+                    return(child1.compareTo(child2) > 0) ? child1 : child2;
+                    
+                case "min(": 
+                    child1 =that.arguments[0].value();
+                    child2 =that.arguments[1].value();
+                    return(child1.compareTo(child2) < 0) ? child1 : child2;
+                    
+                case "perm(": 
+                    value = factorial(that.arguments[0].value()).divide(
+                        factorial(that.arguments[0].value().subtract(
+                        that.arguments[1].value())));
+                    return value;
+                
+                case "comb(": 
+                    value = factorial(that.arguments[0].value()).divide(
+                        factorial(that.arguments[1].value()).multiply(factorial(
+                        that.arguments[0].value().subtract(that.arguments[1].value()))),
+                        precision, RoundingMode.DOWN());
+                    return value;
+                default:
+                    //Should throw error here:
+                    return new BigDecimal(0);
             }
         };
         this.priority = 10;
         this.toString = function(){
             return this.name + this.child.toString()+")";
         };
-        this.child = null;
-        this.setChild = function(cnode){
-            this.child = cnode;
+        this.arguments = null;
+        this.setArguments = function(arguments){
+            this.arguments = arguments;
+            this.numChildren = arguments.length;
         };
     };
 
@@ -343,31 +368,7 @@ var EQTreeBuilder = (function() {
             switch(this.name){
                 
 
-                case "max(": 
-                    child1 =this.lchild.value();
-                    child2 =this.rchild.value();
-                    return(child1.compareTo(child2) > 0) ? child1 : child2;
-                    
-                case "min(": 
-                    child1 =this.lchild.value();
-                    child2 =this.rchild.value();
-                    return(child1.compareTo(child2) < 0) ? child1 : child2;
-                    
-                case "perm(": 
-                    value = factorial(this.lchild.value()).divide(
-                        factorial(this.lchild.value().subtract(
-                        this.rchild.value())));
-                    return value;
                 
-                case "comb(": 
-                    value = factorial(this.lchild.value()).divide(
-                        factorial(this.rchild.value()).multiply(factorial(
-                        this.lchild.value().subtract(this.rchild.value()))),
-                        precision, RoundingMode.DOWN());
-                    return value;
-                default:
-                    //Should throw error here:
-                    return new BigDecimal(0);
             }
         };
         this.priority = 10;

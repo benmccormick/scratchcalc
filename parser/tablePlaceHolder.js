@@ -3,48 +3,51 @@
 
 var tablePlaceHolder = (function(){
     
-    var table =[
-    ["s1" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ],
-    ["" ,"" ,"s8" ,"s11","s6" ,"s7" ,"" ,"" ,"" ,"" ,"" ],
-    ["s3" ,"s4" ,"" ,"" ,"" ,"","s16" ,"" ,"" ,"" ,"" ],
-    ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"" ,"acc"],
-    ["" ,"" ,"s8" ,"s11","s6" ,"s7" ,"" ,"" ,"" ,"" ,"" ],
-    ["r1" ,"r1" ,"" ,"" ,"" ,"" ,"r1" ,"r1" ,"r1" ,"" ,"" ],
-    ["r4" ,"r4" ,"" ,"" ,"" ,"" ,"r4" ,"r4" ,"r4" ,"" ,"" ],
-    ["r5" ,"r5" ,"" ,"" ,"" ,"" ,"r5" ,"r5" ,"r5" ,"" ,"" ],
-    ["" ,"" ,"s8" ,"s11","s6" ,"s7" ,"" ,"" ,"" ,"" ,"" ],
-    ["" ,"s4" ,"" ,"" ,"" ,"" ,"s16" ,"" ,"s10","" ,"" ],
-    ["r2" ,"r2" ,"" ,"" ,"" ,"" ,"r2" ,"r2" ,"r2" ,"" ,"" ],
-    ["" ,"" ,"s8" ,"s11","s6" ,"s7" ,"" ,"" ,"" ,"" ,"" ],
-    ["" ,"" ,"" ,"" ,"" ,"" ,"" ,"s13","" ,"" ,"" ],
-    ["" ,"" ,"s8" ,"s11","s6" ,"s7" ,"" ,"" ,"" ,"" ,"" ],
-    ["" ,"s4" ,"" ,"" ,"" ,"" ,"" ,"" ,"s15","" ,"" ],
-    ["r3" ,"r3" ,"" ,"" ,"" ,"r3" ,"r3" ,"r3" ,"" ,"" ,"" ],
-    ["r6" ,"r6" ,"" ,"" ,"" ,"" ,"r6" ,"r6" ,"r6" ,"" ,"" ]
-    ];
-    var terms = ["#","b","f","n","d","v","u",",",")","=","$"];
-    var prodstep = ["",2,"","",5,"","","",9,"","",12,"",14,"","",""];
-    var productions = [{result:null,components:null,text:null},
-    {result:"S",components:["S","b","S"],
-        text:"(1) <Segment> > <Segment> <binop> <Segment>"},
-    {result:"S",components:["f","S",")"],
-        text:"(2) <Segment> > function( <Segment> )"},
-    {result:"S",components:["n","S",",","S",")"],
-        text:"(3) <Segment> > bifunction( <Segment> , <Segment> )"},
-    {result:"S",components:["d"],
-        text:"(4) <Segment> > double"},
-    {result:"S",components:["v"],
-        text:"(5) <Segment> > variable"},
-    {result:"S",components:["S","u"],
-        text:"(6) <Segment> > <Segment> <unop>"},
-    ];
+    var table =
+[["s1",,,,,,,,,,,,,2,,],
+ [,,,,,"s5","s6","s7",,,"s8",,,,3,4],
+ [,,,,,,,,,,,"acc",,,,],
+ ["r10","r10","r10",,"r10",,,,"s9","r10",,,,,,],
+ ["s10",,,,"s11",,,,,"s12",,,,,,],
+ [,,,,,,"s6",,,,"s14",,,,13,],
+ ["r6","r6","r6",,"r6",,,,"r6","r6",,,,,,],
+ [,,,,,"s5","s6","s7",,,"s14",,15,,3,16],
+ ["r7","r7","r7","s17","r7",,,,"r7","r7",,,,,,],
+ ["r12","r12","r12",,"r12",,,,,"r12",,,,,,],
+ [,,,,,,,,,,,"r1",,,,],
+ [,,,,,"s5","s6","s7",,,"s14",,,,3,18],
+ ["r9","r9","r9",,"r9",,,,,"r9",,,,,,],
+ ["r8","r8","r8",,"r8",,,,,"r8",,,,,,],
+ ["r7","r7","r7",,"r7",,,,"r7","r7",,,,,,],
+ [,"s19",,,,,,,,,,,,,,],
+ [,"r4","s20",,"s11",,,,,"s12",,,,,,],
+ [,,,,,"s5","s6","s7",,,"s14",,,,3,21],
+ ["r3","r3","r3",,"r3",,,,,"r3",,,,,,],
+ ["r11","r11","r11",,"r11",,,,,"r11",,,,,,],
+ [,,,,,"s5","s6","s7",,,"s14",,,,3,22],
+ ["s23",,,,"s11",,,,,"s12",,,,,,],
+ [,"r5",,,"s11",,,,,"s12",,,,,,],
+ [,,,,,,,,,,,"r2",,,,]];
+    var terms = ["#",")",",","=","b","c","d","f","n","u","v","$","A","E","N","S"];
+    var productions = [{result:null,components:null},
+    {result:"E",components:["#","S","#"]},
+    {result:"S",components:["#","v","=","S"]},
+    {result:"S",components:["S","b","S"]},
+    {result:"A",components:["S"]},
+    {result:"A",components:["S",",","S"]},
+    {result:"N",components:["d"]},
+    {result:"N",components:["v"]},
+    {result:"S",components:["c","N"]},
+    {result:"S",components:["S","u"]},
+    {result:"S",components:["N"]},
+    {result:"S",components:["f","A",")"]},
+    {result:"S",components:["N","n"]}];
 
     //Return the configurations
     return {
         table: table,
         terms: terms,
         productions:productions,
-        prodstep:prodstep
     };
 
 }());
