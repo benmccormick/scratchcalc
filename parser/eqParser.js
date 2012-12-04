@@ -30,12 +30,17 @@ var EQParser = (function(){
             EQP.setPrecision(precision);
         }
         EQScanner.newExpression(tokens);
-        result = EQTreeBuilder.process(EQScanner);
-        if(!result)
-        {
-            return "";//Invalid Expression
+        try{
+            result = EQTreeBuilder.process(EQScanner);
+            if(!result)
+            {
+                return "";//Invalid Expression
+            }
+            return  result.value().toString();
         }
-        return  result.value().toString();
+        catch(ex){
+            throw ex;   //if there was an exception throw it for the GUI
+        }
     };
 
     EQP.setPrecision = function(prec){

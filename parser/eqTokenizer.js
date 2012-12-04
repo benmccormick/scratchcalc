@@ -25,10 +25,11 @@ var EQTokenizer = (function() {
         // Regexs for each token type
         var numx = /^-?\d+\.?\d*/;
         var spacex = /^\s+/;
-        var operx = /^[\+\-\*\/!%\^&|,)\[\]#]/;
+        var operx = /^[\+\-\*\/!%\^&|,)\[\]#=]/;
         var unopx = /^[!%]/;
         var funcx = /^\w*\(/;
         var varx = /^\w+\d*/;
+        var assignnext = /^\s*=/;
         var ZERO = new BigDecimal("0");
         //  Goes through the expression and splits it using the regexs
         while(expression.length > 0)
@@ -88,10 +89,11 @@ var EQTokenizer = (function() {
             if(varres)
             {
                 //Only push text if its a valid variable.  Else ignore
-                if(vars[varres[0]]){
+                var newexpression =expression.substring(varres[0].length);
+                if(vars[varres[0]] || assignnext.exec(newexpression)){
                     tokenlist.push(varres[0]);
                 }
-                expression = expression.substring(varres[0].length);
+                expression = newexpression;
                 continue;
             }
             return false;

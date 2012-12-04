@@ -31,7 +31,7 @@ var tablePlaceHolder = (function(){
     var terms = ["#",")",",","=","b","c","d","f","n","u","v","$","A","E","N","S"];
     var productions = [{result:null,components:null},
     {result:"E",components:["#","S","#"]},
-    {result:"S",components:["#","v","=","S"]},
+    {result:"E",components:["#","v","=","S","#"]},
     {result:"S",components:["S","b","S"]},
     {result:"A",components:["S"]},
     {result:"A",components:["S",",","S"]},
@@ -43,11 +43,17 @@ var tablePlaceHolder = (function(){
     {result:"S",components:["f","A",")"]},
     {result:"S",components:["N","n"]}];
 
+    //Errors have types warning W, Error E, or Nothing N
+    var errors =[
+        {message:"Something went wrong", type:"W"}               //E00
+    ];
+
     //Return the configurations
     return {
         table: table,
         terms: terms,
         productions:productions,
+        errors:errors
     };
 
 }());

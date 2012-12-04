@@ -74,9 +74,13 @@ var calcFramework = (function () {
     }
 
     Line.prototype.output = function () {
-
-        var out = EQParser.parse(this.input,10);
-        return  out.chunk(MAXOUTWIDTH).join("<br>");
+        try{
+            var out = EQParser.parse(this.input,10);
+            return  out.chunk(MAXOUTWIDTH).join("<br>");
+        }
+        catch(ex){
+            throw ex; //keep passing exceptions on
+        }
     };
     
     Line.prototype.formatted = function () {

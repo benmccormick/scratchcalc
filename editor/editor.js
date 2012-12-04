@@ -9,6 +9,8 @@
     var FONTWIDTH = 11;
     var LINEHEIGHT = 25;
     var LINEWIDTH = 50;
+    var ERRORLIST = [];
+    var UPDATEERRORS = false;
     calcFramework.setLineWidth(LINEWIDTH);
 
 
@@ -88,7 +90,7 @@
         var input = cline.input;
         var cursorOffset = $(".cursor").offset();
         var newlinelength,prevDiv,prevline,remains,prevlength,moveLine;
-
+        UPDATEERRORS = false;
         switch(e.keyCode){
         case 8: //backspace
             if(currentindex > 0){
@@ -169,6 +171,9 @@
             break;
         default:
              
+        }
+        if(UPDATEERRORS){
+            updateMessages();
         }         
     });
 
@@ -187,8 +192,12 @@
         cline.input = input.splice(currentindex,0,keyVal);
         linediv.html(cline.formatted());
         moveCursor(currentline,currentindex+1);
+        UPDATEERRORS = false;
         updateOut(currentline);
         lineupLines();
+        if(UPDATEERRORS){
+            updateMessages();
+        }
     });
 
     function getLineLength(index){
@@ -377,7 +386,31 @@
 
     function updateOut(line){
         var outdiv = getOutLineDiv(line);
-        outdiv.html(calcFramework.getLine(line).output());
+        try{
+            outdiv.html(calcFramework.getLine(line).output());
+            if(ERRORLIST[line] != null){
+                ERRORLIST[line] = null
+                UPDATEERRORS = true;
+            }
+        }
+        catch(exc){
+            if(ERRORLIST[line] !==exc){
+                ERRORLIST[line] =exc;
+                UPDATEERRORS = true;
+            }
+        }
+    }
+
+    function updateMessages(){
+        var messageDiv = $("#messagediv");
+        messageDiv.html("");
+        for(var iter=1; iter<=calcFramework.getNumLines(); iter++){
+            var exc = ERRORLIST[iter];
+            if(exc){
+                messageDiv.append("<span class>"+iter+":"+exc.message+"</span><br>");
+            }
+    }
+
     }
 
 }());

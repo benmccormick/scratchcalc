@@ -22,7 +22,7 @@ var EQScanner = (function() {
     funcs = ["sqr(","sqrt(","log(","ln(","exp(","floor(","ceil(","neg(","rnd(",
             "sin(","cos(","tan(","asin(","acos(","atan(","abs(","(","min(","max(","perm(","comb("];
     ops = ["+","-","*","/","^","|","&"];
-    puncs = [",",")","#"];
+    puncs = [",",")","#","="];
     unops = ["!","%"];
 
     
