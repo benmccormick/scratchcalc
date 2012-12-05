@@ -15,7 +15,7 @@ var calcFramework = (function () {
     var idx = 0; //for loops
     EQParser.init();
     var cF = {};
-    var MAXWIDTH = 5,MAXOUTWIDTH=5;
+    var MAXWIDTH = 5,MAXOUTWIDTH=25;
 
     cF.getLine = function (index) {
         //returns the specified line

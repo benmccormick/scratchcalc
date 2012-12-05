@@ -46,9 +46,19 @@ var EQTreeBuilder = (function() {
             index = terms.indexOf(ctok.token);
             
             if(index === -1){
-                //unknown token
-                //TODO: ADD better error handling here!
-                return false;
+                var errormessage;
+                if(ctok.token.charAt(ctok.token.length-1) === "("){
+                    errormessage = {
+                    message:"Function not found", 
+                    type:"E"};
+                    throw errormessage;  
+                }
+                else{
+                    errormessage = {
+                    message:"Unknown Token", 
+                    type:"E"};
+                    throw errormessage;  
+                }
             }
 
             instr = table[cstate][index];
@@ -60,7 +70,7 @@ var EQTreeBuilder = (function() {
                     message: errorinfo.message,
                     type: errorinfo.type,
                     errorcode: errorcode
-                }
+                };
                 throw calculationException;
             }
             if(instr === ("acc")){
@@ -205,7 +215,10 @@ var EQTreeBuilder = (function() {
                     }
                 }
                 catch(err){
-                    //add error handling here for not finding a function
+                    var errormessage = {
+                    message:"Function not found", 
+                    type:"E"};
+                    throw errormessage;       
                 }
                 func = child;
                 func.setArgList(arglist);

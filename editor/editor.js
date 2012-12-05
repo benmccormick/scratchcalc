@@ -107,6 +107,7 @@
                     moveCursor(currentline-1,prevlength);
             }
             updateOut(currentline);
+            lineupLines();
             break;
         case 13:  //enter
 
@@ -121,6 +122,7 @@
             moveCursor(currentline+1,0);
             updateOut(currentline-1);
             updateOut(currentline);
+            lineupLines();
             break;
         case 32:  //space
             cline.input = input.splice(currentindex,0," ");
@@ -394,6 +396,7 @@
             }
         }
         catch(exc){
+            outdiv.html("");
             if(ERRORLIST[line] !==exc){
                 ERRORLIST[line] =exc;
                 UPDATEERRORS = true;
@@ -407,7 +410,18 @@
         for(var iter=1; iter<=calcFramework.getNumLines(); iter++){
             var exc = ERRORLIST[iter];
             if(exc){
-                messageDiv.append("<span class>"+iter+":"+exc.message+"</span><br>");
+                switch(exc.type){
+                case "E":
+                    messageDiv.append("<span class=\"errorline\">" +
+                        iter+":"+exc.message+"</span><br>");
+                    break;
+                case "W":
+                     messageDiv.append("<span class=\"warningline\">" +
+                        iter+":"+exc.message+"</span><br>");
+                     break;
+                default: //including N
+                    //do Nothing
+                }
             }
     }
 

@@ -5,7 +5,7 @@ var tablePlaceHolder = (function(){
     
     var table =
 [["s1",,,,,,,,,,,,,2,,],
- [,,,,,"s5","s6","s7",,,"s8",,,,3,4],
+ ["e02",,,,,"s5","s6","s7",,,"s8",,,,3,4],
  [,,,,,,,,,,,"acc",,,,],
  ["r10","r10","r10",,"r10",,,,"s9","r10",,,,,,],
  ["s10",,,,"s11",,,,,"s12",,,,,,],
@@ -20,13 +20,13 @@ var tablePlaceHolder = (function(){
  ["r8","r8","r8",,"r8",,,,,"r8",,,,,,],
  ["r7","r7","r7",,"r7",,,,"r7","r7",,,,,,],
  [,"s19",,,,,,,,,,,,,,],
- [,"r4","s20",,"s11",,,,,"s12",,,,,,],
+ ["e01","r4","s20",,"s11",,,,,"s12",,,,,,],
  [,,,,,"s5","s6","s7",,,"s14",,,,3,21],
  ["r3","r3","r3",,"r3",,,,,"r3",,,,,,],
  ["r11","r11","r11",,"r11",,,,,"r11",,,,,,],
  [,,,,,"s5","s6","s7",,,"s14",,,,3,22],
  ["s23",,,,"s11",,,,,"s12",,,,,,],
- [,"r5",,,"s11",,,,,"s12",,,,,,],
+ ["e01","r5","e01",,"s11",,,,,"s12",,,,,,],
  [,,,,,,,,,,,"r2",,,,]];
     var terms = ["#",")",",","=","b","c","d","f","n","u","v","$","A","E","N","S"];
     var productions = [{result:null,components:null},
@@ -45,7 +45,9 @@ var tablePlaceHolder = (function(){
 
     //Errors have types warning W, Error E, or Nothing N
     var errors =[
-        {message:"Something went wrong", type:"W"}               //E00
+        {message:"Something went wrong", type:"W"},     //E00
+        {message:"Unmatched Parentheses", type:"E"},    //E01
+        {message:"No Input", type:"N"}                  //E02
     ];
 
     //Return the configurations
