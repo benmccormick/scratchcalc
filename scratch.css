@@ -160,6 +160,18 @@ background-color: #F8F8F8!important;
     position:absolute;
 }
 
+#aggdiv
+{
+    width:200px;
+    height:50px;
+    background-color: rgba(256, 256, 256, 0.7);
+    overflow:hidden;
+    left:800px;
+    top:700px;
+    position:absolute;
+
+}
+
 
 ::-webkit-scrollbar-thumb:vertical {
     height:9px;

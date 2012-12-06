@@ -495,6 +495,19 @@ var EQTreeBuilder = (function() {
         
     };
 
+    var NumberValue = function(value,units){
+        this.num = value;
+        this.units = units;
+
+        this.setUnits = function(unit){
+            this.units = unit;
+        }
+
+        this.setValue = function(val){
+            this.num=value;
+        }
+    }
+
 
     function factorial(val){
         //gets the factorial of a number

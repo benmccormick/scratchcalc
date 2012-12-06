@@ -4,7 +4,7 @@
  * @author Ben McCormick
  **/
 
- /*global BigDecimal:false $:true */
+ /*global $:true */
 
 /*The Scanner module goes through the tokens, identifies them by their class
  *and saves a reference for future lookup */
@@ -17,10 +17,11 @@ var EQScanner = (function() {
     var vars ={};          //a map of variables
     // For now these are going to be in code.  Should be moved 
     // To a props file at some point
-    var funcs, ops, bifuncs, puncs, unops;
+    var funcs, ops, puncs, unops;
 
     funcs = ["sqr(","sqrt(","log(","ln(","exp(","floor(","ceil(","neg(","rnd(",
-            "sin(","cos(","tan(","asin(","acos(","atan(","abs(","(","min(","max(","perm(","comb("];
+            "sin(","cos(","tan(","asin(","acos(","atan(","abs(","(","min(",
+            "max(","perm(","comb("];
     ops = ["+","-","*","/","^","|","&"];
     puncs = [",",")","#","="];
     unops = ["!","%"];
@@ -96,7 +97,6 @@ var EQScanner = (function() {
 
     //Sets the reference for a new token, using existing ref if possible
     function setReference(tok){
-        var decimalValue;
         currentref = isInSym((tok+"").toLowerCase());
         var value = (currenttok === "d") ?  tok: 
             (puncs.indexOf(currenttok) > -1) ?  null : "0";

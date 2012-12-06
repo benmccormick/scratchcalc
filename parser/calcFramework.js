@@ -10,12 +10,14 @@
 
 
 var calcFramework = (function () {
-    var line1 = new Line();
+    var line1 = new Line(1);
     var lines = [null,line1];
+    var outputs = [0,0];
     var idx = 0; //for loops
-    EQParser.init();
     var cF = {};
     var MAXWIDTH = 5,MAXOUTWIDTH=25;
+
+    EQParser.init();
 
     cF.getLine = function (index) {
         //returns the specified line
@@ -67,6 +69,20 @@ var calcFramework = (function () {
         return lines.length-1;
     };
 
+    cF.getAggregate = function(type){
+        switch(type){
+            case "Total":
+                return getArrayTotal(outputs)
+            case "Average":
+                return getArrayTotal(outputs)/outputs.length;
+            default:
+                return 0;
+
+
+
+        }
+    };
+
     //Create Line type
     function Line(linenum) {
         this.input = "";
@@ -76,9 +92,11 @@ var calcFramework = (function () {
     Line.prototype.output = function () {
         try{
             var out = EQParser.parse(this.input,10);
+            outputs[this.linenum] = out;
             return  out.chunk(MAXOUTWIDTH).join("<br>");
         }
         catch(ex){
+            outputs[this.linenum] = 0;
             throw ex; //keep passing exceptions on
         }
     };

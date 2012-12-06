@@ -11,9 +11,8 @@
     var LINEWIDTH = 50;
     var ERRORLIST = [];
     var UPDATEERRORS = false;
+    var LINESCHANGED = false;
     calcFramework.setLineWidth(LINEWIDTH);
-
-
 
     //Sync Scrolling
     $(".in").on("scroll", function () {
@@ -90,7 +89,6 @@
         var input = cline.input;
         var cursorOffset = $(".cursor").offset();
         var newlinelength,prevDiv,prevline,remains,prevlength,moveLine;
-        UPDATEERRORS = false;
         switch(e.keyCode){
         case 8: //backspace
             if(currentindex > 0){
@@ -107,7 +105,7 @@
                     moveCursor(currentline-1,prevlength);
             }
             updateOut(currentline);
-            lineupLines();
+            LINESCHANGED = true;
             break;
         case 13:  //enter
 
@@ -122,7 +120,7 @@
             moveCursor(currentline+1,0);
             updateOut(currentline-1);
             updateOut(currentline);
-            lineupLines();
+            LINESCHANGED = true;
             break;
         case 32:  //space
             cline.input = input.splice(currentindex,0," ");
@@ -174,9 +172,7 @@
         default:
              
         }
-        if(UPDATEERRORS){
-            updateMessages();
-        }         
+        cleanUpMessages();
     });
 
     $(document).keypress(function(e){
@@ -194,12 +190,9 @@
         cline.input = input.splice(currentindex,0,keyVal);
         linediv.html(cline.formatted());
         moveCursor(currentline,currentindex+1);
-        UPDATEERRORS = false;
         updateOut(currentline);
-        lineupLines();
-        if(UPDATEERRORS){
-            updateMessages();
-        }
+        LINESCHANGED = true;
+        cleanUpMessages();
     });
 
     function getLineLength(index){
@@ -254,7 +247,7 @@
             getLineNumDiv(idx).data("line",(idx-1)).html(idx-1);
         }
         calcFramework.removeLine(line);
-        lineupLines();
+        
 
     }
 
@@ -423,7 +416,24 @@
                     //do Nothing
                 }
             }
+        }
     }
+
+    function showAggregates(){
+        $("#aggdiv").html(calcFramework.getAggregate("Total"));
+    }
+
+    function cleanUpMessages(){
+        if(UPDATEERRORS){
+            updateMessages();
+
+            UPDATEERRORS = false;
+        }
+        if(LINESCHANGED){
+            lineupLines();
+            showAggregates();
+            LINESCHANGED = false;
+        }     
 
     }
 

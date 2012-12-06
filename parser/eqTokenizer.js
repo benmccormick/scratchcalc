@@ -16,7 +16,7 @@ var EQTokenizer = (function() {
 
     EQT.init = function(varMap){
         vars = varMap;
-    }
+    };
 
     //Takes the strings and splits it into tokens
     EQT.tokenize = function(expression){
@@ -28,7 +28,7 @@ var EQTokenizer = (function() {
         var operx = /^[\+\-\*\/!%\^&|,)\[\]#=]/;
         var unopx = /^[!%]/;
         var funcx = /^\w*\(/;
-        var varx = /^\w+\d*/;
+        var varx = /^[a-zA-Z]+\d*[\:\-\'\?\.]?/;
         var assignnext = /^\s*=/;
         var ZERO = new BigDecimal("0");
         //  Goes through the expression and splits it using the regexs
