@@ -1,3 +1,8 @@
+/**
+* Editor Class: Contains the code for defining a custom text editor
+* and calculator hybrid.  
+**/
+
 
 /*jshint jquery:true*/
 /*global calcFramework:false */
@@ -35,9 +40,9 @@
                 case 32: e.preventDefault(); break; // Space
                 default: break; // do not block other keys
             }
-        },
-    false);
-    window.addEventListener('keyup',
+        },false);
+
+    window.addEventListener("keyup",
         function(e){
             keys[e.keyCode] = false;
         },
@@ -69,17 +74,13 @@
     var currentline = 1;
     var currentindex=0;
     $(".cursor").offset(offset);
-    $(".empty").bind("click",function(e){
-        //Take care of this later... for when we click below currentline
-
-    });
 
     $(".in").on("click",".inln",function(e){
         var newline = $(e.currentTarget).data("line");
         var linelength = getLineLength(newline);
         var xpos = e.pageX;
         var diff = xpos-offset.left;
-        var pos = Math.min(linelength, diff/FONTWIDTH|0);
+        var pos = Math.min(linelength, Math.floor(diff/FONTWIDTH));
         moveCursor(newline,pos);
     });
 
@@ -87,8 +88,7 @@
         var linediv =  getLineDiv(currentline);
         var cline =  calcFramework.getLine(currentline);
         var input = cline.input;
-        var cursorOffset = $(".cursor").offset();
-        var newlinelength,prevDiv,prevline,remains,prevlength,moveLine;
+        var prevline,remains,prevlength,moveLine;
         switch(e.keyCode){
         case 8: //backspace
             if(currentindex > 0){
@@ -108,8 +108,6 @@
             LINESCHANGED = true;
             break;
         case 13:  //enter
-
-
             remains = input.substring(currentindex);
             cline.input = input.substring(0,currentindex);
             linediv.html(cline.formatted());
@@ -126,7 +124,6 @@
             cline.input = input.splice(currentindex,0," ");
             linediv.html(cline.formatted());
             moveCursor(currentline, currentindex + 1);
-
             break;
        case 35: //end
             moveLine = (e.ctrlKey) ? calcFramework.getNumLines() : currentline;
@@ -142,12 +139,12 @@
                     moveCursor(currentline-1); //move to end of previous line
                 }
             }
-            else{
+            else {
                 moveCursor(currentline,currentindex-1);  
             }
             break;
         case 38: //up arrow
-            if(currentline > 1){
+            if(currentline > 1) {
                 moveCursor(currentline -1, currentindex);
             }
             break;
@@ -208,29 +205,20 @@
 
     function getLineDiv(linenum){
        return $(".inln").filter( function() { 
-            return $(this).data("line") == linenum; 
+            return $(this).data("line") === linenum; 
         });
     }
 
     function getOutLineDiv(linenum){
        return $(".outln").filter( function() { 
-            return $(this).data("line") == linenum; 
+            return $(this).data("line") === linenum; 
         });
     }
 
     function getLineNumDiv(linenum){
        return $(".linenum").filter( function() { 
-            return $(this).data("line") == linenum; 
+            return $(this).data("line") === linenum; 
         });
-    }
-
-
-    function formatHTML(input){
-        return input.replace(/\s/g,"&nbsp;");
-    }
-
-    function cleanHTML(input){
-        return input.replace(/&nbsp;/g," ");
     }
 
     function removeLine(line){
@@ -247,8 +235,6 @@
             getLineNumDiv(idx).data("line",(idx-1)).html(idx-1);
         }
         calcFramework.removeLine(line);
-        
-
     }
 
     function lineupLines(){
@@ -272,13 +258,11 @@
                 outlineDiv.offset(outOffset);
                 lineDiv.offset(inOffset);
                 lineNumDiv.offset(numOffset);
-
             }
             lineDiv.height("auto");
             var outheight = outlineDiv[0].scrollHeight;
             var lineheight = lineDiv[0].scrollHeight;
             lineDiv.height(Math.max(outheight,lineheight));
-            
         }
     }
 
@@ -290,8 +274,7 @@
            getOutLineDiv(idx).data("line",(idx+1));
            getLineNumDiv(idx).data("line",(idx+1)).html(idx+1);
         }
-        if(line > 1)
-        {
+        if(line > 1) {
             getLineDiv(line-1).after(
                 "<div class=\"inln\" data-line=\""+line+"\"></div>");
             getOutLineDiv(line-1).after(
@@ -299,17 +282,14 @@
              getLineNumDiv(line-1).after(
                 "<div class=\"linenum\" data-line=\""+line+"\">"+line+"</div>");
         }
-        else
-        {
+        else {
              getLineDiv(1).before("<div class=\"inln\" data-line=\"1\"></div>");
              getOutLineDiv(1).before(
                 "<div class=\"outln\" data-line=\"1\"></div>");
              getLineNumDiv(1).before(
                 "<div class=\"linenum\" data-line=\"1\">1</div>");
         }
-        
         lineupLines();
-
     }
 
 
@@ -318,20 +298,19 @@
         //the line and index variables.  if index is undefined, move to end 
         //of the line
         var numlines = calcFramework.getNumLines();
-        if(line > numlines)
-        {
+        if(line > numlines){
             line = numlines;
             index = null;  //we'll go to the end of the last line
         }
         var lineLength =getLineLength(line);
-        if(index === null || typeof index === "undefined" || 
-            index > lineLength){
+        if (index === null || typeof index === "undefined" || 
+            index > lineLength) {
             //If the index is undefined or longer than line, make line length
             index = lineLength;
         }
 
         //update current line classes
-        if(line !== currentline){
+        if(line !== currentline) {
             getLineDiv(currentline).removeClass("currentline");
             getLineNumDiv(currentline).removeClass("currentnum");
             getLineDiv(line).addClass("currentline");
@@ -340,12 +319,8 @@
         currentline = line;
         currentindex = index;
 
-
-
-
-
         //if the line has to be folded, which fold is the cursor on
-        var foldnum = index/calcFramework.getLineWidth()|0;
+        var foldnum = Math.floor( index / calcFramework.getLineWidth() );
 
         var perceivedIndex = index % calcFramework.getLineWidth();
 
@@ -360,7 +335,7 @@
         var extralength =1;
         
         //if we're out of the box, scroll to where we are and try again
-        if(cursorOffset.top >= inputBottom){
+        if(cursorOffset.top >= inputBottom) {
             extralength = cursorOffset.top - inputBottom;
             $(".in").scrollTop($(".in").scrollTop()+extralength+LINEHEIGHT);
             moveCursor(line,index);
@@ -374,36 +349,34 @@
             return;
         }
 
-
-
         $(".cursor").offset(cursorOffset);
     }
 
-    function updateOut(line){
+    function updateOut(line) {
         var outdiv = getOutLineDiv(line);
-        try{
+        try {
             outdiv.html(calcFramework.getLine(line).output());
-            if(ERRORLIST[line] != null){
-                ERRORLIST[line] = null
+            if(ERRORLIST[line]) {
+                ERRORLIST[line] = null;
                 UPDATEERRORS = true;
             }
         }
-        catch(exc){
+        catch(exc) {
             outdiv.html("");
-            if(ERRORLIST[line] !==exc){
+            if(ERRORLIST[line] !==exc) {
                 ERRORLIST[line] =exc;
                 UPDATEERRORS = true;
             }
         }
     }
 
-    function updateMessages(){
+    function updateMessages() {
         var messageDiv = $("#messagediv");
         messageDiv.html("");
-        for(var iter=1; iter<=calcFramework.getNumLines(); iter++){
+        for(var iter=1; iter<=calcFramework.getNumLines(); iter++) {
             var exc = ERRORLIST[iter];
             if(exc){
-                switch(exc.type){
+                switch(exc.type) {
                 case "E":
                     messageDiv.append("<span class=\"errorline\">" +
                         iter+":"+exc.message+"</span><br>");
@@ -419,22 +392,20 @@
         }
     }
 
-    function showAggregates(){
+    function showAggregates() {
         $("#aggdiv").html(calcFramework.getAggregate("Total"));
     }
 
-    function cleanUpMessages(){
+    function cleanUpMessages() {
         if(UPDATEERRORS){
             updateMessages();
-
             UPDATEERRORS = false;
         }
-        if(LINESCHANGED){
+        if(LINESCHANGED) {
             lineupLines();
             showAggregates();
             LINESCHANGED = false;
         }     
-
     }
 
 }());
