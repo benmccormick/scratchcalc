@@ -77,9 +77,6 @@ var calcFramework = (function () {
                 return getArrayTotal(outputs)/outputs.length;
             default:
                 return 0;
-
-
-
         }
     };
 
@@ -91,8 +88,12 @@ var calcFramework = (function () {
 
     Line.prototype.output = function () {
         try{
+            var ans = (this.linenum > 1) ? 
+                EQParser.getVar("line"+(this.linenum-1)) : new BigDecimal("0");
+            EQParser.setVar("ans",ans);
             var out = EQParser.parse(this.input,10);
             outputs[this.linenum] = out;
+            EQParser.setVar("line"+this.linenum,new BigDecimal(out));
             return  out.chunk(MAXOUTWIDTH).join("<br>");
         }
         catch(ex){

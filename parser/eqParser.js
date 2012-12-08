@@ -56,6 +56,11 @@ var EQParser = (function(){
         varMap[variable] = value;
     };
 
+    EQP.getVar = function(variable)
+    {
+        return varMap[variable];
+    };
+
 
     return EQP;
 }());

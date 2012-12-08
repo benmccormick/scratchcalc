@@ -99,6 +99,7 @@ var EQTokenizer = (function() {
             return false;
         }
         addImplicitMultiplication();
+        addPreviousAnswerHandling(tokenlist);
         return tokenlist;
     };
 
@@ -110,6 +111,14 @@ var EQTokenizer = (function() {
     //Adds a * between implicitly multiplied items
     function addImplicitMultiplication(){
         //this can be added later.  Multiplication must be explicit for now
+    }
+
+    function addPreviousAnswerHandling(tokenlist){
+        var opers = /^[\+\-\*\/!%\^&|]/
+        var isoperator = opers.exec(tokenlist[1]);
+        if(isoperator && tokenlist){
+            tokenlist.splice(1,0,"ans");
+        }
     }
 
     return EQT;
