@@ -13,9 +13,11 @@ var EQTokenizer = (function() {
     var EQT ={};
     var tokenlist = [];
     var vars = {};
+    var units = {};
 
-    EQT.init = function(varMap){
+    EQT.init = function(varMap, unitMap){
         vars = varMap;
+        units = unitMap;
     };
 
     //Takes the strings and splits it into tokens
@@ -88,9 +90,10 @@ var EQTokenizer = (function() {
             var varres = varx.exec(expression);
             if(varres)
             {
-                //Only push text if its a valid variable.  Else ignore
+                //Only push text if its a valid variable or unit.  Else ignore
                 var newexpression =expression.substring(varres[0].length);
-                if(vars[varres[0]] || assignnext.exec(newexpression)){
+                if(vars[varres[0]] || units[varres[0]]|| 
+                    assignnext.exec(newexpression)){
                     tokenlist.push(varres[0]);
                 }
                 expression = newexpression;
@@ -99,7 +102,6 @@ var EQTokenizer = (function() {
             return false;
         }
         addImplicitMultiplication();
-        addPreviousAnswerHandling(tokenlist);
         return tokenlist;
     };
 
@@ -113,13 +115,7 @@ var EQTokenizer = (function() {
         //this can be added later.  Multiplication must be explicit for now
     }
 
-    function addPreviousAnswerHandling(tokenlist){
-        var opers = /^[\+\-\*\/!%\^&|]/
-        var isoperator = opers.exec(tokenlist[1]);
-        if(isoperator && tokenlist){
-            tokenlist.splice(1,0,"ans");
-        }
-    }
+   
 
     return EQT;
 }());

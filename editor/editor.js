@@ -17,6 +17,9 @@
     var ERRORLIST = [];
     var UPDATEERRORS = false;
     var LINESCHANGED = false;
+    var BOXTOP = $(".in").offset().top;
+    var BOXHEIGHT = $(".in").height();
+    var CONTENTHEIGHT = LINEHEIGHT;
     calcFramework.setLineWidth(LINEWIDTH);
 
     //Sync Scrolling
@@ -176,7 +179,6 @@
         if(e.keyCode === 13){
             return;
         }
-        var linediv =  getLineDiv(currentline);
         var cline =  calcFramework.getLine(currentline);
         var input = cline.input;
         var keyVal = String.fromCharCode(e.keyCode);
@@ -185,12 +187,18 @@
             keyVal = keyVal.toLowerCase();
         }
         cline.input = input.splice(currentindex,0,keyVal);
-        linediv.html(cline.formatted());
+        updateLineDisplay(cline);
         moveCursor(currentline,currentindex+1);
-        updateOut(currentline);
         LINESCHANGED = true;
         cleanUpMessages();
     });
+
+    function updateLineDisplay(cline){
+
+        var linediv =  getLineDiv(currentline);
+        linediv.html(cline.formatted());
+        updateOut(currentline);
+    }
 
     function getLineLength(index){
         //get the length of a given line
@@ -264,6 +272,7 @@
             var lineheight = lineDiv[0].scrollHeight;
             lineDiv.height(Math.max(outheight,lineheight));
         }
+        CONTENTHEIGHT = inOffset.top + lineDiv.height() - BOXTOP;
     }
 
     function addLine(line){
@@ -362,10 +371,19 @@
             }
         }
         catch(exc) {
-            outdiv.html("");
-            if(ERRORLIST[line] !==exc) {
-                ERRORLIST[line] =exc;
-                UPDATEERRORS = true;
+
+            switch(exc.type){
+                case "movecursor":
+                    moveCursor(currentline+exc.xdistance, 
+                        currentindex+exc.ydistance);
+                    updateLineDisplay(calcFramework.getLine(line));
+                break;
+                default:
+                    outdiv.html("");
+                    if(ERRORLIST[line] !==exc) {
+                        ERRORLIST[line] =exc;
+                        UPDATEERRORS = true;
+                    }
             }
         }
     }

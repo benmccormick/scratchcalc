@@ -12,11 +12,15 @@ var EQParser = (function(){
     var varMap = {
         "pi":new BigDecimal("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679")
     };
+
+    var unitMap = {dollars:{type:"currency",multiple:1},
+        pounds:{type:"weight",multiple:1}};
+
     var result;
     EQP.init = function(){
-        EQTokenizer.init(varMap);
-        EQTreeBuilder.init();
-        EQScanner.init(varMap);
+        EQTokenizer.init(varMap,unitMap);
+        EQTreeBuilder.init(unitMap);
+        EQScanner.init(varMap,unitMap);
     };
 
     EQP.parse = function(expression,precision){
@@ -36,7 +40,7 @@ var EQParser = (function(){
             {
                 return "";//Invalid Expression
             }
-            return  result.value().toString();
+            return  result.value();
         }
         catch(ex){
             throw ex;   //if there was an exception throw it for the GUI

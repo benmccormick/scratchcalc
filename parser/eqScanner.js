@@ -15,6 +15,7 @@ var EQScanner = (function() {
     var currenttok = "x";   //current token being processed
     var currentref = null;  //reference to the current token
     var vars ={};          //a map of variables
+    var units = {};
     // For now these are going to be in code.  Should be moved 
     // To a props file at some point
     var funcs, ops, puncs, unops;
@@ -27,8 +28,9 @@ var EQScanner = (function() {
     unops = ["!","%"];
 
     
-    EQS.init = function(varMap){
+    EQS.init = function(varMap, unitMap){
         vars = varMap;
+        units = unitMap;
     };
 
     //Takes a new set of tokens to process
@@ -52,6 +54,7 @@ var EQScanner = (function() {
                     ($.inArray(tok,unops) !== -1) ? "u" :
                     (numx.exec(tok)) ? "d" :
                     ($.inArray(tok,puncs) !== -1) ? tok :
+                    (isUnit(tok) !== -1) ?  "n" :
                     (varx.exec(tok)) ? "v" : errorHandle(tok);
 
         if(currenttok.indexOf("Error:") === -1){
@@ -123,6 +126,12 @@ var EQScanner = (function() {
             }
         }
         return null;
+    }
+
+
+    function isUnit(tok){
+        //simple for now
+        return units[tok];
     }
 
     return EQS;

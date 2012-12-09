@@ -97,3 +97,9 @@ test( "Factorial", function() {
     result = EQParser.parse("2 + 3! + 5");
     deepEqual( result.toString(), "13", "Adding to factorial test" );
 });
+
+test( "Precision", function() {
+    var result = EQParser.parse("7 / 6 * 12");
+    deepEqual( result.toString(), "14", "Division precision test test" );
+
+});

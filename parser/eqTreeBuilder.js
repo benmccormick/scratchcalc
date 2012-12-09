@@ -249,7 +249,9 @@ var EQTreeBuilder = (function() {
             case "u":
                 return (new UnOpNode(refval));
             case "n":
-                return (new BiFuncNode(refval));
+                var lastnum = eqStack.pop();
+                lastnum.value().setUnits(refval.text);
+                return lastnum;
             case "b":
                 return (new BinOpNode(refval));
             default:
@@ -274,14 +276,21 @@ var EQTreeBuilder = (function() {
         this.type = "f";
         this.name = ref.text;
         this.numChildren = 0;
+        var child1,child2;
         this.value = function(){
             switch(that.name) {
                 case "sin(":
-                    return new BigDecimal(Math.sin(that.arglist[0].value()));
+                    return new NumberValue(new BigDecimal(
+                        Math.sin(that.arglist[0].value())) ,
+                    that.arglist[0].units);
                 case "cos(":
-                    return new BigDecimal(Math.cos(that.arglist[0].value()));
+                    return new NumberValue(new BigDecimal(
+                        Math.cos(that.arglist[0].value())) ,
+                    that.arglist[0].units);
                 case "tan(":
-                    return new BigDecimal(Math.cos(that.arglist[0].value()));
+                    return new NumberValue(new BigDecimal(
+                        Math.tan(that.arglist[0].value())) ,
+                    that.arglist[0].units);
                 case "(":
                     return that.arglist[0].value();
                 case "max(": 
@@ -308,7 +317,7 @@ var EQTreeBuilder = (function() {
                     return value;
                 default:
                     //Should throw error here:
-                    return new BigDecimal(0);
+                    return new NumberValue(new BigDecimal(0));
             }
         };
         this.priority = 10;
@@ -327,8 +336,11 @@ var EQTreeBuilder = (function() {
         this.type = "d";
         this.name = ref.value;
         this.numChildren = 0;
+        var value = new NumberValue(new BigDecimal(this.name));
+        //can make the value a constant since it won't change
+        //this allows units to be set
         this.value = function(){
-            return new BigDecimal(this.name);
+            return value;
         };
         this.priority = 100;
         this.toString = function(){
@@ -368,7 +380,7 @@ var EQTreeBuilder = (function() {
                 case "%":
                     //Consider throwing an error if the child 
                     //is not a var or digit
-                    var node = this.child.value().divide(new BigDecimal("100"),
+                    var node = this.child.value().divide(new NumberValue(new BigDecimal("100")),
                         precision,RoundingMode.DOWN());
                     node.isPercentage = true;
                     return node;
@@ -477,9 +489,10 @@ var EQTreeBuilder = (function() {
                 case "^":
                     //There will  be some precision lost here.
                     //Not ideal.
-                    return new BigDecimal(Math.pow(
-                        this.lchild.value().doubleValue(),
-                    (this.rchild.value().doubleValue())));
+                    return new NumberValue(new BigDecimal(Math.pow(
+                        this.lchild.num.value().doubleValue(),
+                    (this.rchild.num.value().doubleValue()))),
+                    (this.lchild.units | this.rchild.units));
             }
         };
         this.priority = priority;
@@ -495,23 +508,10 @@ var EQTreeBuilder = (function() {
         
     };
 
-    var NumberValue = function(value,units){
-        this.num = value;
-        this.units = units;
-
-        this.setUnits = function(unit){
-            this.units = unit;
-        }
-
-        this.setValue = function(val){
-            this.num=value;
-        }
-    }
-
 
     function factorial(val){
         //gets the factorial of a number
-        var num = new BigDecimal("1");
+        var num = new NumberValue(new BigDecimal("1"));
         for(var i=1; i<=val; i++)
         {
             num=num.multiply(new BigDecimal(i+""));

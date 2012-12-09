@@ -88,16 +88,19 @@ var calcFramework = (function () {
 
     Line.prototype.output = function () {
         try{
-            var ans = (this.linenum > 1) ? 
-                EQParser.getVar("line"+(this.linenum-1)) : new BigDecimal("0");
-            EQParser.setVar("ans",ans);
+            try{
+            this.addPreviousAnswerHandling();
+            }
+            catch(movecursor){
+               throw movecursor; //try again with updated line
+            }
             var out = EQParser.parse(this.input,10);
             outputs[this.linenum] = out;
-            EQParser.setVar("line"+this.linenum,new BigDecimal(out));
-            return  out.chunk(MAXOUTWIDTH).join("<br>");
+            EQParser.setVar("line"+this.linenum,out);
+            return  out.toString().chunk(MAXOUTWIDTH).join("<br>");
         }
         catch(ex){
-            outputs[this.linenum] = 0;
+            outputs[this.linenum] = new NumberValue(0);
             throw ex; //keep passing exceptions on
         }
     };
@@ -106,6 +109,25 @@ var calcFramework = (function () {
         //return the input string for now, add syntax highlighting/controls later
         var output = this.input.chunk(MAXWIDTH).join("<br>");
         return markupGen.markup(output);
+    };
+
+
+    Line.prototype.addPreviousAnswerHandling = function (){
+        var ans = (this.linenum > 1) ? 
+            EQParser.getVar("line"+(this.linenum-1)) : 
+            new NumberValue(new BigDecimal("0"));
+        EQParser.setVar("ans",ans);
+        var opers = /^\s*[\+\-\*\/!%\^&|]/;
+        var isoperator = opers.exec(this.input);
+        if(isoperator && this.input.length && this.linenum > 1){
+           this.input =  this.input.splice(0,0,"ans ");
+           var exc ={
+                type:"movecursor",
+                xdistance:4,
+                ydistance:0
+           };
+           throw exc;
+        }
     };
 
     return cF;
