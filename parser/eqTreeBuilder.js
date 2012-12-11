@@ -22,7 +22,7 @@ var EQTreeBuilder = (function() {
     var cstate;         //the current state of the system  
     var instr;          // the instruction for the next step in the table
     var root;           // the tree root
-    var precision = 5;  // The decimal precision for division
+    var precision = 20;  // The decimal precision for division
     var errors = [];    //the error messages for different states
 
     //Eventually will load table from a file.  For now just defines it in code
@@ -485,7 +485,7 @@ var EQTreeBuilder = (function() {
                     return this.lchild.value().multiply(this.rchild.value());
                 case "/":
                     return this.lchild.value().divide(this.rchild.value(),
-                        precision,RoundingMode.DOWN());
+                        precision,RoundingMode.HALF_DOWN());
                 case "^":
                     //There will  be some precision lost here.
                     //Not ideal.

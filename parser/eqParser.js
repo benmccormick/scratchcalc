@@ -14,6 +14,7 @@ var EQParser = (function(){
     };
 
     var unitMap = {dollars:{type:"currency",multiple:1},
+        cents:{type:"currency",multiple:0.01},
         pounds:{type:"weight",multiple:1}};
 
     var result;
@@ -40,6 +41,8 @@ var EQParser = (function(){
             {
                 return "";//Invalid Expression
             }
+            var finalval = result.value();
+            finalval.num = finalval.num.setScale(5,RoundingMode.HALF_DOWN());
             return  result.value();
         }
         catch(ex){
@@ -63,6 +66,10 @@ var EQParser = (function(){
     EQP.getVar = function(variable)
     {
         return varMap[variable];
+    };
+
+    EQP.getUnitInfo = function(unit){
+        return unitMap[unit];
     };
 
 
