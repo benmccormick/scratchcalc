@@ -115,7 +115,7 @@ var calcFramework = (function () {
     Line.prototype.addPreviousAnswerHandling = function (){
         var ans = (this.linenum > 1) ? 
             EQParser.getVar("line"+(this.linenum-1)) : 
-            new NumberValue(new BigDecimal("0"));
+            new NumberValue(0);
         EQParser.setVar("ans",ans);
         var opers = /^\s*[\+\-\*\/!%\^&|]/;
         var isoperator = opers.exec(this.input);

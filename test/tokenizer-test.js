@@ -4,6 +4,9 @@
 EQParser.init();
 EQParser.setVar("x",5);
 
+
+
+
 test( "Tokenizer Exists", function() {
     ok( (EQTokenizer), "Tokenizer Exists" );
 });

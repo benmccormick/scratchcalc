@@ -322,8 +322,10 @@
         if(line !== currentline) {
             getLineDiv(currentline).removeClass("currentline");
             getLineNumDiv(currentline).removeClass("currentnum");
+            getOutLineDiv(currentline).removeClass("currentout");
             getLineDiv(line).addClass("currentline");
             getLineNumDiv(line).addClass("currentnum");
+            getOutLineDiv(line).addClass("currentout");
         }
         currentline = line;
         currentindex = index;

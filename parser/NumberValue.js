@@ -3,10 +3,8 @@
 
 
 var NumberValue = function(value,units){
-    this.num = value;
+    this.num = new BigDecimal(value);
     this.units = units;
-
-    
 };
 
 NumberValue.prototype.setUnits = function(unit){
@@ -19,41 +17,40 @@ NumberValue.prototype.setValue = function(val){
 
 NumberValue.prototype.add = function(othernumber){
     var nums = convertUnits(this,othernumber);
-    return new NumberValue(
-        nums[0].num.add(nums[1].num),
-        (nums[0].units || nums[1].units)
-        );
+    var sum = nums[0].num.add(nums[1].num);
+    return new NumberValue(sum.toString(), 
+        (nums[0].units || nums[1].units));
 };
 
 NumberValue.prototype.subtract = function(othernumber){
     var nums = convertUnits(this,othernumber);
-    return new NumberValue(
-        nums[0].num.subtract(nums[1].num),
-        (nums[0].units || nums[1].units)
-        );
+    var difference = nums[0].num.subtract(nums[1].num);
+    return new NumberValue(difference.toString(), 
+        (nums[0].units || nums[1].units));
 };
 
 NumberValue.prototype.multiply = function(othernumber){
-    return new NumberValue(
-        this.num.multiply(othernumber.num),
+    var product = this.num.multiply(othernumber.num);
+    return new NumberValue(product.toString(),
         (this.units || othernumber.units)
         );
 };
 
-NumberValue.prototype.divide = function(othernumber,precision,roundingmode){
-    return new NumberValue(
-        this.num.divide(othernumber.num,precision,roundingmode),
+NumberValue.prototype.divide = function(othernumber){
+    var quotient = this.num.divide(othernumber.num, 20,RoundingMode.HALF_UP());
+    return new NumberValue(quotient.toString(),
         (this.units||othernumber.units)
         );
 };
 
 NumberValue.prototype.compareTo = function(othernumber){
-    return this.num.compareTo(othernumber.num);
+    return (this.num === othernumber.num) ? 0 : (this.num > othernumber.num) ? 
+        1: -1;
 };
 
 NumberValue.prototype.toString = function(){
     var unitstr = (this.units) ? " "+this.units : "";
-    return this.num.toString() + unitstr;
+    return trimZeros(this.num.toString()) + unitstr;
 };
 
 /**
@@ -72,12 +69,17 @@ function convertUnits(num1,num2){
     }
     else{
         //convert num2 to num1 units
-        num2.num = num2.num.divide(new BigDecimal(
-            info1.multiple),20,RoundingMode.HALF_DOWN()).multiply(
-            new BigDecimal(info2.multiple));
+        num2.num = (num2.num.divide(
+            new BigDecimal(info1.multiple/info2.multiple), RoundingMode.HALF_DOWN));
         num2.units = num1.units;
         return [num1, num2];
     }
 
-}
+};
+
+function trimZeros(numString){
+    numString = numString.replace(/(\.[0-9]*?)0+$/, "$1"); 
+    numString = numString.replace(/\.$/, ""); 
+    return numString;             
+};
 

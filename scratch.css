@@ -143,9 +143,17 @@ background-color: #F8F8F8!important;
 
 }
 
+.currentout
+{
+    font-style:bold;
+    border: 1px solid grey;
+}
+
 .currentnum
 {
     color:teal;
+    font-style: bold;
+    background: rgba(128, 64, 64, 0.2);
 }
 
 #messagediv

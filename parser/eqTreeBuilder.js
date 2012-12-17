@@ -280,16 +280,16 @@ var EQTreeBuilder = (function() {
         this.value = function(){
             switch(that.name) {
                 case "sin(":
-                    return new NumberValue(new BigDecimal(
-                        Math.sin(that.arglist[0].value())) ,
+                    return new NumberValue(
+                        Math.sin(that.arglist[0].value()) ,
                     that.arglist[0].units);
                 case "cos(":
-                    return new NumberValue(new BigDecimal(
-                        Math.cos(that.arglist[0].value())) ,
+                    return new NumberValue(
+                        Math.cos(that.arglist[0].value()) ,
                     that.arglist[0].units);
                 case "tan(":
-                    return new NumberValue(new BigDecimal(
-                        Math.tan(that.arglist[0].value())) ,
+                    return new NumberValue(
+                        Math.tan(that.arglist[0].value()) ,
                     that.arglist[0].units);
                 case "(":
                     return that.arglist[0].value();
@@ -317,7 +317,7 @@ var EQTreeBuilder = (function() {
                     return value;
                 default:
                     //Should throw error here:
-                    return new NumberValue(new BigDecimal(0));
+                    return new NumberValue(0);
             }
         };
         this.priority = 10;
@@ -336,7 +336,7 @@ var EQTreeBuilder = (function() {
         this.type = "d";
         this.name = ref.value;
         this.numChildren = 0;
-        var value = new NumberValue(new BigDecimal(this.name));
+        var value = new NumberValue(this.name);
         //can make the value a constant since it won't change
         //this allows units to be set
         this.value = function(){
@@ -380,8 +380,7 @@ var EQTreeBuilder = (function() {
                 case "%":
                     //Consider throwing an error if the child 
                     //is not a var or digit
-                    var node = this.child.value().divide(new NumberValue(new BigDecimal("100")),
-                        precision,RoundingMode.DOWN());
+                    var node = this.child.value().divide(new NumberValue("100"));
                     node.isPercentage = true;
                     return node;
                 default:
@@ -401,34 +400,6 @@ var EQTreeBuilder = (function() {
             this.child = cnode;
         };
     };
-
-    var BiFuncNode = function(ref){
-        //Binary Function Node
-        var child1,child2,value;
-        this.type ="n";
-        this.name = ref.text;
-        this.numChildren = 2;
-        this.value = function(){
-            switch(this.name){
-                
-
-                
-            }
-        };
-        this.priority = 10;
-        this.toString = function(){
-            return this.name + this.lchild.toString() + "," + 
-                this.rchild.toString() + ")";
-        };
-        this.lchild = null;
-        this.rchild = null;
-        this.setChildren = function(left,right){
-            this.lchild = left;
-            this.rchild = right;
-        };
-        
-    };
-
     
     var BinOpNode = function(ref){
         //Binary Operation Node
@@ -445,7 +416,8 @@ var EQTreeBuilder = (function() {
                     priority = 5;
                     break;
                 case "/":
-                    priority = 5;
+                    // do division after mult to avoid precision issues
+                    priority = 5; 
                     break;
                 default:
                     priority = 5;
@@ -489,9 +461,9 @@ var EQTreeBuilder = (function() {
                 case "^":
                     //There will  be some precision lost here.
                     //Not ideal.
-                    return new NumberValue(new BigDecimal(Math.pow(
+                    return new NumberValue(Math.pow(
                         this.lchild.num.value().doubleValue(),
-                    (this.rchild.num.value().doubleValue()))),
+                    (this.rchild.num.value().doubleValue())),
                     (this.lchild.units | this.rchild.units));
             }
         };
@@ -511,10 +483,10 @@ var EQTreeBuilder = (function() {
 
     function factorial(val){
         //gets the factorial of a number
-        var num = new NumberValue(new BigDecimal("1"));
+        var num = new NumberValue(1);
         for(var i=1; i<=val; i++)
         {
-            num=num.multiply(new BigDecimal(i+""));
+            num=num.multiply(new NumberValue(i));
         }
         return num;
     }

@@ -5,7 +5,7 @@
  * @author Ben McCormick
  **/
 
- /*global BigDecimal:false */
+ /*global NumberValue:false */
 
 /** The Tokenizer module takes a string and splits it up into individual tokens
 */ 
@@ -32,7 +32,7 @@ var EQTokenizer = (function() {
         var funcx = /^\w*\(/;
         var varx = /^[a-zA-Z]+\d*[\:\-\'\?\.]?/;
         var assignnext = /^\s*=/;
-        var ZERO = new BigDecimal("0");
+        var ZERO = new NumberValue("0");
         //  Goes through the expression and splits it using the regexs
         while(expression.length > 0)
         {
@@ -44,7 +44,7 @@ var EQTokenizer = (function() {
             var numres = numx.exec(expression);
             if(numres)
             {
-                var number = new BigDecimal(numres[0]);
+                var number = new NumberValue(numres[0]);
                 expression = expression.substring(numres[0].length);
                 if(number.compareTo(ZERO)< 0 &&// if  negative number
                     last !== null && //list isn't empty
