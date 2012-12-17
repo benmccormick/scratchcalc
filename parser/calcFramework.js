@@ -10,12 +10,14 @@
 
 
 var calcFramework = (function () {
-    var line1 = new Line();
+    var line1 = new Line(1);
     var lines = [null,line1];
+    var outputs = [0,0];
     var idx = 0; //for loops
-    EQParser.init();
     var cF = {};
-    var MAXWIDTH = 5,MAXOUTWIDTH=5;
+    var MAXWIDTH = 5,MAXOUTWIDTH=25;
+
+    EQParser.init();
 
     cF.getLine = function (index) {
         //returns the specified line
@@ -67,6 +69,17 @@ var calcFramework = (function () {
         return lines.length-1;
     };
 
+    cF.getAggregate = function(type){
+        switch(type){
+            case "Total":
+                return getArrayTotal(outputs)
+            case "Average":
+                return getArrayTotal(outputs)/outputs.length;
+            default:
+                return 0;
+        }
+    };
+
     //Create Line type
     function Line(linenum) {
         this.input = "";
@@ -74,15 +87,47 @@ var calcFramework = (function () {
     }
 
     Line.prototype.output = function () {
-
-        var out = EQParser.parse(this.input,10);
-        return  out.chunk(MAXOUTWIDTH).join("<br>");
+        try{
+            try{
+            this.addPreviousAnswerHandling();
+            }
+            catch(movecursor){
+               throw movecursor; //try again with updated line
+            }
+            var out = EQParser.parse(this.input,10);
+            outputs[this.linenum] = out;
+            EQParser.setVar("line"+this.linenum,out);
+            return  out.toString().chunk(MAXOUTWIDTH).join("<br>");
+        }
+        catch(ex){
+            outputs[this.linenum] = new NumberValue(0);
+            throw ex; //keep passing exceptions on
+        }
     };
     
     Line.prototype.formatted = function () {
         //return the input string for now, add syntax highlighting/controls later
         var output = this.input.chunk(MAXWIDTH).join("<br>");
         return markupGen.markup(output);
+    };
+
+
+    Line.prototype.addPreviousAnswerHandling = function (){
+        var ans = (this.linenum > 1) ? 
+            EQParser.getVar("line"+(this.linenum-1)) : 
+            new NumberValue(0);
+        EQParser.setVar("ans",ans);
+        var opers = /^\s*[\+\-\*\/!%\^&|]/;
+        var isoperator = opers.exec(this.input);
+        if(isoperator && this.input.length && this.linenum > 1){
+           this.input =  this.input.splice(0,0,"ans ");
+           var exc ={
+                type:"movecursor",
+                xdistance:4,
+                ydistance:0
+           };
+           throw exc;
+        }
     };
 
     return cF;

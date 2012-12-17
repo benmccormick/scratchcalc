@@ -5,7 +5,7 @@
  * @author Ben McCormick
  **/
 
- /*global BigDecimal:false */
+ /*global NumberValue:false */
 
 /** The Tokenizer module takes a string and splits it up into individual tokens
 */ 
@@ -13,10 +13,12 @@ var EQTokenizer = (function() {
     var EQT ={};
     var tokenlist = [];
     var vars = {};
+    var units = {};
 
-    EQT.init = function(varMap){
+    EQT.init = function(varMap, unitMap){
         vars = varMap;
-    }
+        units = unitMap;
+    };
 
     //Takes the strings and splits it into tokens
     EQT.tokenize = function(expression){
@@ -25,11 +27,12 @@ var EQTokenizer = (function() {
         // Regexs for each token type
         var numx = /^-?\d+\.?\d*/;
         var spacex = /^\s+/;
-        var operx = /^[\+\-\*\/!%\^&|,)\[\]#]/;
+        var operx = /^[\+\-\*\/!%\^&|,)\[\]#=]/;
         var unopx = /^[!%]/;
         var funcx = /^\w*\(/;
-        var varx = /^\w+\d*/;
-        var ZERO = new BigDecimal("0");
+        var varx = /^[a-zA-Z]+\d*[\:\-\'\?\.]?/;
+        var assignnext = /^\s*=/;
+        var ZERO = new NumberValue("0");
         //  Goes through the expression and splits it using the regexs
         while(expression.length > 0)
         {
@@ -41,7 +44,7 @@ var EQTokenizer = (function() {
             var numres = numx.exec(expression);
             if(numres)
             {
-                var number = new BigDecimal(numres[0]);
+                var number = new NumberValue(numres[0]);
                 expression = expression.substring(numres[0].length);
                 if(number.compareTo(ZERO)< 0 &&// if  negative number
                     last !== null && //list isn't empty
@@ -87,11 +90,13 @@ var EQTokenizer = (function() {
             var varres = varx.exec(expression);
             if(varres)
             {
-                //Only push text if its a valid variable.  Else ignore
-                if(vars[varres[0]]){
+                //Only push text if its a valid variable or unit.  Else ignore
+                var newexpression =expression.substring(varres[0].length);
+                if(vars[varres[0]] || units[varres[0]]|| 
+                    assignnext.exec(newexpression)){
                     tokenlist.push(varres[0]);
                 }
-                expression = expression.substring(varres[0].length);
+                expression = newexpression;
                 continue;
             }
             return false;
@@ -109,6 +114,8 @@ var EQTokenizer = (function() {
     function addImplicitMultiplication(){
         //this can be added later.  Multiplication must be explicit for now
     }
+
+   
 
     return EQT;
 }());

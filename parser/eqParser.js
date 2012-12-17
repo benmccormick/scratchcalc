@@ -10,13 +10,18 @@
 var EQParser = (function(){
     var EQP ={};
     var varMap = {
-        "pi":new BigDecimal("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679")
+        "pi":new NumberValue("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679")
     };
+
+    var unitMap = {dollars:{type:"currency",multiple:1},
+        cents:{type:"currency",multiple:0.01},
+        pounds:{type:"weight",multiple:1}};
+
     var result;
     EQP.init = function(){
-        EQTokenizer.init(varMap);
-        EQTreeBuilder.init();
-        EQScanner.init(varMap);
+        EQTokenizer.init(varMap,unitMap);
+        EQTreeBuilder.init(unitMap);
+        EQScanner.init(varMap,unitMap);
     };
 
     EQP.parse = function(expression,precision){
@@ -30,12 +35,19 @@ var EQParser = (function(){
             EQP.setPrecision(precision);
         }
         EQScanner.newExpression(tokens);
-        result = EQTreeBuilder.process(EQScanner);
-        if(!result)
-        {
-            return "";//Invalid Expression
+        try{
+            result = EQTreeBuilder.process(EQScanner);
+            if(!result)
+            {
+                return "";//Invalid Expression
+            }
+            //var finalval = result.value();
+            //finalval.num = finalval.num.setScale(5,RoundingMode.HALF_DOWN());
+            return  result.value();
         }
-        return  result.value().toString();
+        catch(ex){
+            throw ex;   //if there was an exception throw it for the GUI
+        }
     };
 
     EQP.setPrecision = function(prec){
@@ -49,6 +61,15 @@ var EQParser = (function(){
     EQP.setVar = function(variable, value)
     {
         varMap[variable] = value;
+    };
+
+    EQP.getVar = function(variable)
+    {
+        return varMap[variable];
+    };
+
+    EQP.getUnitInfo = function(unit){
+        return unitMap[unit];
     };
 
 

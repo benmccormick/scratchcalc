@@ -50,7 +50,7 @@ test( "multiplication", function() {
     deepEqual( result.toString(), "30", "multiple numbers test" );
 
     result = EQParser.parse("200 * 0.5");
-    deepEqual( result.toString(), "100.0", "Decimal multiplication test" );
+    deepEqual( result.toString(), "100", "Decimal multiplication test" );
 
     result = EQParser.parse("10 * -5 * 2");
     deepEqual( result.toString(), "-100", 
@@ -64,21 +64,21 @@ test( "multiplication", function() {
 
 test( "Division", function() {
     var result = EQParser.parse("10/2");
-    deepEqual( result.toString(), "5.00000", "10/2 test" );
+    deepEqual( result.toString(), "5", "10/2 test" );
 
 
     result = EQParser.parse("18/2/3");
-    deepEqual( result.toString(), "3.00000", "multiple numbers test" );
+    deepEqual( result.toString(), "3", "multiple numbers test" );
 
     result = EQParser.parse("200 / 0.5");
-    deepEqual( result.toString(), "400.00000", "Decimal division test" );
+    deepEqual( result.toString(), "400", "Decimal division test" );
 
     result = EQParser.parse("10 / -2");
-    deepEqual( result.toString(), "-5.000000", 
+    deepEqual( result.toString(), "-5", 
         "Negative number division test" );
 
     result = EQParser.parse("-10 / -5 ");
-    deepEqual( result.toString(), "2.00000", 
+    deepEqual( result.toString(), "2", 
         "Negative number division test 2" );
 
     result = EQParser.parse("10 / 3 ");
@@ -96,4 +96,10 @@ test( "Factorial", function() {
 
     result = EQParser.parse("2 + 3! + 5");
     deepEqual( result.toString(), "13", "Adding to factorial test" );
+});
+
+test( "Precision", function() {
+    var result = EQParser.parse("7 / 6 * 12");
+    deepEqual( result.toString(), "14", "Division precision test" );
+
 });

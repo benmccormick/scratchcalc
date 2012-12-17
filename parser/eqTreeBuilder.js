@@ -22,7 +22,8 @@ var EQTreeBuilder = (function() {
     var cstate;         //the current state of the system  
     var instr;          // the instruction for the next step in the table
     var root;           // the tree root
-    var precision = 5;  // The decimal precision for division
+    var precision = 20;  // The decimal precision for division
+    var errors = [];    //the error messages for different states
 
     //Eventually will load table from a file.  For now just defines it in code
     
@@ -45,17 +46,32 @@ var EQTreeBuilder = (function() {
             index = terms.indexOf(ctok.token);
             
             if(index === -1){
-                //unknown token
-                //TODO: ADD better error handling here!
-                return false;
+                var errormessage;
+                if(ctok.token.charAt(ctok.token.length-1) === "("){
+                    errormessage = {
+                    message:"Function not found", 
+                    type:"E"};
+                    throw errormessage;  
+                }
+                else{
+                    errormessage = {
+                    message:"Unknown Token", 
+                    type:"E"};
+                    throw errormessage;  
+                }
             }
 
             instr = table[cstate][index];
 
-            if(instr === ("")){
-                //invalid syntax
-                //TODO: ADD better error handling here
-                return false;
+            if(typeof instr === "undefined"||instr.charAt(0)==="e"){
+                var errorcode = (instr) ? instr : "e00";
+                var errorinfo =errors[parseInt(errorcode.substring(1))];
+                var calculationException ={
+                    message: errorinfo.message,
+                    type: errorinfo.type,
+                    errorcode: errorcode
+                };
+                throw calculationException;
             }
             if(instr === ("acc")){
                 //Valid equation completed
@@ -120,8 +136,8 @@ var EQTreeBuilder = (function() {
                 cstate=table[idx][cstate];
                 break;
             }*/
-        
-        cstate = prodsteps[cstate];
+        var column = terms.indexOf(cprod.result);
+        cstate = table[cstate][column];
     }
 
     function balanceTree(node){
@@ -129,9 +145,14 @@ var EQTreeBuilder = (function() {
         if(node.numChildren === 0){
             return node;
         }
-        else
-        if(node.numChildren === 1)
-        {
+        else if(node.type === "f"){
+            var argnum = node.numChildren, iter;
+            for(iter =0; iter<argnum; iter++){
+                node.arglist[iter] = balanceTree(node.arglist[iter]);
+            }
+        }
+        else if(node.numChildren === 1){
+            var child = (node.child) ? node.child :node.arglist[0];
             if (node.child.priority < node.priority && node.priority !== 10) {
                 //trying to get both !,% and functions working right.
                 var newroot = node.child;
@@ -144,8 +165,7 @@ var EQTreeBuilder = (function() {
                 node.setChild(balanceTree(node.child));
             }
         }
-        else
-        {
+        else{
             node.setChildren(balanceTree(node.lchild),balanceTree(node.rchild));
             var lchild = node.lchild;
             var rchild = node.rchild;
@@ -168,29 +188,43 @@ var EQTreeBuilder = (function() {
     }
 
     function handleEqStack(productionNum){
-        var lchild,rchild,child, biFuncNode,binOpNode,func,opNode;
+        var lchild,rchild,child,binOpNode,func,opNode,arglist,
+        variable;
         switch(productionNum){
-            case "1":
+            case "2":
+                child = eqStack.pop();
+                variable = eqStack.pop();
+                variable.setValue(child.value());
+                EQParser.setVar(variable.name,child.value());
+                eqStack.push(variable);
+                break;
+            case "3":
                 rchild = eqStack.pop();
                 binOpNode = eqStack.pop();
                 lchild = eqStack.pop();
                 binOpNode.setChildren(lchild,rchild);
                 eqStack.push(binOpNode);
             break;
-            case "2":
+            case "11":
+                arglist = [];
                 child = eqStack.pop();
-                func = eqStack.pop();
-                func.setChild(child);
+                try{
+                    while(child.type !== "f"){
+                        arglist.push(child);
+                        child = eqStack.pop();
+                    }
+                }
+                catch(err){
+                    var errormessage = {
+                    message:"Function not found", 
+                    type:"E"};
+                    throw errormessage;       
+                }
+                func = child;
+                func.setArgList(arglist);
                 eqStack.push(func);
             break;
-            case "3":
-                rchild = eqStack.pop();
-                lchild = eqStack.pop();
-                biFuncNode = eqStack.pop();
-                biFuncNode.setChildren(lchild,rchild);
-                eqStack.push(biFuncNode);
-            break;
-            case "6":
+            case "9":
                 opNode = eqStack.pop();
                 child = eqStack.pop();
                 opNode.setChild(child);
@@ -215,7 +249,9 @@ var EQTreeBuilder = (function() {
             case "u":
                 return (new UnOpNode(refval));
             case "n":
-                return (new BiFuncNode(refval));
+                var lastnum = eqStack.pop();
+                lastnum.value().setUnits(refval.text);
+                return lastnum;
             case "b":
                 return (new BinOpNode(refval));
             default:
@@ -229,7 +265,7 @@ var EQTreeBuilder = (function() {
         table = tablePlaceHolder.table;
         terms = tablePlaceHolder.terms;
         prods = tablePlaceHolder.productions;
-        prodsteps = tablePlaceHolder.prodstep;
+        errors = tablePlaceHolder.errors;
     }
 
     //Node Constructors
@@ -239,29 +275,59 @@ var EQTreeBuilder = (function() {
         var that = this;
         this.type = "f";
         this.name = ref.text;
-        this.numChildren = 1;
+        this.numChildren = 0;
+        var child1,child2;
         this.value = function(){
             switch(that.name) {
                 case "sin(":
-                    return new BigDecimal(Math.sin(that.child.value()));
+                    return new NumberValue(
+                        Math.sin(that.arglist[0].value()) ,
+                    that.arglist[0].units);
                 case "cos(":
-                    return new BigDecimal(Math.cos(that.child.value()));
+                    return new NumberValue(
+                        Math.cos(that.arglist[0].value()) ,
+                    that.arglist[0].units);
                 case "tan(":
-                    return new BigDecimal(Math.cos(that.child.value()));
+                    return new NumberValue(
+                        Math.tan(that.arglist[0].value()) ,
+                    that.arglist[0].units);
                 case "(":
-                    return that.child.value();
-            default:
-                //Error Handling here??
-                return new BigDecimal("0");
+                    return that.arglist[0].value();
+                case "max(": 
+                    child1 =that.arglist[0].value();
+                    child2 =that.arglist[1].value();
+                    return(child1.compareTo(child2) > 0) ? child1 : child2;
+                    
+                case "min(": 
+                    child1 =that.arglist[0].value();
+                    child2 =that.arglist[1].value();
+                    return(child1.compareTo(child2) < 0) ? child1 : child2;
+                    
+                case "perm(": 
+                    value = factorial(that.arglist[0].value()).divide(
+                        factorial(that.arglist[0].value().subtract(
+                        that.arglist[1].value())));
+                    return value;
+                
+                case "comb(": 
+                    value = factorial(that.arglist[0].value()).divide(
+                        factorial(that.arglist[1].value()).multiply(factorial(
+                        that.arglist[0].value().subtract(that.arglist[1].value()))),
+                        precision, RoundingMode.DOWN());
+                    return value;
+                default:
+                    //Should throw error here:
+                    return new NumberValue(0);
             }
         };
         this.priority = 10;
         this.toString = function(){
             return this.name + this.child.toString()+")";
         };
-        this.child = null;
-        this.setChild = function(cnode){
-            this.child = cnode;
+        this.arglist = null;
+        this.setArgList = function(arglist){
+            this.arglist = arglist;
+            this.numChildren = arglist.length;
         };
     };
 
@@ -270,8 +336,11 @@ var EQTreeBuilder = (function() {
         this.type = "d";
         this.name = ref.value;
         this.numChildren = 0;
+        var value = new NumberValue(this.name);
+        //can make the value a constant since it won't change
+        //this allows units to be set
         this.value = function(){
-            return new BigDecimal(this.name);
+            return value;
         };
         this.priority = 100;
         this.toString = function(){
@@ -284,7 +353,7 @@ var EQTreeBuilder = (function() {
         //Variable Node
         var varValue = varVal;
         this.type = "v";
-        this.nam =ref.text;
+        this.name =ref.text;
         this.numChildren = 0;
         this.value = function(){
             return varValue;
@@ -311,8 +380,7 @@ var EQTreeBuilder = (function() {
                 case "%":
                     //Consider throwing an error if the child 
                     //is not a var or digit
-                    var node = this.child.value().divide(new BigDecimal("100"),
-                        precision,RoundingMode.DOWN());
+                    var node = this.child.value().divide(new NumberValue("100"));
                     node.isPercentage = true;
                     return node;
                 default:
@@ -332,58 +400,6 @@ var EQTreeBuilder = (function() {
             this.child = cnode;
         };
     };
-
-    var BiFuncNode = function(ref){
-        //Binary Function Node
-        var child1,child2,value;
-        this.type ="n";
-        this.name = ref.text;
-        this.numChildren = 2;
-        this.value = function(){
-            switch(this.name){
-                
-
-                case "max(": 
-                    child1 =this.lchild.value();
-                    child2 =this.rchild.value();
-                    return(child1.compareTo(child2) > 0) ? child1 : child2;
-                    
-                case "min(": 
-                    child1 =this.lchild.value();
-                    child2 =this.rchild.value();
-                    return(child1.compareTo(child2) < 0) ? child1 : child2;
-                    
-                case "perm(": 
-                    value = factorial(this.lchild.value()).divide(
-                        factorial(this.lchild.value().subtract(
-                        this.rchild.value())));
-                    return value;
-                
-                case "comb(": 
-                    value = factorial(this.lchild.value()).divide(
-                        factorial(this.rchild.value()).multiply(factorial(
-                        this.lchild.value().subtract(this.rchild.value()))),
-                        precision, RoundingMode.DOWN());
-                    return value;
-                default:
-                    //Should throw error here:
-                    return new BigDecimal(0);
-            }
-        };
-        this.priority = 10;
-        this.toString = function(){
-            return this.name + this.lchild.toString() + "," + 
-                this.rchild.toString() + ")";
-        };
-        this.lchild = null;
-        this.rchild = null;
-        this.setChildren = function(left,right){
-            this.lchild = left;
-            this.rchild = right;
-        };
-        
-    };
-
     
     var BinOpNode = function(ref){
         //Binary Operation Node
@@ -400,7 +416,8 @@ var EQTreeBuilder = (function() {
                     priority = 5;
                     break;
                 case "/":
-                    priority = 5;
+                    // do division after mult to avoid precision issues
+                    priority = 5; 
                     break;
                 default:
                     priority = 5;
@@ -440,13 +457,14 @@ var EQTreeBuilder = (function() {
                     return this.lchild.value().multiply(this.rchild.value());
                 case "/":
                     return this.lchild.value().divide(this.rchild.value(),
-                        precision,RoundingMode.DOWN());
+                        precision,RoundingMode.HALF_DOWN());
                 case "^":
                     //There will  be some precision lost here.
                     //Not ideal.
-                    return new BigDecimal(Math.pow(
-                        this.lchild.value().doubleValue(),
-                    (this.rchild.value().doubleValue())));
+                    return new NumberValue(Math.pow(
+                        this.lchild.num.value().doubleValue(),
+                    (this.rchild.num.value().doubleValue())),
+                    (this.lchild.units | this.rchild.units));
             }
         };
         this.priority = priority;
@@ -465,10 +483,10 @@ var EQTreeBuilder = (function() {
 
     function factorial(val){
         //gets the factorial of a number
-        var num = new BigDecimal("1");
+        var num = new NumberValue(1);
         for(var i=1; i<=val; i++)
         {
-            num=num.multiply(new BigDecimal(i+""));
+            num=num.multiply(new NumberValue(i));
         }
         return num;
     }
