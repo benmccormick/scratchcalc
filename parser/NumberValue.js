@@ -44,8 +44,8 @@ NumberValue.prototype.divide = function(othernumber){
 };
 
 NumberValue.prototype.compareTo = function(othernumber){
-    return (this.num === othernumber.num) ? 0 : (this.num > othernumber.num) ? 
-        1: -1;
+    var nums = convertUnits(this,othernumber);
+    return nums[0].num.compareTo(nums[1].num);
 };
 
 NumberValue.prototype.toString = function(){
