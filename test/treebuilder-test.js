@@ -104,5 +104,4 @@ test( "Precision", function() {
     var result = EQParser.parse("7 / 6 * 12");
     ok( result.compareTo(new NumberValue("14")) === 0, 
         "Division precision test" );
-
 });

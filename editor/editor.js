@@ -398,11 +398,11 @@
             if(exc){
                 switch(exc.type) {
                 case "E":
-                    messageDiv.append("<span class=\"errorline\">" +
+                    messageDiv.append("<span class=\"errorline\">Line #" +
                         iter+":"+exc.message+"</span><br>");
                     break;
                 case "W":
-                     messageDiv.append("<span class=\"warningline\">" +
+                     messageDiv.append("<span class=\"warningline\">Line #" +
                         iter+":"+exc.message+"</span><br>");
                      break;
                 default: //including N

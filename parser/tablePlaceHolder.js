@@ -47,15 +47,32 @@ var tablePlaceHolder = (function(){
     var errors =[
         {message:"Something went wrong", type:"W"},     //E00
         {message:"Unmatched Parentheses", type:"E"},    //E01
-        {message:"No Input", type:"N"}                  //E02
+        {message:"No Input", type:"N"},                 //E02
+        {message:"Invalid Input", type:"E"}             //E03
+
     ];
+
+    var unitMap = {dollars:{type:"currency",multiple:1},
+        dollar:{type:"currency",multiple:1},
+        quarter:{type:"currency",multiple:0.25},
+        quarters:{type:"currency",multiple:0.25},
+        cents:{type:"currency",multiple:0.01},
+        cent:{type:"currency",multiple:0.01},
+        pennies:{type:"currency",multiple:0.01},
+        penny:{type:"currency",multiple:0.01},
+        dimes:{type:"currency",multiple:0.1},
+        dime:{type:"currency",multiple:0.1},
+        nickels:{type:"currency",multiple:0.05},
+        nickel:{type:"currency",multiple:0.05},
+        pounds:{type:"weight",multiple:1}};
 
     //Return the configurations
     return {
         table: table,
         terms: terms,
         productions:productions,
-        errors:errors
+        errors:errors,
+        units: unitMap
     };
 
 }());

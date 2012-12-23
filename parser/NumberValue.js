@@ -69,8 +69,8 @@ function convertUnits(num1,num2){
     }
     else{
         //convert num2 to num1 units
-        num2.num = (num2.num.divide(
-            new BigDecimal(info1.multiple/info2.multiple), RoundingMode.HALF_DOWN));
+        var multiple = new BigDecimal((info1.multiple/info2.multiple)+"");
+        num2.num = (num2.num.divide(multiple, 20, RoundingMode.HALF_DOWN()));
         num2.units = num1.units;
         return [num1, num2];
     }

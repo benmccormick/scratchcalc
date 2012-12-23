@@ -5,17 +5,18 @@
  * @author Ben McCormick
  **/
 
- /*global EQScanner:false EQTreeBuilder:false EQTokenizer:false EQParser:true*/
+ /*global EQScanner:false EQTreeBuilder:false EQTokenizer:false EQParser:true
+    tablePlaceHolder:false*/
 
 var EQParser = (function(){
     var EQP ={};
+    var errorInfo = tablePlaceHolder.errors;
+    var unitMap = tablePlaceHolder.units;
     var varMap = {
         "pi":new NumberValue("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679")
     };
 
-    var unitMap = {dollars:{type:"currency",multiple:1},
-        cents:{type:"currency",multiple:0.01},
-        pounds:{type:"weight",multiple:1}};
+    
 
     var result;
     EQP.init = function(){
@@ -28,7 +29,12 @@ var EQParser = (function(){
         var tokens = EQTokenizer.tokenize("#"+expression+"#");
         if(!tokens) //Invalid Token
         {
-            return "#Invalid Token#";
+            var tokenException ={
+                    message: errorInfo[3].message,
+                    type: errorInfo[3].type,
+                    errorcode: "E03"
+                };
+            throw tokenException;
         }
         if(precision)
         {

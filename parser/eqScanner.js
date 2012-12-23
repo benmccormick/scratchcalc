@@ -54,7 +54,7 @@ var EQScanner = (function() {
                     ($.inArray(tok,unops) !== -1) ? "u" :
                     (numx.exec(tok)) ? "d" :
                     ($.inArray(tok,puncs) !== -1) ? tok :
-                    (isUnit(tok) !== -1) ?  "n" :
+                    isUnit(tok) ?  "n" :
                     (varx.exec(tok)) ? "v" : errorHandle(tok);
 
         if(currenttok.indexOf("Error:") === -1){
