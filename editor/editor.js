@@ -74,7 +74,7 @@
 
 
     var offset = $(".in").offset();
-    var currentline = 1;
+    var currentline = 0;
     var currentindex=0;
     $(".cursor").offset(offset);
 
@@ -90,19 +90,19 @@
     $(document).keydown(function(e){
         var linediv =  getLineDiv(currentline);
         var cline =  calcFramework.getLine(currentline);
-        var input = cline.input;
+        var input = cline.input();
         var prevline,remains,prevlength,moveLine;
         switch(e.keyCode){
         case 8: //backspace
             if(currentindex > 0){
-                cline.input = input.splice(currentindex-1,1);
+                cline.input(input.splice(currentindex-1,1));
                 linediv.html(cline.formatted());
                 moveCursor(currentline,currentindex-1);
             }
-            else if(currentline > 1){
+            else if(currentline > 0){
                     prevline = calcFramework.getLine(currentline-1);
-                    prevlength = prevline.input.length;
-                    prevline.input += cline.input;
+                    prevlength = prevline.input().length;
+                    prevline.input(prevline.input()+cline.input());
                     getLineDiv(currentline-1).html(prevline.formatted());
                     removeLine(currentline);
                     moveCursor(currentline-1,prevlength);
@@ -112,20 +112,20 @@
             break;
         case 13:  //enter
             remains = input.substring(currentindex);
-            cline.input = input.substring(0,currentindex);
+            cline.input(input.substring(0,currentindex));
             linediv.html(cline.formatted());
             addLine(currentline+1);
             cline = calcFramework.getLine(currentline+1);
-            cline.input = remains;
-            getLineDiv(currentline+1).html(cline.formatted());
+            cline.input(remains);
+           // getLineDiv(currentline+1).html(cline.formatted());
             moveCursor(currentline+1,0);
-            updateOut(currentline-1);
-            updateOut(currentline);
+            //updateOut(currentline-1);
+            //updateOut(currentline);
             LINESCHANGED = true;
             break;
         case 32:  //space
-            cline.input = input.splice(currentindex,0," ");
-            linediv.html(cline.formatted());
+            cline.input (input.splice(currentindex,0," "));
+            //linediv.html(cline.formatted());
             moveCursor(currentline, currentindex + 1);
             break;
        case 35: //end
@@ -166,7 +166,7 @@
             }
             break;
         case 46: //delete
-            cline.input = input.splice(currentindex,1);
+            cline.input(input().splice(currentindex,1));
             linediv.html(cline.formatted());
             break;
         default:
@@ -180,13 +180,13 @@
             return;
         }
         var cline =  calcFramework.getLine(currentline);
-        var input = cline.input;
+        var input = cline.input();
         var keyVal = String.fromCharCode(e.keyCode);
         if(!e.shiftKey)
         {
             keyVal = keyVal.toLowerCase();
         }
-        cline.input = input.splice(currentindex,0,keyVal);
+        cline.input(input.splice(currentindex,0,keyVal));
         updateLineDisplay(cline);
         moveCursor(currentline,currentindex+1);
         LINESCHANGED = true;
@@ -203,7 +203,7 @@
     function getLineLength(index){
         //get the length of a given line
         var line =  calcFramework.getLine(index);    
-        return line.input.length;
+        return line.input().length;
     }
 
     function isLastLine(linenum){
@@ -213,19 +213,19 @@
 
     function getLineDiv(linenum){
        return $(".inln").filter( function() { 
-            return $(this).data("line") === linenum; 
+            return this.dataset["line"] === linenum+""; 
         });
     }
 
     function getOutLineDiv(linenum){
        return $(".outln").filter( function() { 
-            return $(this).data("line") === linenum; 
+            return this.dataset["line"] === linenum+""; 
         });
     }
 
     function getLineNumDiv(linenum){
        return $(".linenum").filter( function() { 
-            return $(this).data("line") === linenum; 
+            return this.dataset["line"] === linenum+""; 
         });
     }
 
@@ -246,16 +246,17 @@
     }
 
     function lineupLines(){
+        return;
         var lineDiv,outlineDiv,outOffset,
             inOffset,topheight,lineNumDiv,numOffset;
-        for( var idx = 1; idx<=calcFramework.getNumLines(); idx++ ){
+        for( var idx = 0; idx<calcFramework.getNumLines(); idx++ ){
             lineDiv = getLineDiv(idx);
             inOffset = lineDiv.offset();
             outlineDiv =getOutLineDiv(idx);
             outOffset = outlineDiv.offset();
             lineNumDiv=getLineNumDiv(idx);
             numOffset = lineNumDiv.offset();
-            if(outOffset && idx !== 1)  
+            if(outOffset && idx !== 0)  
             {
                 //sometimes can't find output div.  possibly harmless?
                 //just ignoring for now, but may need to fix
@@ -278,27 +279,6 @@
     function addLine(line){
         // Add a new line to the editor
         calcFramework.addLine(line);
-        for (var idx = calcFramework.getNumLines()-1; idx >=line; idx--) {
-           getLineDiv(idx).data("line",(idx+1));
-           getOutLineDiv(idx).data("line",(idx+1));
-           getLineNumDiv(idx).data("line",(idx+1)).html(idx+1);
-        }
-        if(line > 1) {
-            getLineDiv(line-1).after(
-                "<div class=\"inln\" data-line=\""+line+"\"></div>");
-            getOutLineDiv(line-1).after(
-                "<div class=\"outln\" data-line=\""+line+"\"></div>");
-             getLineNumDiv(line-1).after(
-                "<div class=\"linenum\" data-line=\""+line+"\">"+line+"</div>");
-        }
-        else {
-             getLineDiv(1).before("<div class=\"inln\" data-line=\"1\"></div>");
-             getOutLineDiv(1).before(
-                "<div class=\"outln\" data-line=\"1\"></div>");
-             getLineNumDiv(1).before(
-                "<div class=\"linenum\" data-line=\"1\">1</div>");
-        }
-        lineupLines();
     }
 
 
@@ -364,9 +344,9 @@
     }
 
     function updateOut(line) {
-        var outdiv = getOutLineDiv(line);
+        /*var outdiv = getOutLineDiv(line);
         try {
-            outdiv.html(calcFramework.getLine(line).output());
+            outdiv.html(calcFramework.getLine(line).lnOutput());
             if(ERRORLIST[line]) {
                 ERRORLIST[line] = null;
                 UPDATEERRORS = true;
@@ -387,7 +367,7 @@
                         UPDATEERRORS = true;
                     }
             }
-        }
+        }*/
     }
 
     function updateMessages() {
