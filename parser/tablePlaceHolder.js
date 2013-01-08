@@ -2,6 +2,7 @@
 
 
 var tablePlaceHolder = (function(){
+    "use strict";
     
     var table =
 [["s1",,,,,,,,,,,,,2,,],

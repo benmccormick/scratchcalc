@@ -5,31 +5,30 @@
 
 
 /*jshint jquery:true*/
-/*global calcFramework:false */
+/*global calcFramework:false ko:false */
 
 
 
 (function(){
+    "use strict";
+    var LINEWIDTH = 50;
 
     var FONTWIDTH = 11;
     var LINEHEIGHT = 25;
-    var LINEWIDTH = 50;
-    var ERRORLIST = [];
-    var UPDATEERRORS = false;
     var LINESCHANGED = false;
     var BOXTOP = $(".in").offset().top;
-    var BOXHEIGHT = $(".in").height();
     var CONTENTHEIGHT = LINEHEIGHT;
     calcFramework.setLineWidth(LINEWIDTH);
+    //set up Knockout bindings
+    ko.applyBindings(calcFramework);
+
+
 
     //Sync Scrolling
     $(".in").on("scroll", function () {
         $(".out").scrollTop($(this).scrollTop());
         $(".nums").scrollTop($(this).scrollTop());
     });
-
-
-
 
 
     // Prevent the backspace key from navigating back.
@@ -88,7 +87,6 @@
     });
 
     $(document).keydown(function(e){
-        var linediv =  getLineDiv(currentline);
         var cline =  calcFramework.getLine(currentline);
         var input = cline.input();
         var prevline,remains,prevlength,moveLine;
@@ -96,36 +94,28 @@
         case 8: //backspace
             if(currentindex > 0){
                 cline.input(input.splice(currentindex-1,1));
-                linediv.html(cline.formatted());
                 moveCursor(currentline,currentindex-1);
             }
             else if(currentline > 0){
                     prevline = calcFramework.getLine(currentline-1);
                     prevlength = prevline.input().length;
                     prevline.input(prevline.input()+cline.input());
-                    getLineDiv(currentline-1).html(prevline.formatted());
                     removeLine(currentline);
                     moveCursor(currentline-1,prevlength);
             }
-            updateOut(currentline);
             LINESCHANGED = true;
             break;
         case 13:  //enter
             remains = input.substring(currentindex);
             cline.input(input.substring(0,currentindex));
-            linediv.html(cline.formatted());
             addLine(currentline+1);
             cline = calcFramework.getLine(currentline+1);
             cline.input(remains);
-           // getLineDiv(currentline+1).html(cline.formatted());
             moveCursor(currentline+1,0);
-            //updateOut(currentline-1);
-            //updateOut(currentline);
             LINESCHANGED = true;
             break;
         case 32:  //space
             cline.input (input.splice(currentindex,0," "));
-            //linediv.html(cline.formatted());
             moveCursor(currentline, currentindex + 1);
             break;
        case 35: //end
@@ -167,12 +157,10 @@
             break;
         case 46: //delete
             cline.input(input().splice(currentindex,1));
-            linediv.html(cline.formatted());
             break;
         default:
              
         }
-        cleanUpMessages();
     });
 
     $(document).keypress(function(e){
@@ -187,18 +175,10 @@
             keyVal = keyVal.toLowerCase();
         }
         cline.input(input.splice(currentindex,0,keyVal));
-        updateLineDisplay(cline);
         moveCursor(currentline,currentindex+1);
         LINESCHANGED = true;
-        cleanUpMessages();
     });
 
-    function updateLineDisplay(cline){
-
-        var linediv =  getLineDiv(currentline);
-        linediv.html(cline.formatted());
-        updateOut(currentline);
-    }
 
     function getLineLength(index){
         //get the length of a given line
@@ -213,68 +193,26 @@
 
     function getLineDiv(linenum){
        return $(".inln").filter( function() { 
-            return this.dataset["line"] === linenum+""; 
+            return this.dataset.line === linenum+""; 
         });
     }
 
     function getOutLineDiv(linenum){
        return $(".outln").filter( function() { 
-            return this.dataset["line"] === linenum+""; 
+            return this.dataset.line === linenum+""; 
         });
     }
 
     function getLineNumDiv(linenum){
        return $(".linenum").filter( function() { 
-            return this.dataset["line"] === linenum+""; 
+            return this.dataset.line === linenum+""; 
         });
     }
 
     function removeLine(line){
-        // Remove a line from the editor
-        var lineDiv = getLineDiv(line);
-        var outlineDiv = getOutLineDiv(line);
-        var linenumDiv = getLineNumDiv(line);
-        lineDiv.remove();
-        outlineDiv.remove();
-        linenumDiv.remove();
-        for(var idx = line+1;  idx<=calcFramework.getNumLines(); idx++ ){
-            getLineDiv(idx).data("line",(idx-1));
-            getOutLineDiv(idx).data("line",(idx-1));
-            getLineNumDiv(idx).data("line",(idx-1)).html(idx-1);
-        }
         calcFramework.removeLine(line);
     }
 
-    function lineupLines(){
-        return;
-        var lineDiv,outlineDiv,outOffset,
-            inOffset,topheight,lineNumDiv,numOffset;
-        for( var idx = 0; idx<calcFramework.getNumLines(); idx++ ){
-            lineDiv = getLineDiv(idx);
-            inOffset = lineDiv.offset();
-            outlineDiv =getOutLineDiv(idx);
-            outOffset = outlineDiv.offset();
-            lineNumDiv=getLineNumDiv(idx);
-            numOffset = lineNumDiv.offset();
-            if(outOffset && idx !== 0)  
-            {
-                //sometimes can't find output div.  possibly harmless?
-                //just ignoring for now, but may need to fix
-                topheight =  Math.max(inOffset.top, outOffset.top);
-                outOffset.top = topheight;
-                inOffset.top = topheight;
-                numOffset.top = topheight;
-                outlineDiv.offset(outOffset);
-                lineDiv.offset(inOffset);
-                lineNumDiv.offset(numOffset);
-            }
-            lineDiv.height("auto");
-            var outheight = outlineDiv[0].scrollHeight;
-            var lineheight = lineDiv[0].scrollHeight;
-            lineDiv.height(Math.max(outheight,lineheight));
-        }
-        CONTENTHEIGHT = inOffset.top + lineDiv.height() - BOXTOP;
-    }
 
     function addLine(line){
         // Add a new line to the editor
@@ -341,71 +279,6 @@
         }
 
         $(".cursor").offset(cursorOffset);
-    }
-
-    function updateOut(line) {
-        /*var outdiv = getOutLineDiv(line);
-        try {
-            outdiv.html(calcFramework.getLine(line).lnOutput());
-            if(ERRORLIST[line]) {
-                ERRORLIST[line] = null;
-                UPDATEERRORS = true;
-            }
-        }
-        catch(exc) {
-
-            switch(exc.type){
-                case "movecursor":
-                    moveCursor(currentline+exc.xdistance, 
-                        currentindex+exc.ydistance);
-                    updateLineDisplay(calcFramework.getLine(line));
-                break;
-                default:
-                    outdiv.html("");
-                    if(ERRORLIST[line] !==exc) {
-                        ERRORLIST[line] =exc;
-                        UPDATEERRORS = true;
-                    }
-            }
-        }*/
-    }
-
-    function updateMessages() {
-        var messageDiv = $("#messagediv");
-        messageDiv.html("");
-        for(var iter=1; iter<=calcFramework.getNumLines(); iter++) {
-            var exc = ERRORLIST[iter];
-            if(exc){
-                switch(exc.type) {
-                case "E":
-                    messageDiv.append("<span class=\"errorline\">Line #" +
-                        iter+":"+exc.message+"</span><br>");
-                    break;
-                case "W":
-                     messageDiv.append("<span class=\"warningline\">Line #" +
-                        iter+":"+exc.message+"</span><br>");
-                     break;
-                default: //including N
-                    //do Nothing
-                }
-            }
-        }
-    }
-
-    function showAggregates() {
-        $("#aggdiv").html(calcFramework.getAggregate("Total"));
-    }
-
-    function cleanUpMessages() {
-        if(UPDATEERRORS){
-            updateMessages();
-            UPDATEERRORS = false;
-        }
-        if(LINESCHANGED) {
-            lineupLines();
-            showAggregates();
-            LINESCHANGED = false;
-        }     
     }
 
 }());

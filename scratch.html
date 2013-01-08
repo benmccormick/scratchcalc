@@ -19,25 +19,31 @@
 
         <div  class="snapped">
             <div class="nums calcspace" data-bind="foreach:lines">
-                <div class="linenum currentnum" data-bind="attr:{ 'data-line':linenum}">
+                <div class="linenum currentnum" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: adjlinenum"></span>
                 </div>
             </div>
             <div class="in calcspace" data-bind="foreach:lines">
-                <div class="inln currentline" data-bind="attr:{ 'data-line':linenum}">
-                    <span data-bind="html: input"></span>
+                <div class="inln currentline" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
+                    <span data-bind="html: formattedInput"></span>
                 </div>
             </div>
             <div class="out calcspace" data-bind="foreach:lines">
-                <div class="outln currentout" data-bind="attr:{ 'data-line':linenum}">
+                <div class="outln currentout" data-bind="attr:{ 'data-line':linenum,},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: lnOutput"></span>
                 </div>
             </div>
         </div>
 
 
-        <div id="messagediv"></div>
-        <div id="aggdiv"></div>
+        <div id="messagediv" data-bind="foreach:lines">
+            <!-- ko if: errormessage -->
+            <div class="errorline" data-bind="html:errormessage"></div>
+            <!-- /ko -->
+        </div>
+        
+        <div id="aggdiv" data-bind="html:getAggregate"></div>
+
         <script type='text/javascript' src='ext/jquery.js'></script>
         <script type='text/javascript' src='ext/knockout-2.2.0.js'></script>
         <script type="text/javascript" src="editor/toolkit.js"></script>
@@ -53,28 +59,6 @@
         <script type='text/javascript' src='parser/calcFramework.js'></script>
         <script type='text/javascript' src='editor/editor.js'></script>
         <script type="text/javascript">
-           /* var Line = function(num){
-                
-                this.linenum = num;
-                this.lineinput = "2+2";
-                
-            };
-
-            Line.prototype.lineout = function(){
-                return "4";
-            }
-
-            var ViewModel = function(){
-                var self = this;
-                self.lines = ko.observableArray();
-            };
-
-
-
-            var vm = new ViewModel();
-            vm.lines.push(new Line(1));
-            vm.lines.push(new Line(2));*/
-            ko.applyBindings(calcFramework);
         </script>
     </body>
 </html>

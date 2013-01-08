@@ -3,6 +3,7 @@
 
 
 var NumberValue = function(value,units,divisor){
+    "use strict";
     this.num = new BigDecimal(value);
     this.divisor = divisor || new BigDecimal("1");
     this.units = units;

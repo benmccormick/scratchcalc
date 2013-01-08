@@ -10,6 +10,7 @@
 
 
 var EQTreeBuilder = (function() {
+    "use strict";
     var EQB ={};        //the internal treebuilder object
     var myScan = {};    // the scanner
     var eqStack = [];   //the stack of equation tree objects

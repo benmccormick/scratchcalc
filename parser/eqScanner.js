@@ -9,6 +9,7 @@
 /*The Scanner module goes through the tokens, identifies them by their class
  *and saves a reference for future lookup */
 var EQScanner = (function() {
+    "use strict";
     var EQS ={};            //the scanner object
     var tokens = [];        //holds the tokens being processed
     var sym = [];           //symbol table for saving references

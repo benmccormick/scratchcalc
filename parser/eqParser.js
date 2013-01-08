@@ -9,6 +9,7 @@
     tablePlaceHolder:false*/
 
 var EQParser = (function(){
+    "use strict";
     var EQP ={};
     var errorInfo = tablePlaceHolder.errors;
     var unitMap = tablePlaceHolder.units;

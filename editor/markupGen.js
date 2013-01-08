@@ -10,6 +10,7 @@
 
 
 var markupGen = (function () {
+    "use strict";
     var mG = {};
 
     mG.markup = function(expression){

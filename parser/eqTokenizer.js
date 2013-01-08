@@ -10,6 +10,7 @@
 /** The Tokenizer module takes a string and splits it up into individual tokens
 */ 
 var EQTokenizer = (function() {
+    "use strict";
     var EQT ={};
     var tokenlist = [];
     var vars = {};
