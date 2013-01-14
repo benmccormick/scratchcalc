@@ -19,17 +19,17 @@
 
         <div  class="snapped">
             <div class="nums calcspace" data-bind="foreach:lines">
-                <div class="linenum currentnum" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
+                <div class="linenum" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: adjlinenum"></span>
                 </div>
             </div>
             <div class="in calcspace" data-bind="foreach:lines">
-                <div class="inln currentline" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
+                <div class="inln" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: formattedInput"></span>
                 </div>
             </div>
             <div class="out calcspace" data-bind="foreach:lines">
-                <div class="outln currentout" data-bind="attr:{ 'data-line':linenum,},style:{'height':(lineheight()+'px')}">
+                <div class="outln" data-bind="attr:{ 'data-line':linenum,},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: lnOutput"></span>
                 </div>
             </div>

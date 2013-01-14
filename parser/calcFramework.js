@@ -178,6 +178,37 @@ var calcFramework = (function () {
         return cF.lines().length;
     };
 
+    cF.saveToStorage = function(){
+        var i =0, n=cF.getNumLines();
+        var inputArray=[];
+        for(i;i<n; i++){
+            inputArray.push(cF.lines()[i].input());
+        }
+        var inputsString = JSON.stringify(inputArray);
+        localStorage["calcInputs"] = inputsString;
+    };
+
+    cF.restoreFromStorage = function(){
+        var storageString = localStorage["calcInputs"];
+        if(!storageString){
+            return;
+        }
+        var storageObj = JSON.parse(storageString);
+
+        var i=0, n=cF.getNumLines(),m=storageObj.length;
+
+        //go over existing lines first
+        for(i; i<n; i++){
+            cF.lines()[i].input(storageObj[i]);
+        }
+        //and then add new lines if necessary
+        for(i; i<m; i++){
+            cF.addLine (i);
+            cF.lines()[i].input(storageObj[i]);
+        }
+
+    };
+
     cF.getAggregate = ko.computed({ 
 
         read:function(){

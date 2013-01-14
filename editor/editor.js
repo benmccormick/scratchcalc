@@ -4,7 +4,7 @@
 **/
 
 
-/*jshint jquery:true*/
+/*jshint jquery:true browser:true*/
 /*global calcFramework:false ko:false */
 
 
@@ -16,11 +16,11 @@
     var FONTWIDTH = 11;
     var LINEHEIGHT = 25;
     var LINESCHANGED = false;
-    var BOXTOP = $(".in").offset().top;
-    var CONTENTHEIGHT = LINEHEIGHT;
     calcFramework.setLineWidth(LINEWIDTH);
+    calcFramework.restoreFromStorage();
     //set up Knockout bindings
     ko.applyBindings(calcFramework);
+    moveCursor(0,0);
 
 
 
@@ -137,7 +137,7 @@
             }
             break;
         case 38: //up arrow
-            if(currentline > 1) {
+            if(currentline > 0) {
                 moveCursor(currentline -1, currentindex);
             }
             break;
@@ -161,6 +161,7 @@
         default:
              
         }
+        setTimeOut(0,calcFramework.saveToStorage());
     });
 
     $(document).keypress(function(e){
@@ -177,6 +178,7 @@
         cline.input(input.splice(currentindex,0,keyVal));
         moveCursor(currentline,currentindex+1);
         LINESCHANGED = true;
+        setTimeOut(0,calcFramework.saveToStorage());
     });
 
 
