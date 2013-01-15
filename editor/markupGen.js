@@ -20,7 +20,7 @@ var markupGen = (function () {
         output = output.replace(/[\+\-\*\/!%\^|,\[\]!#]/g,
             "<span class=\"operator\">$&</span>");
         output = output.replace(/\b\d+\b/g,"<span class=\"number\">$&</span>");
-        output = output.replace(/\w+\(/g,"<span class=\"function\">$&</span>");
+        output = output.replace(/\w*\(/g,"<span class=\"function\">$&</span>");
         output = output.replace(/\)/g,"<span class=\"function\">$&</span>");
         output = output.replace(/[a-zA-Z]+\d*/g,returnTextValue);
         return output;

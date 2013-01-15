@@ -22,7 +22,7 @@ var EQTokenizer = (function() {
     };
 
     //Takes the strings and splits it into tokens
-    EQT.tokenize = function(expression){
+    EQT.tokenize = function(expression,getVar) {
         tokenlist = [];
 
         // Regexs for each token type
@@ -93,8 +93,8 @@ var EQTokenizer = (function() {
             {
                 //Only push text if its a valid variable or unit.  Else ignore
                 var newexpression =expression.substring(varres[0].length);
-                if(vars[varres[0]] || units[varres[0]]|| 
-                    assignnext.exec(newexpression)){
+                if(typeof getVar(varres[0]) !== "undefined" ||
+                    units[varres[0]]|| assignnext.exec(newexpression)){
                     tokenlist.push(varres[0]);
                 }
                 expression = newexpression;

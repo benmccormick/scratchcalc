@@ -45,6 +45,23 @@ NumberValue.prototype.divide = function(othernumber){
         (this.units||othernumber.units),denominator);
 };
 
+NumberValue.prototype.pow = function(othernumber){
+    var i,n;
+    var newval = new NumberValue(1,this.units);
+    if((othernumber.num.floatValue()/ 
+        othernumber.divisor.floatValue()) % 1 === 0){
+        i=0,n=othernumber.num.floatValue();
+        for(i; i<n; i++){
+            newval = newval.multiply(this);
+        }
+    }
+    else{
+        newval = new NumberValue(Math.pow(
+            this.num.floatValue(),othernumber.num.floatValue()),this.num.units);
+    }
+    return newval;
+};
+
 NumberValue.prototype.compareTo = function(othernumber){
     var nums = convertUnits(this,othernumber);
 

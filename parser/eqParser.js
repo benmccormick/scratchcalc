@@ -26,8 +26,9 @@ var EQParser = (function(){
         EQScanner.init(varMap,unitMap);
     };
 
-    EQP.parse = function(expression,precision){
-        var tokens = EQTokenizer.tokenize("#"+expression+"#");
+    EQP.parse = function(expression,precision,currentLine){
+        var tokens = EQTokenizer.tokenize("#"+expression+"#",
+            currentLine.getVar.bind(currentLine));
         if(!tokens) //Invalid Token
         {
             var tokenException ={
@@ -43,7 +44,7 @@ var EQParser = (function(){
         }
         EQScanner.newExpression(tokens);
         try{
-            result = EQTreeBuilder.process(EQScanner);
+            result = EQTreeBuilder.process(EQScanner,currentLine);
             if(!result)
             {
                 return "";//Invalid Expression

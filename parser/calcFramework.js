@@ -17,6 +17,7 @@ var calcFramework = (function () {
      //Create Line type
     var Line = function (linenum) {
         var self = this;
+        self.varMap = {};
         self.input = ko.observable("");
         self.formattedInput = ko.computed({
             read:function(){
@@ -63,9 +64,9 @@ var calcFramework = (function () {
             }
         try{
             self.errormessage(null);
-            var out = EQParser.parse(input,10);
+            var out = EQParser.parse(input,10,self);
             cF.outputs.splice(self.linenum(),1,out);
-            EQParser.setVar("line"+self.adjlinenum(),out);
+            cF.varMap["line"+self.adjlinenum()] = out;
             return  out.toString().chunk(MAXOUTWIDTH).join("<br>");
         }
         catch(ex){
@@ -89,9 +90,9 @@ var calcFramework = (function () {
 
     Line.prototype.addPreviousAnswerHandling = function (){
         var ans = (this.linenum > 1) ? 
-            EQParser.getVar("line"+(this.linenum-1)) : 
+            cF.varMap["line"+(this.linenum-1)] : 
             new NumberValue(0);
-        EQParser.setVar("ans",ans);
+        this.varMap["ans"] = ans;
         var opers = /^\s*[\+\-\*\/!%\^&|]/;
         var isoperator = opers.exec(this.input);
         if(isoperator && this.input.length && this.linenum > 1){
@@ -105,6 +106,20 @@ var calcFramework = (function () {
         }
     };
 
+    Line.prototype.getVar = function(varName){
+        if(varName in this.varMap){
+            return this.varMap[varName];
+        }
+        if(this.linenum() > 0){
+            return cF.lines()[this.linenum()-1].getVar(varName);
+        }else{
+            return cF.varMap[varName];
+        }
+    };
+
+    Line.prototype.setVar = function(varName,value){
+        this.varMap[varName] = value;
+    };
 
     var line1 = new Line(0);
     var idx = 0; //for loops
@@ -116,6 +131,7 @@ var calcFramework = (function () {
     cF.outputs.push(0);
     cF.lines = ko.observableArray();
     cF.lines.push(line1);
+    cF.varMap = {};
     EQParser.init();
     cF.type = "Total";
 

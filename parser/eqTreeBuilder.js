@@ -25,7 +25,7 @@ var EQTreeBuilder = (function() {
     var root;           // the tree root
     var precision = 20;  // The decimal precision for division
     var errors = [];    //the error messages for different states
-
+    var cline = null;
     //Eventually will load table from a file.  For now just defines it in code
     
 
@@ -33,7 +33,8 @@ var EQTreeBuilder = (function() {
         loadConfigs();
     };
 
-    EQB.process = function(scanner){
+    EQB.process = function(scanner,currline){
+        cline = currline;
         myScan = scanner;
         cstate = 0;
         stack = [];
@@ -196,7 +197,7 @@ var EQTreeBuilder = (function() {
                 child = eqStack.pop();
                 variable = eqStack.pop();
                 variable.setValue(child.value());
-                EQParser.setVar(variable.name,child.value());
+                cline.setVar(variable.name,child.value());
                 eqStack.push(variable);
                 break;
             case "3":
@@ -245,7 +246,7 @@ var EQTreeBuilder = (function() {
             case "d":
                 return (new DigitNode(refval));
             case "v":
-                var varVal = myScan.getVar(refval.text);
+                var varVal = cline.getVar(refval.text);
                 return (new VarNode(refval,varVal));
             case "u":
                 return (new UnOpNode(refval));
@@ -462,10 +463,7 @@ var EQTreeBuilder = (function() {
                 case "^":
                     //There will  be some precision lost here.
                     //Not ideal.
-                    return new NumberValue(Math.pow(
-                        this.lchild.num.value().doubleValue(),
-                    (this.rchild.num.value().doubleValue())),
-                    (this.lchild.units | this.rchild.units));
+                    return new this.lchild.value().pow(this.rchild.value());
             }
         };
         this.priority = priority;

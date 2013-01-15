@@ -161,7 +161,7 @@
         default:
              
         }
-        setTimeOut(0,calcFramework.saveToStorage());
+        setTimeout(0,calcFramework.saveToStorage());
     });
 
     $(document).keypress(function(e){
@@ -178,7 +178,7 @@
         cline.input(input.splice(currentindex,0,keyVal));
         moveCursor(currentline,currentindex+1);
         LINESCHANGED = true;
-        setTimeOut(0,calcFramework.saveToStorage());
+        setTimeout(0,calcFramework.saveToStorage());
     });
 
 
