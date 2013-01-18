@@ -47,7 +47,7 @@ var EQTokenizer = (function() {
             {
                 var number = new NumberValue(numres[0]);
                 expression = expression.substring(numres[0].length);
-                if(number.compareTo(ZERO)< 0 &&// if  negative number
+                if(number.compareTo(ZERO)<= 0 &&// if  negative number
                     last !== null && //list isn't empty
                     (last === ")" || numx.exec(last) !== null ||
                     varx.exec(last) !== null)) //isn't a subtraction
