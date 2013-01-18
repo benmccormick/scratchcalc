@@ -22,12 +22,22 @@
     ko.applyBindings(calcFramework);
     moveCursor(0,0);
 
+    $(window).resize(function() {
+        var outwidth;
+        LINEWIDTH = Math.floor($("#in").width()/FONTWIDTH);
+        outwidth = Math.floor($("#out").width()/FONTWIDTH);
+
+        calcFramework.setLineWidth(LINEWIDTH);
+        calcFramework.setOutWidth(outwidth);
+
+    });
+
 
 
     //Sync Scrolling
-    $(".in").on("scroll", function () {
-        $(".out").scrollTop($(this).scrollTop());
-        $(".nums").scrollTop($(this).scrollTop());
+    $("#in").on("scroll", function () {
+        $("#out").scrollTop($(this).scrollTop());
+        $("#nums").scrollTop($(this).scrollTop());
     });
 
 
@@ -72,17 +82,22 @@
     });
 
 
-    var offset = $(".in").offset();
+    var offset = $("#in").offset();
     var currentline = 0;
     var currentindex=0;
     $(".cursor").offset(offset);
 
-    $(".in").on("click",".inln",function(e){
+    $("#in").on("click",".inln",function(e){
         var newline = $(e.currentTarget).data("line");
+        var lineoffset = $(e.currentTarget).offset();
         var linelength = getLineLength(newline);
         var xpos = e.pageX;
-        var diff = xpos-offset.left;
-        var pos = Math.min(linelength, Math.floor(diff/FONTWIDTH));
+        var ypos = e.pageY;
+        var xdiff = xpos-offset.left;
+        var ydiff = ypos-lineoffset.top;
+        var column = Math.floor(xdiff/FONTWIDTH)+ 
+            Math.floor(ydiff/LINEHEIGHT)*LINEWIDTH;
+        var pos = Math.min(linelength,column);
         moveCursor(newline,pos);
     });
 
@@ -156,7 +171,12 @@
             }
             break;
         case 46: //delete
-            cline.input(input().splice(currentindex,1));
+            if(currentindex === getLineLength(currentline)){
+                calcFramework.appendNextLine(currentline);
+            }else{
+
+                cline.input(cline.input().splice(currentindex,1));
+            }
             break;
         default:
              
@@ -261,21 +281,21 @@
             left:lineOffset.left + (FONTWIDTH * perceivedIndex)
         };    
 
-        var inputBottom =$(".in").offset().top+$(".in").height();
-        var inputTop =$(".in").offset().top;
+        var inputBottom =$("#in").offset().top+$("#in").height();
+        var inputTop =$("#in").offset().top;
         var extralength =1;
         
         //if we're out of the box, scroll to where we are and try again
         if(cursorOffset.top >= inputBottom) {
             extralength = cursorOffset.top - inputBottom;
-            $(".in").scrollTop($(".in").scrollTop()+extralength+LINEHEIGHT);
+            $("#in").scrollTop($("#in").scrollTop()+extralength+LINEHEIGHT);
             moveCursor(line,index);
             return;
         }
 
         if(cursorOffset.top < inputTop){
             extralength = inputTop-cursorOffset.top ;
-            $(".in").scrollTop($(".in").scrollTop()-extralength-LINEHEIGHT);
+            $("#in").scrollTop($("#in").scrollTop()-extralength-LINEHEIGHT);
             moveCursor(line,index);
             return;
         }

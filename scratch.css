@@ -1,58 +1,58 @@
 body
 {
-background: url(http://1-ps.googleusercontent.com/x/s.html5rocks-hrd.appspot.com/www.html5rocks.com/static/images/wbackground.png.pagespeed.ic.y4quBltJwu.jpg) repeat;
-background-color: #F8F8F8!important;
+    background: url(http://1-ps.googleusercontent.com/x/s.html5rocks-hrd.appspot.com/www.html5rocks.com/static/images/wbackground.png.pagespeed.ic.y4quBltJwu.jpg) repeat;
+    background-color: #F8F8F8!important;
 }
 
-}
+
 
 .snapped
 {
-    width:320px;
+    width:100%;
+    height:500px;
     left:0px;
-    position:absolute;
+    display:block;
+    float:left;
 
 }
 
-.nums
+#nums
 {
-    width:80px;
+    width:10%;
+    max-width:50px;
     height:500px;
     overflow:hidden;
-    left:10px;
-    position:absolute;
     border: 0;
     background-color: rgba(256, 256, 256, 0.7);
+    float:left;
 }
 
 
 
-.in
+#in
 {
-    width:600px;
+    width:50%;
     height:500px;
-    overflow-y:scrollable;
+    overflow-y:hidden;
     overflow-x:hidden;
-    left:100px;
-    position:absolute;
     border: 0;
     background-color: rgba(256, 256, 256, 0.7);
+    float:left;
 }
 
-.out
+#out
 {
-    width:300px;
+    width:40%;
     height:500px;
-    left:800px;
     overflow:hidden;
-    position:absolute;
     background-color: rgba(256, 256, 256, 0.7);
+    float: left;
 }
 
 
 .linenum
 {
-    width:50px;
+    width:100%;
     min-height:25px;
     display:block;
 
@@ -60,22 +60,23 @@ background-color: #F8F8F8!important;
 
 .outln
 {
-    width:300px;
+    width:100%;
     height:auto;
     min-height:25px;
     display:block;
 
 }
 
-.inln {
-    width:600px;
+.inln 
+{
+    width:100%;
     min-height:25px;
     display:block;
 }
 
 .empty{
     height:100%;
-    width:600;
+    width:100%;
 }
 
 .cursor

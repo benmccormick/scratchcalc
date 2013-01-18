@@ -18,17 +18,17 @@
 
 
         <div  class="snapped">
-            <div class="nums calcspace" data-bind="foreach:lines">
+            <div id="nums" class="calcspace" data-bind="foreach:lines">
                 <div class="linenum" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: adjlinenum"></span>
                 </div>
             </div>
-            <div class="in calcspace" data-bind="foreach:lines">
+            <div id="in" class="calcspace" data-bind="foreach:lines">
                 <div class="inln" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: formattedInput"></span>
                 </div>
             </div>
-            <div class="out calcspace" data-bind="foreach:lines">
+            <div id="out" class="calcspace" data-bind="foreach:lines">
                 <div class="outln" data-bind="attr:{ 'data-line':linenum,},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: lnOutput"></span>
                 </div>
@@ -48,7 +48,6 @@
         <script type='text/javascript' src='ext/knockout-2.2.0.js'></script>
         <script type="text/javascript" src="editor/toolkit.js"></script>
         <script type='text/javascript' src='ext/bigdecimal.js'></script>
-        <script type='text/javascript' src='ext/numbers.js'></script>
         <script type='text/javascript' src='parser/NumberValue.js'></script>
         <script type='text/javascript' src='parser/tablePlaceHolder.js'></script>
         <script type='text/javascript' src='parser/eqTreeBuilder.js'></script>
@@ -58,7 +57,5 @@
         <script type="text/javascript" src="editor/markupGen.js"></script>
         <script type='text/javascript' src='parser/calcFramework.js'></script>
         <script type='text/javascript' src='editor/editor.js'></script>
-        <script type="text/javascript">
-        </script>
     </body>
 </html>

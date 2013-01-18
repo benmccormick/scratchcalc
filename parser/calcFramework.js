@@ -11,8 +11,16 @@
 var calcFramework = (function () {
     "use strict";
 
-
-    var MAXWIDTH = 5,MAXOUTWIDTH=25;
+    //start calcFramework definition
+    var cF = {};
+    cF.outputs = ko.observableArray();
+    cF.outputs.push(0);
+    cF.varMap = {};
+    EQParser.init();
+    cF.type = "Total";
+    cF.lineWidth = ko.observable(50); 
+    cF.outWidth = ko.observable(25);
+    
 
      //Create Line type
     var Line = function (linenum) {
@@ -46,7 +54,7 @@ var calcFramework = (function () {
         self.lineheight = ko.computed({
             read:function(){
                 //get integer output for max height
-                return (Math.ceil(Math.max(self.input().length/MAXWIDTH,
+                return (Math.ceil(Math.max(self.input().length/cF.lineWidth(),
                     self.lnOutput().split("<br>").length))|0)*25+""; 
         } ,
             write:function(){},
@@ -67,7 +75,7 @@ var calcFramework = (function () {
             var out = EQParser.parse(input,10,self);
             cF.outputs.splice(self.linenum(),1,out);
             cF.varMap["line"+self.adjlinenum()] = out;
-            return  out.toString().chunk(MAXOUTWIDTH).join("<br>");
+            return  out.toString().chunk(cF.outWidth()).join("<br>");
         }
         catch(ex){
             self.errormessage(formatErrorMessage(ex,self.adjlinenum()));
@@ -76,7 +84,7 @@ var calcFramework = (function () {
     }
 
     function formatted(input) {
-        var output = input.chunk(MAXWIDTH).join("<br>");
+        var output = input.chunk(cF.lineWidth()).join("<br>");
         return markupGen.markup(output);
     }
 
@@ -125,16 +133,9 @@ var calcFramework = (function () {
     var idx = 0; //for loops
 
 
-    //start calcFramework definition
-    var cF = {};
-    cF.outputs = ko.observableArray();
-    cF.outputs.push(0);
+    
     cF.lines = ko.observableArray();
     cF.lines.push(line1);
-    cF.varMap = {};
-    EQParser.init();
-    cF.type = "Total";
-
 
 
 
@@ -174,19 +175,27 @@ var calcFramework = (function () {
         }
     };
 
+    cF.appendNextLine = function (index){
+        //Adds the next line into the current 1 and deletes the next line
+        var line1 = cF.lines()[index];
+        var line2 = cF.lines()[index+1];
+        line1.input(line1.input()+line2.input());
+        cF.removeLine(index+1);
+    };
+
     cF.setLineWidth = function(width){
-        MAXWIDTH = width;
+        cF.lineWidth(width);
     };
 
     cF.setOutWidth = function(width){
-        MAXOUTWIDTH = width;
+        cF.outWidth(width);
     };
 
     cF.getLineWidth = function(){
-        return MAXWIDTH;
+        return cF.lineWidth();
     };
     cF.getLineHeight = function(linenum){
-        return cF.lines()[linenum].length/MAXWIDTH|0;
+        return cF.lines()[linenum].length/cF.lineWidth()|0;
     };
 
     cF.getNumLines = function(){
