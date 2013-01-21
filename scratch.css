@@ -1,7 +1,8 @@
 body
 {
-    background: url(http://1-ps.googleusercontent.com/x/s.html5rocks-hrd.appspot.com/www.html5rocks.com/static/images/wbackground.png.pagespeed.ic.y4quBltJwu.jpg) repeat;
-    background-color: #F8F8F8!important;
+    /*background: url(http://1-ps.googleusercontent.com/x/s.html5rocks-hrd.appspot.com/www.html5rocks.com/static/images/wbackground.png.pagespeed.ic.y4quBltJwu.jpg) repeat;
+    background-color: #F8F8F8!important;*/
+    background-color: #FFFFFF;
 }
 
 
@@ -9,6 +10,7 @@ body
 .snapped
 {
     width:100%;
+    max-width: 1200px;
     height:500px;
     left:0px;
     display:block;
@@ -42,7 +44,7 @@ body
 
 #out
 {
-    width:40%;
+    width:35%;
     height:500px;
     overflow:hidden;
     background-color: rgba(256, 256, 256, 0.7);
@@ -88,23 +90,46 @@ body
 }
 
 
-.explanation
+#messagediv
 {
-    width:610px;
-    height:100px;
-    top:10px;
-    left:600px;
-    position:absolute;
-    background-color: rgba(256, 256, 256, 0.7);
+    margin-top: 5px;
+    width:600px;
+    height:50px;
+    display:block;
+    float:right;
+    overflow-y:scroll;
+    font-family: Consolas,Monaco,Fixed-width;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+    border: 4px solid red;
+    margin-right:5px;
+    vertical-align-center;
+    padding-left:10px;
+
 
 
 }
 
-
 .header
+{    float:left;
+    margin:0;
+    height:50px;
+    display:block;
+    margin-top:5px;
+    margin-bottom:20px;
+}
+
+.header h3
 {
     font-family: "Segoe UI Light";
     font-size: 48px;
+    height:50px;
+    margin:0;
+
+
+
 }
 
 .calcspace
@@ -139,7 +164,6 @@ body
 
 .currentline
 {
-    border: 1px solid grey;
     background: rgba(128, 256, 64, 0.2);
 
 }
@@ -147,7 +171,9 @@ body
 .currentout
 {
     font-style:bold;
-    border: 1px solid grey;
+    /*background: rgba(128, 64, 256, 0.2);*/
+    color: #0000FF;
+
 }
 
 .currentnum
@@ -157,17 +183,7 @@ body
     background: rgba(128, 64, 64, 0.2);
 }
 
-#messagediv
-{
-    width:300px;
-    height:50px;
-    background-color: rgba(256, 256, 256, 0.7);
-    overflow-y:scroll;
-    overflow-x:hidden;
-    left:100px;
-    top:700px;
-    position:absolute;
-}
+
 
 #aggdiv
 {
@@ -193,4 +209,19 @@ body
     background-color: #FFF;
     margin-right:5px;
 
+}
+
+.clear
+{
+    height:0px;
+    width:100%;
+    display:block;
+    float:left;
+}
+
+.buffer
+{
+    float:left;
+    width:5%;
+    height:500px;
 }

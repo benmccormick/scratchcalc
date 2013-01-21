@@ -5,7 +5,7 @@
  * @author Ben McCormick
  **/
 
-/*global ko:false EQParser:false markupGen:false*/
+/*global ko:false EQParser:false markupGen:false $:false*/
 
 
 var calcFramework = (function () {
@@ -23,7 +23,7 @@ var calcFramework = (function () {
     
 
      //Create Line type
-    var Line = function (linenum) {
+    var Line = function (linenum,currline) {
         var self = this;
         self.varMap = {};
         self.input = ko.observable("");
@@ -36,7 +36,8 @@ var calcFramework = (function () {
         });
         self.linenum = ko.observable(linenum);
         self.errormessage = ko.observable();
-        
+        //set currentline, if not specified make it false
+        self.isCurrentLine = ko.observable(currline || false);
         self.adjlinenum = ko.computed({
             read:function(){
                 return self.linenum()+1;
@@ -129,14 +130,14 @@ var calcFramework = (function () {
         this.varMap[varName] = value;
     };
 
-    var line1 = new Line(0);
+    var line1 = new Line(0,true);
     var idx = 0; //for loops
 
 
     
     cF.lines = ko.observableArray();
     cF.lines.push(line1);
-
+    cF.currentLine =cF.lines()[0];
 
 
     
@@ -203,6 +204,12 @@ var calcFramework = (function () {
         return cF.lines().length;
     };
 
+    cF.setCurrentLine = function(newCurrentLine){
+        cF.currentLine.isCurrentLine(false);
+        cF.currentLine=cF.lines()[newCurrentLine];
+        cF.currentLine.isCurrentLine(true);
+    };
+
     cF.saveToStorage = function(){
         var i =0, n=cF.getNumLines();
         var inputArray=[];
@@ -249,6 +256,15 @@ var calcFramework = (function () {
         write: function(){},
         owner:this
     });
+
+     // Animation callbacks for the planets list
+    cF.showLine = function(element) { 
+        $(element).filter("div").slideDown();
+    };
+
+    cF.hideLine = function(element) { 
+        $(element).filter("div").slideUp();
+    };
 
     return cF;
 }());

@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Math Test</title>
+        <title>ScratchCalc</title>
         <link rel="stylesheet" href = "scratch.css">
     </head>
     <body>
-        <h3 class="header">ScratchCalc Basic Test</h3>
-        <div class ="explanation">
-            <p>This is an early preview of my new project.  Please experiment with it, 
-                but know it is not a complete product yet,
-            and has many known bugs and unimplemented features, and probably many unknown bugs
-            and features I haven't thought of.  If you try it and see something that doesn't work
-            that you think should work, please let me know by opening up an issue 
-            <a href="https://bitbucket.org/scratchapps/scratchcalc/issues?status=new&status=open">here</a>.</p>
+        <div class="header">
+            <h3>ScratchCalc</h3>
         </div>
-        <div class="cursor"></div>
-
+        <div id="messagediv" data-bind="foreach:lines">
+            <!-- ko if: isCurrentLine -->
+                <!-- ko if: errormessage -->
+            <div class="errorline" data-bind="html:errormessage"></div>
+                <!-- /ko -->
+            <!--/ko -->
+        </div>
+        <div class="clear"/>
 
         <div  class="snapped">
-            <div id="nums" class="calcspace" data-bind="foreach:lines">
+            <div id="nums" class="calcspace" data-bind="foreach:{ data: lines,
+                            beforeRemove: hideLine,
+                            afterAdd: showLine }">
                 <div class="linenum" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: adjlinenum"></span>
                 </div>
             </div>
-            <div id="in" class="calcspace" data-bind="foreach:lines">
+            <div id="in" class="calcspace" data-bind="foreach:{ data: lines,
+                            beforeRemove: hideLine,
+                            afterAdd: showLine }">
                 <div class="inln" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: formattedInput"></span>
                 </div>
             </div>
-            <div id="out" class="calcspace" data-bind="foreach:lines">
+            <div class="buffer"></div>
+            <div id="out" class="calcspace" data-bind="foreach:{ data: lines,
+                            beforeRemove: hideLine,
+                            afterAdd: showLine }">
                 <div class="outln" data-bind="attr:{ 'data-line':linenum,},style:{'height':(lineheight()+'px')}">
                     <span data-bind="html: lnOutput"></span>
                 </div>
@@ -36,11 +43,8 @@
         </div>
 
 
-        <div id="messagediv" data-bind="foreach:lines">
-            <!-- ko if: errormessage -->
-            <div class="errorline" data-bind="html:errormessage"></div>
-            <!-- /ko -->
-        </div>
+        <div class="cursor"></div>
+        
         
         <div id="aggdiv" data-bind="html:getAggregate"></div>
 

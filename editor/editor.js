@@ -16,23 +16,28 @@
     var FONTWIDTH = 11;
     var LINEHEIGHT = 25;
     var LINESCHANGED = false;
+    var currentline = 0;
+    var currentindex=0;
     calcFramework.setLineWidth(LINEWIDTH);
     calcFramework.restoreFromStorage();
     //set up Knockout bindings
     ko.applyBindings(calcFramework);
     moveCursor(0,0);
 
-    $(window).resize(function() {
+    
+    function fitToWindow(){
         var outwidth;
         LINEWIDTH = Math.floor($("#in").width()/FONTWIDTH);
         outwidth = Math.floor($("#out").width()/FONTWIDTH);
 
         calcFramework.setLineWidth(LINEWIDTH);
         calcFramework.setOutWidth(outwidth);
+        moveCursor(currentline,currentindex);
+    }
 
-    });
-
-
+    //set up resizing page elements when the window size changes and do it on load
+    $(window).resize(fitToWindow);
+    fitToWindow();
 
     //Sync Scrolling
     $("#in").on("scroll", function () {
@@ -83,8 +88,6 @@
 
 
     var offset = $("#in").offset();
-    var currentline = 0;
-    var currentindex=0;
     $(".cursor").offset(offset);
 
     $("#in").on("click",".inln",function(e){
@@ -134,16 +137,19 @@
             moveCursor(currentline, currentindex + 1);
             break;
        case 35: //end
+            e.preventDefault();
             moveLine = (e.ctrlKey) ? calcFramework.getNumLines() : currentline;
-            moveCursor(moveLine, calcFramework.getLine(moveLine).input.length);
+            moveCursor(moveLine, 
+                calcFramework.getLine(moveLine).input().length);
             break;
        case 36: //home
+            e.preventDefault();
             moveLine = (e.ctrlKey) ? 1 : currentline;
             moveCursor(moveLine, 0);
             break;
         case 37: //left arrow
             if(currentindex === 0){
-                if(currentline > 1){
+                if(currentline > 0){
                     moveCursor(currentline-1); //move to end of previous line
                 }
             }
@@ -269,7 +275,7 @@
         }
         currentline = line;
         currentindex = index;
-
+        calcFramework.setCurrentLine(line);
         //if the line has to be folded, which fold is the cursor on
         var foldnum = Math.floor( index / calcFramework.getLineWidth() );
 
