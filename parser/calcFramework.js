@@ -115,13 +115,15 @@ var calcFramework = (function () {
         }
     };
 
-    Line.prototype.getVar = function(varName){
-        if(varName in this.varMap){
+    Line.prototype.getVar = function(varName,notCurrentLine){
+        //Actually don't want ones set in the current varMap, only past lines
+        if(varName in this.varMap && notCurrentLine){
             return this.varMap[varName];
         }
         if(this.linenum() > 0){
-            return cF.lines()[this.linenum()-1].getVar(varName);
-        }else{
+            return cF.lines()[this.linenum()-1].getVar(varName,true);
+        } else {
+            //eventually go to global
             return cF.varMap[varName];
         }
     };

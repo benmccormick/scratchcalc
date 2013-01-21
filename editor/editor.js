@@ -163,8 +163,10 @@
             }
             break;
         case 39: //right arrow
-            if(currentindex === getLineLength(currentline)){
-                moveCursor(currentline+1,0);
+            if (currentindex === getLineLength(currentline)) {
+                if(!isLastLine){
+                    moveCursor(currentline+1,0);
+                }
             }
             else
             {
@@ -177,8 +179,10 @@
             }
             break;
         case 46: //delete
-            if(currentindex === getLineLength(currentline)){
-                calcFramework.appendNextLine(currentline);
+            if (currentindex === getLineLength(currentline)) {
+                if(!isLastLine(currentline)){
+                    calcFramework.appendNextLine(currentline);
+                }
             }else{
 
                 cline.input(cline.input().splice(currentindex,1));
@@ -216,24 +220,24 @@
 
     function isLastLine(linenum){
         //obviously this will change
-        return (linenum === calcFramework.getNumLines());
+        return (linenum === calcFramework.getNumLines()-1);
     }
 
     function getLineDiv(linenum){
        return $(".inln").filter( function() { 
-            return this.dataset.line === linenum+""; 
+            return this.getAttribute("data-line") === linenum+""; 
         });
     }
 
     function getOutLineDiv(linenum){
        return $(".outln").filter( function() { 
-            return this.dataset.line === linenum+""; 
+           return this.getAttribute("data-line") === linenum+"";
         });
     }
 
     function getLineNumDiv(linenum){
        return $(".linenum").filter( function() { 
-            return this.dataset.line === linenum+""; 
+           return this.getAttribute("data-line") === linenum+"";
         });
     }
 
