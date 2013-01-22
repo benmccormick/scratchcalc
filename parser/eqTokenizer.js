@@ -113,7 +113,15 @@ var EQTokenizer = (function() {
 
     //Adds a * between implicitly multiplied items
     function addImplicitMultiplication(){
-        //this can be added later.  Multiplication must be explicit for now
+
+        var opener = /^[)\d\w]+$/;
+        var closer = /^[(\d\w]+$/;
+        var i=tokenlist.length-2;
+        for(i; i>=0; i--){
+            if(opener.exec(tokenlist[i])&& closer.exec(tokenlist[i+1])){
+                tokenlist.splice(i+1,0,"*");
+            }
+        }
     }
 
    

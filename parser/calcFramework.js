@@ -29,7 +29,7 @@ var calcFramework = (function () {
         self.input = ko.observable("");
         self.formattedInput = ko.computed({
             read:function(){
-               return formatted(self.input());
+               return formatted(self);
             },
             write:function(){},
             owner:self
@@ -84,9 +84,10 @@ var calcFramework = (function () {
         }
     }
 
-    function formatted(input) {
-        var output = input.chunk(cF.lineWidth()).join("<br>");
-        return markupGen.markup(output);
+    function formatted(line) {
+        var getVar = line.getVar.bind(line);
+        var output = line.input().chunk(cF.lineWidth()).join("<br>");
+        return markupGen.markup(output,getVar);
     }
 
     function formatErrorMessage(exception,linenum){

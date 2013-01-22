@@ -161,6 +161,12 @@ body
     color:purple;
 }
 
+/** Plain text**/
+.inln
+{
+    color:grey;
+}
+
 
 .currentline
 {
