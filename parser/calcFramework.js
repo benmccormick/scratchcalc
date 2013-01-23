@@ -116,13 +116,23 @@ var calcFramework = (function () {
         }
     };
 
-    Line.prototype.getVar = function(varName,notCurrentLine){
+    Line.prototype.getVar = function (varName, notCurrentLine) {
+        if(typeof varName === "undefined"){
+            return null;
+        }
         //Actually don't want ones set in the current varMap, only past lines
         if(varName in this.varMap && notCurrentLine){
             return this.varMap[varName];
         }
-        if(this.linenum() > 0){
-            return cF.lines()[this.linenum()-1].getVar(varName,true);
+        
+        if (this.linenum() > 0) {
+            var nextLine = cF.lines()[this.linenum() - 1];
+
+            //HACK: Getting around issue with formats updating while lines are deleted
+            if (nextLine.linenum() === this.linenum()) {
+                nextLine = cF.lines()[this.linenum() - 2];
+            }
+            return nextLine.getVar(varName,true);
         } else {
             //eventually go to global
             return cF.varMap[varName];

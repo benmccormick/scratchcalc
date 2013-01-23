@@ -17,7 +17,8 @@
     var LINEHEIGHT = 25;
     var LINESCHANGED = false;
     var currentline = 0;
-    var currentindex=0;
+    var currentindex = 0;
+    var highlightData = [];
     calcFramework.setLineWidth(LINEWIDTH);
     calcFramework.restoreFromStorage();
     //set up Knockout bindings
@@ -90,26 +91,60 @@
     var offset = $("#in").offset();
     $(".cursor").offset(offset);
 
-    $("#in").on("click",".inln",function(e){
+    $("#in").on("mouseup",".inln",function(e){
+        var loc = getMouseLoc(e);
+        highlightData[2] = loc.line;
+        highlightData[3] = loc.position;
+        adjustHighlightIndices();
+
+        moveCursor(highlightData[2], highlightData[3]);
+    });
+
+    $("#in").on("mousedown", ".inln", function (e) {
+        var loc = getMouseLoc(e);
+        highlightData[0] = loc.line;
+        highlightData[1] = loc.position;
+    });
+
+    function getMouseLoc(e) {
         var newline = $(e.currentTarget).data("line");
         var lineoffset = $(e.currentTarget).offset();
         var linelength = getLineLength(newline);
         var xpos = e.pageX;
         var ypos = e.pageY;
-        var xdiff = xpos-offset.left;
-        var ydiff = ypos-lineoffset.top;
-        var column = Math.floor(xdiff/FONTWIDTH)+ 
-            Math.floor(ydiff/LINEHEIGHT)*LINEWIDTH;
-        var pos = Math.min(linelength,column);
-        moveCursor(newline,pos);
-    });
+        var xdiff = xpos - offset.left;
+        var ydiff = ypos - lineoffset.top;
+        var column = xdiff / FONTWIDTH +
+            Math.floor(ydiff / LINEHEIGHT) * LINEWIDTH;
+        var pos = Math.min(linelength, column);
+        return {
+            line: newline,
+            position: pos
+        };
+    }
+
+    function adjustHighlightIndices() {
+        var bigStart = isHighlightStartGreater();
+        var endhalfway = highlightData[3] % 1 < .5;
+        //highlightData[1] = (bigStart && starthalfway) ? Math.ceil(highlightData[1]) : Math.floor(highlightData[1]);
+        //at least in Chrome, Highlighting always floors on the start
+        highlightData[1] = Math.floor(highlightData[1]);
+        highlightData[3] = (bigStart || endhalfway) ? Math.floor(highlightData[3]) : Math.ceil(highlightData[3]);
+    }
+
 
     $(document).keydown(function(e){
         var cline =  calcFramework.getLine(currentline);
         var input = cline.input();
         var prevline,remains,prevlength,moveLine;
+        var registered = true;
         switch(e.keyCode){
-        case 8: //backspace
+
+            case 8: //backspace
+            if (isHighlighted()) {
+                removeHighlightedSection();
+                break;
+            }
             if(currentindex > 0){
                 cline.input(input.splice(currentindex-1,1));
                 moveCursor(currentline,currentindex-1);
@@ -123,73 +158,86 @@
             }
             LINESCHANGED = true;
             break;
-        case 13:  //enter
-            remains = input.substring(currentindex);
-            cline.input(input.substring(0,currentindex));
-            addLine(currentline+1);
-            cline = calcFramework.getLine(currentline+1);
-            cline.input(remains);
-            moveCursor(currentline+1,0);
-            LINESCHANGED = true;
-            break;
-        case 32:  //space
-            cline.input (input.splice(currentindex,0," "));
-            moveCursor(currentline, currentindex + 1);
-            break;
-       case 35: //end
-            e.preventDefault();
-            moveLine = (e.ctrlKey) ? calcFramework.getNumLines() : currentline;
-            moveCursor(moveLine, 
-                calcFramework.getLine(moveLine).input().length);
-            break;
-       case 36: //home
-            e.preventDefault();
-            moveLine = (e.ctrlKey) ? 1 : currentline;
-            moveCursor(moveLine, 0);
-            break;
-        case 37: //left arrow
-            if(currentindex === 0){
-                if(currentline > 0){
-                    moveCursor(currentline-1); //move to end of previous line
-                }
-            }
-            else {
-                moveCursor(currentline,currentindex-1);  
-            }
-            break;
-        case 38: //up arrow
-            if(currentline > 0) {
-                moveCursor(currentline -1, currentindex);
-            }
-            break;
-        case 39: //right arrow
-            if (currentindex === getLineLength(currentline)) {
-                if(!isLastLine){
-                    moveCursor(currentline+1,0);
-                }
-            }
-            else
-            {
-                moveCursor(currentline,currentindex+1);
-            }
-            break;
-        case 40: //down arrow
-            if(!isLastLine(currentline)){
-                moveCursor(currentline+1,currentindex);
-            }
-            break;
-        case 46: //delete
-            if (currentindex === getLineLength(currentline)) {
-                if(!isLastLine(currentline)){
-                    calcFramework.appendNextLine(currentline);
-                }
-            }else{
+            case 13:  //enter
 
-                cline.input(cline.input().splice(currentindex,1));
-            }
-            break;
-        default:
-             
+                if (isHighlighted()) {
+                    removeHighlightedSection();
+                    cline = calcFramework.getLine(currentline);
+                    input = cline.input();
+                }
+                remains = input.substring(currentindex);
+                cline.input(input.substring(0,currentindex));
+                addLine(currentline+1);
+                cline = calcFramework.getLine(currentline+1);
+                cline.input(remains);
+                moveCursor(currentline+1,0);
+                LINESCHANGED = true;
+                break;
+            case 32:  //space
+                cline.input (input.splice(currentindex,0," "));
+                moveCursor(currentline, currentindex + 1);
+                break;
+           case 35: //end
+                e.preventDefault();
+                moveLine = (e.ctrlKey) ? calcFramework.getNumLines() : currentline;
+                moveCursor(moveLine, 
+                    calcFramework.getLine(moveLine).input().length);
+                break;
+           case 36: //home
+                e.preventDefault();
+                moveLine = (e.ctrlKey) ? 1 : currentline;
+                moveCursor(moveLine, 0);
+                break;
+            case 37: //left arrow
+                if(currentindex === 0){
+                    if(currentline > 0){
+                        moveCursor(currentline-1); //move to end of previous line
+                    }
+                }
+                else {
+                    moveCursor(currentline,currentindex-1);  
+                }
+                break;
+            case 38: //up arrow
+                if(currentline > 0) {
+                    moveCursor(currentline -1, currentindex);
+                }
+                break;
+            case 39: //right arrow
+                if (currentindex === getLineLength(currentline)) {
+                    if(!isLastLine){
+                        moveCursor(currentline+1,0);
+                    }
+                }
+                else
+                {
+                    moveCursor(currentline,currentindex+1);
+                }
+                break;
+            case 40: //down arrow
+                if(!isLastLine(currentline)){
+                    moveCursor(currentline+1,currentindex);
+                }
+                break;
+                case 46: //delete
+                    if (isHighlighted()) {
+                        removeHighlightedSection();
+                        break;
+                    }
+                if (currentindex === getLineLength(currentline)) {
+                    if(!isLastLine(currentline)){
+                        calcFramework.appendNextLine(currentline);
+                    }
+                }else{
+
+                    cline.input(cline.input().splice(currentindex,1));
+                }
+                break;
+            default:
+             registered = false;
+        }
+        if(registered){
+            removeHighlight();
         }
         setTimeout(0,calcFramework.saveToStorage());
     });
@@ -250,7 +298,55 @@
         // Add a new line to the editor
         calcFramework.addLine(line);
     }
+    
+    function isHighlighted() {
+        return highlightData.length > 0 &&
+            !(highlightData[0] === highlightData[2] &&
+            highlightData[1] === highlightData[3]);
+    }
 
+    function removeHighlight() {
+        highlightData = [];
+        window.getSelection().collapse();
+
+    }
+
+    function removeHighlightedSection(replacement) {
+        if (!replacement) {
+            replacement = "";
+        }
+        var startGreater = isHighlightStartGreater();
+
+        var lastline = startGreater ? highlightData[0]: highlightData[2];
+        var lastindex = startGreater ? highlightData[1]: highlightData[3];
+        var firstline = startGreater ? highlightData[2]: highlightData[0];
+        var firstindex = startGreater ? highlightData[3]: highlightData[1];
+        
+        
+        if (lastline > firstline) {
+            var lastremainder = calcFramework.getLine(lastline).input().substring(lastindex);
+            var firstremainder = calcFramework.getLine(firstline).input().substring(0,firstindex);
+            for (var i = lastline; i > firstline; i--) {
+                removeLine(i);
+            }
+            calcFramework.getLine(firstline).input(firstremainder +replacement+ lastremainder);
+        }
+        else {
+            var line = calcFramework.getLine(lastline);
+            var input = line.input();
+            line.input(input.substring(0, firstindex) + replacement+ input.substring(lastindex));
+        }
+        moveCursor(firstline, firstindex + replacement.length);
+        removeHighlight();
+    }
+
+    // Returns whether the starting point was after the end point for the current highlight
+    function isHighlightStartGreater() {
+        return (highlightData[0] > highlightData[2]) ||
+            ((highlightData[0] === highlightData[2]) &&
+            (highlightData[1] > highlightData[3]));
+        
+    }
 
     function moveCursor(line, index){
         //Move the cursor to the specified line and index, and update

@@ -52,7 +52,7 @@ var tablePlaceHolder = (function(){
         {message:"Invalid Input", type:"E"}             //E03
 
     ];
-
+    /*
     var unitMap = {dollars:{type:"currency",multiple:1},
         dollar:{type:"currency",multiple:1},
         quarter:{type:"currency",multiple:0.25},
@@ -66,6 +66,9 @@ var tablePlaceHolder = (function(){
         nickels:{type:"currency",multiple:0.05},
         nickel:{type:"currency",multiple:0.05},
         pounds:{type:"weight",multiple:1}};
+    */
+
+    var unitMap = {};
 
     //Return the configurations
     return {
