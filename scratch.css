@@ -92,6 +92,7 @@ body
 
 #messagediv
 {
+    background-color:rgba(256,0,0,.6);
     margin-top: 5px;
     width:600px;
     height:50px;
@@ -99,11 +100,13 @@ body
     float:right;
     overflow-y:scroll;
     font-family: Consolas,Monaco,Fixed-width;
-    -moz-border-radius: 10px;
+    font-size:20px;
+    color:white;
+    /*-moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     border-radius: 10px; /* future proofing */
-    -khtml-border-radius: 10px; /* for old Konqueror browsers */
-    border: 4px solid red;
+    /*-khtml-border-radius: 10px; /* for old Konqueror browsers */
+    /*border: 4px solid red;*/
     margin-right:5px;
     vertical-align-center;
     padding-left:10px;
@@ -178,7 +181,7 @@ body
 {
     font-style:bold;
     /*background: rgba(128, 64, 256, 0.2);*/
-    color: #0000FF;
+    color: rgba(64,192,0,1);
 
 }
 

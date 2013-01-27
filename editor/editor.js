@@ -3,19 +3,14 @@
 * and calculator hybrid.  
 **/
 
-
 /*jshint jquery:true browser:true*/
 /*global calcFramework:false ko:false */
-
-
 
 (function(){
     "use strict";
     var LINEWIDTH = 50;
-
     var FONTWIDTH = 11;
     var LINEHEIGHT = 25;
-    var LINESCHANGED = false;
     var currentline = 0;
     var currentindex = 0;
     var highlightData = [];
@@ -24,7 +19,6 @@
     //set up Knockout bindings
     ko.applyBindings(calcFramework);
     moveCursor(0,0);
-
     
     function fitToWindow(){
         var outwidth;
@@ -36,7 +30,7 @@
         moveCursor(currentline,currentindex);
     }
 
-    //set up resizing page elements when the window size changes and do it on load
+    //set up resizing page elements when the window size changes and  onload
     $(window).resize(fitToWindow);
     fitToWindow();
 
@@ -125,11 +119,13 @@
 
     function adjustHighlightIndices() {
         var bigStart = isHighlightStartGreater();
-        var endhalfway = highlightData[3] % 1 < .5;
-        //highlightData[1] = (bigStart && starthalfway) ? Math.ceil(highlightData[1]) : Math.floor(highlightData[1]);
+        var endhalfway = highlightData[3] % 1 < 0.5;
+        //highlightData[1] = (bigStart && starthalfway) ? 
+        //Math.ceil(highlightData[1]) : Math.floor(highlightData[1]);
         //at least in Chrome, Highlighting always floors on the start
         highlightData[1] = Math.floor(highlightData[1]);
-        highlightData[3] = (bigStart || endhalfway) ? Math.floor(highlightData[3]) : Math.ceil(highlightData[3]);
+        highlightData[3] = (bigStart || endhalfway) ? 
+            Math.floor(highlightData[3]) : Math.ceil(highlightData[3]);
     }
 
 
@@ -156,7 +152,6 @@
                     removeLine(currentline);
                     moveCursor(currentline-1,prevlength);
             }
-            LINESCHANGED = true;
             break;
             case 13:  //enter
 
@@ -171,7 +166,6 @@
                 cline = calcFramework.getLine(currentline+1);
                 cline.input(remains);
                 moveCursor(currentline+1,0);
-                LINESCHANGED = true;
                 break;
             case 32:  //space
                 cline.input (input.splice(currentindex,0," "));
@@ -179,7 +173,8 @@
                 break;
            case 35: //end
                 e.preventDefault();
-                moveLine = (e.ctrlKey) ? calcFramework.getNumLines() : currentline;
+                moveLine = (e.ctrlKey) ? 
+                    calcFramework.getNumLines() : currentline;
                 moveCursor(moveLine, 
                     calcFramework.getLine(moveLine).input().length);
                 break;
@@ -191,7 +186,7 @@
             case 37: //left arrow
                 if(currentindex === 0){
                     if(currentline > 0){
-                        moveCursor(currentline-1); //move to end of previous line
+                        moveCursor(currentline-1); //move to end of prev line
                     }
                 }
                 else {
@@ -246,6 +241,7 @@
         if(e.keyCode === 13){
             return;
         }
+
         var cline =  calcFramework.getLine(currentline);
         var input = cline.input();
         var keyVal = String.fromCharCode(e.keyCode);
@@ -253,9 +249,14 @@
         {
             keyVal = keyVal.toLowerCase();
         }
-        cline.input(input.splice(currentindex,0,keyVal));
-        moveCursor(currentline,currentindex+1);
-        LINESCHANGED = true;
+        if (isHighlighted()) {
+            removeHighlightedSection(keyVal);
+        }
+        else{
+            cline.input(input.splice(currentindex,0,keyVal));
+            moveCursor(currentline,currentindex+1);
+        }
+
         setTimeout(0,calcFramework.saveToStorage());
     });
 
@@ -324,23 +325,27 @@
         
         
         if (lastline > firstline) {
-            var lastremainder = calcFramework.getLine(lastline).input().substring(lastindex);
-            var firstremainder = calcFramework.getLine(firstline).input().substring(0,firstindex);
+            var lastremainder = calcFramework.getLine(lastline)
+                .input().substring(lastindex);
+            var firstremainder = calcFramework.getLine(firstline)
+                .input().substring(0,firstindex);
             for (var i = lastline; i > firstline; i--) {
                 removeLine(i);
             }
-            calcFramework.getLine(firstline).input(firstremainder +replacement+ lastremainder);
+            calcFramework.getLine(firstline).input(firstremainder + 
+                replacement+ lastremainder);
         }
         else {
             var line = calcFramework.getLine(lastline);
             var input = line.input();
-            line.input(input.substring(0, firstindex) + replacement+ input.substring(lastindex));
+            line.input(input.substring(0, firstindex) + 
+                replacement+ input.substring(lastindex));
         }
         moveCursor(firstline, firstindex + replacement.length);
         removeHighlight();
     }
 
-    // Returns whether the starting point was after the end point for the current highlight
+    // Returns whether the starting point was after the end point for current highlight
     function isHighlightStartGreater() {
         return (highlightData[0] > highlightData[2]) ||
             ((highlightData[0] === highlightData[2]) &&
