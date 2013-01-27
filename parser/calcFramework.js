@@ -127,10 +127,8 @@ var calcFramework = (function () {
         
         if (this.linenum() > 0) {
             var nextLine = cF.lines()[this.linenum() - 1];
-
-            //HACK: Getting around issue with formats updating while lines are deleted
-            if (nextLine.linenum() === this.linenum()) {
-                nextLine = cF.lines()[this.linenum() - 2];
+            if(!nextLine){
+                return null;
             }
             return nextLine.getVar(varName,true);
         } else {

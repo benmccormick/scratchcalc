@@ -28,7 +28,7 @@ var markupGen = (function () {
 
     function returnTextValue(text){
         var vartext = "<span class=\"variable\">"+text+"</span>";
-        if(/*currentVarFunc(text)*/ false)
+        if(currentVarFunc(text))
         {
             return vartext;
         }
@@ -42,8 +42,3 @@ var markupGen = (function () {
 
     return mG;
 }());
-
-
-Addfs
-s
-adsas
