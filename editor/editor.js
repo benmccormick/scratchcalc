@@ -9,7 +9,7 @@
 (function(){
     "use strict";
     var LINEWIDTH = 50;
-    var FONTWIDTH = 11;
+    var FONTWIDTH = 11;2
     var LINEHEIGHT = 25;
     var currentline = 0;
     var currentindex = 0;
@@ -106,7 +106,7 @@
         var linelength = getLineLength(newline);
         var xpos = e.pageX;
         var ypos = e.pageY;
-        var xdiff = xpos - offset.left;
+        var xdiff = xpos - lineoffset.left;
         var ydiff = ypos - lineoffset.top;
         var column = xdiff / FONTWIDTH +
             Math.floor(ydiff / LINEHEIGHT) * LINEWIDTH;

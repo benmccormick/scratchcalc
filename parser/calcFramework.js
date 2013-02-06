@@ -79,6 +79,7 @@ var calcFramework = (function () {
             return  out.toString().chunk(cF.outWidth()).join("<br>");
         }
         catch(ex){
+            cF.outputs.splice(self.linenum(),1,0);
             self.errormessage(formatErrorMessage(ex,self.adjlinenum()));
             return "";
         }
@@ -255,15 +256,14 @@ var calcFramework = (function () {
     cF.getAggregate = ko.computed({ 
 
         read:function(){
-        var self = cF; // Probably should find a better way to do this.  bind?
-        switch(self.type){
-            case "Total":
-                return getArrayTotal(self.outputs());
-            case "Average":
-                return getArrayTotal(self.outputs())/self.outputs().length;
-            default:
-                return 0;
-        }},
+            switch(cF.type){
+                case "Total":
+                    return getArrayTotal(cF.outputs());
+                case "Average":
+                    return getArrayTotal(cF.outputs())/cF.outputs().length;
+                default:
+                    return 0;
+            }},
         write: function(){},
         owner:this
     });

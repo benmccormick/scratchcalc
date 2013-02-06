@@ -110,8 +110,26 @@ body
     margin-right:5px;
     vertical-align-center;
     padding-left:10px;
+}
 
-
+#aggdiv
+{
+    width:600px;
+    height:50px;
+    background-color: rgba(64, 64, 64, 0.7);
+    float:right;
+    overflow-y:scroll;
+    font-family: Consolas,Monaco,Fixed-width;
+    font-size:20px;
+    color:white;
+    /*-moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    /*-khtml-border-radius: 10px; /* for old Konqueror browsers */
+    /*border: 4px solid red;*/
+    margin-right:5px;
+    vertical-align-center;
+    padding-left:10px;
 
 }
 
@@ -194,17 +212,7 @@ body
 
 
 
-#aggdiv
-{
-    width:200px;
-    height:50px;
-    background-color: rgba(256, 256, 256, 0.7);
-    overflow:hidden;
-    left:800px;
-    top:700px;
-    position:absolute;
 
-}
 
 
 ::-webkit-scrollbar-thumb:vertical {
