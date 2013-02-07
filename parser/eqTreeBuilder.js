@@ -306,17 +306,24 @@ var EQTreeBuilder = (function() {
                     return(child1.compareTo(child2) < 0) ? child1 : child2;
                     
                 case "perm(": 
-                    value = factorial(that.arglist[0].value()).divide(
+                    var val = factorial(that.arglist[0].value()).divide(
                         factorial(that.arglist[0].value().subtract(
                         that.arglist[1].value())));
-                    return value;
+                    return val;
                 
                 case "comb(": 
-                    value = factorial(that.arglist[0].value()).divide(
+                    var val = factorial(that.arglist[0].value()).divide(
                         factorial(that.arglist[1].value()).multiply(factorial(
                         that.arglist[0].value().subtract(that.arglist[1].value()))),
                         precision, RoundingMode.DOWN());
-                    return value;
+                    return val;
+
+                case "ceil(":
+                    var val = that.arglist[0].value().ceil();
+                    return val;
+                case "floor(":
+                    var val = that.arglist[0].value().floor();
+                    return val;
                 default:
                     //Should throw error here:
                     return new NumberValue(0);

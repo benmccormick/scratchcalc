@@ -26,7 +26,7 @@ var EQTokenizer = (function() {
         tokenlist = [];
 
         // Regexs for each token type
-        var numx = /^-?\d+\.?\d*/;
+        var numx = /^(-?\d+\.?\d*|^-?\.\d+)/;
         var spacex = /^\s+/;
         var operx = /^[\+\-\*\/!%\^&|,)\[\]#=]/;
         var unopx = /^[!%]/;

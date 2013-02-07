@@ -62,6 +62,20 @@ NumberValue.prototype.pow = function(othernumber){
     return newval;
 };
 
+NumberValue.prototype.ceil = function(othernumber){
+    this.num = new BigDecimal(Math.ceil(this.num.floatValue()/ 
+        this.divisor.floatValue()));
+    this.divisor = new BigDecimal("1");
+    return this;
+}
+
+NumberValue.prototype.floor = function(othernumber){
+    this.num = new BigDecimal(Math.floor(this.num.floatValue()/ 
+        this.divisor.floatValue()));
+    this.divisor = new BigDecimal("1");
+    return this;
+}
+
 NumberValue.prototype.compareTo = function(othernumber){
     var nums = convertUnits(this,othernumber);
 
