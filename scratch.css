@@ -10,45 +10,56 @@ body
 .snapped
 {
     width:100%;
-    max-width: 1200px;
     height:500px;
     left:0px;
     display:block;
-    float:left;
-
+    float:right;
 }
 
 #nums
 {
-    width:10%;
-    max-width:50px;
+    width:50px;
+    margin-right:-50px;
     height:500px;
     overflow:hidden;
     border: 0;
     background-color: rgba(256, 256, 256, 0.7);
     float:left;
+}
+
+#inwrapper
+{
+    display:block;
+    float:right;
+    width:100%;
+
+}
+#inwrapper2
+{
+    float:left;
+    margin:0 30% 0 50px;
 }
 
 
 
 #in
 {
-    width:50%;
     height:500px;
+    margin-right:10px;
+    float:right;
     overflow-y:hidden;
     overflow-x:hidden;
     border: 0;
-    background-color: rgba(256, 256, 256, 0.7);
-    float:left;
 }
 
 #out
 {
-    width:35%;
+    width:30%;
+    margin-right:-100%;
     height:500px;
     overflow:hidden;
     background-color: rgba(256, 256, 256, 0.7);
-    float: left;
+    float: right;
 }
 
 
@@ -93,48 +104,32 @@ body
 #messagediv
 {
     background-color:rgba(256,0,0,.6);
-    margin-top: 5px;
-    width:600px;
+    width:70%;
     height:50px;
     display:block;
-    float:right;
-    overflow-y:scroll;
+    float:left;
+    overflow-y:hidden;
     font-family: Consolas,Monaco,Fixed-width;
     font-size:20px;
     color:white;
-    /*-moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    border-radius: 10px; /* future proofing */
-    /*-khtml-border-radius: 10px; /* for old Konqueror browsers */
-    /*border: 4px solid red;*/
-    margin-right:5px;
     vertical-align-center;
-    padding-left:10px;
 }
 
 #aggdiv
 {
-    width:600px;
+    width:30%;
     height:50px;
-    background-color: rgba(64, 64, 64, 0.7);
     float:right;
-    overflow-y:scroll;
+    background-color: rgba(64, 64, 64, 0.7);
+    overflow-y:hidden;
     font-family: Consolas,Monaco,Fixed-width;
     font-size:20px;
     color:white;
-    /*-moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    border-radius: 10px; /* future proofing */
-    /*-khtml-border-radius: 10px; /* for old Konqueror browsers */
-    /*border: 4px solid red;*/
-    margin-right:5px;
-    vertical-align-center;
-    padding-left:10px;
-
+    vertical-align:center;
 }
 
 .header
-{    float:left;
+{    float:right;
     margin:0;
     height:50px;
     display:block;
@@ -144,7 +139,7 @@ body
 
 .header h3
 {
-    font-family: "Segoe UI Light";
+    font-family: "Segoe UI Light",Helvetica,"Sans Serif";
     font-size: 48px;
     height:50px;
     margin:0;
@@ -239,6 +234,26 @@ body
 .buffer
 {
     float:left;
-    width:5%;
+    width:10%;
     height:500px;
+    background-color:#FFFFFF;
 }
+
+
+
+
+
+
+@media (max-width:600px){
+    #messagediv{
+        width:100%;
+    }
+
+    #aggdiv{
+        width:100%;
+    }
+
+
+}
+
+

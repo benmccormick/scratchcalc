@@ -8,6 +8,31 @@
         <div class="header">
             <h3>ScratchCalc</h3>
         </div>
+        
+        <div class="clear"></div>
+
+        <div  class="snapped">
+            <div id="inwrapper">
+                <div id="inwrapper2">
+                    <div id="in" class="calcspace" data-bind="foreach:{ data: lines}">
+                        <div class="inln" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
+                            <span data-bind="html: formattedInput"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="nums" class="calcspace" data-bind="foreach:{ data: lines}">
+                <div class="linenum" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
+                    <span data-bind="html: adjlinenum"></span>
+                </div>
+            </div>
+
+            <div id="out" class="calcspace" data-bind="foreach:{ data: lines}">
+                <div class="outln" data-bind="attr:{ 'data-line':linenum,},style:{'height':(lineheight()+'px')}">
+                    <span data-bind="html: lnOutput"></span>
+                </div>
+            </div>
+        </div>
         <div id="messagediv" data-bind="foreach:lines">
             <!-- ko if: isCurrentLine -->
                 <!-- ko if: errormessage -->
@@ -15,32 +40,11 @@
                 <!-- /ko -->
             <!--/ko -->
         </div>
-        <div class="clear"/>
-
-        <div  class="snapped">
-            <div id="nums" class="calcspace" data-bind="foreach:{ data: lines}">
-                <div class="linenum" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
-                    <span data-bind="html: adjlinenum"></span>
-                </div>
-            </div>
-            <div id="in" class="calcspace" data-bind="foreach:{ data: lines}">
-                <div class="inln" data-bind="attr:{ 'data-line':linenum},style:{'height':(lineheight()+'px')}">
-                    <span data-bind="html: formattedInput"></span>
-                </div>
-            </div>
-            <div class="buffer"></div>
-            <div id="out" class="calcspace" data-bind="foreach:{ data: lines}">
-                <div class="outln" data-bind="attr:{ 'data-line':linenum,},style:{'height':(lineheight()+'px')}">
-                    <span data-bind="html: lnOutput"></span>
-                </div>
-            </div>
-        </div>
-
+        <div id="aggdiv" data-bind="html:getAggregate"></div>
 
         <div class="cursor"></div>
         
         
-        <div id="aggdiv" data-bind="html:getAggregate"></div>
 
         <script type='text/javascript' src='ext/jquery.js'></script>
         <script type='text/javascript' src='ext/knockout-2.2.0.js'></script>

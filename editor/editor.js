@@ -22,7 +22,8 @@
     
     function fitToWindow(){
         var outwidth;
-        LINEWIDTH = Math.floor($("#in").width()/FONTWIDTH);
+        var inwidth = $(".snapped").width() - $("#out").width() - $("#nums").width();
+        LINEWIDTH = Math.floor(inwidth/FONTWIDTH);
         outwidth = Math.floor($("#out").width()/FONTWIDTH);
 
         calcFramework.setLineWidth(LINEWIDTH);
