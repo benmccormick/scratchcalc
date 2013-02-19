@@ -1,11 +1,7 @@
 body
 {
-    /*background: url(http://1-ps.googleusercontent.com/x/s.html5rocks-hrd.appspot.com/www.html5rocks.com/static/images/wbackground.png.pagespeed.ic.y4quBltJwu.jpg) repeat;
-    background-color: #F8F8F8!important;*/
     background-color: #FFFFFF;
 }
-
-
 
 .snapped
 {
@@ -32,15 +28,13 @@ body
     display:block;
     float:right;
     width:100%;
-
 }
+
 #inwrapper2
 {
     float:left;
     margin:0 30% 0 50px;
 }
-
-
 
 #in
 {
@@ -62,13 +56,11 @@ body
     float: right;
 }
 
-
 .linenum
 {
     width:100%;
     min-height:25px;
     display:block;
-
 }
 
 .outln
@@ -87,7 +79,8 @@ body
     display:block;
 }
 
-.empty{
+.empty
+{
     height:100%;
     width:100%;
 }
@@ -99,7 +92,6 @@ body
    background-color:black;
    position:absolute;
 }
-
 
 #messagediv
 {
@@ -129,7 +121,8 @@ body
 }
 
 .header
-{    float:right;
+{    
+    float:right;
     margin:0;
     height:50px;
     display:block;
@@ -143,16 +136,12 @@ body
     font-size: 48px;
     height:50px;
     margin:0;
-
-
-
 }
 
 .calcspace
 {
     font: 20px/25px "Consolas";
     color:black;
-
 }
 
 
@@ -187,7 +176,6 @@ body
 .currentline
 {
     background: rgba(128, 256, 64, 0.2);
-
 }
 
 .currentout
@@ -195,7 +183,6 @@ body
     font-style:bold;
     /*background: rgba(128, 64, 256, 0.2);*/
     color: rgba(64,192,0,1);
-
 }
 
 .currentnum
@@ -205,22 +192,17 @@ body
     background: rgba(128, 64, 64, 0.2);
 }
 
-
-
-
-
-
 ::-webkit-scrollbar-thumb:vertical {
     height:9px;
     background:#000;
 }
 
-::-webkit-scrollbar {
+::-webkit-scrollbar 
+{
     width:8px;
     height:10px;
     background-color: #FFF;
     margin-right:5px;
-
 }
 
 .clear
@@ -239,21 +221,15 @@ body
     background-color:#FFFFFF;
 }
 
-
-
-
-
-
-@media (max-width:600px){
-    #messagediv{
+@media (max-width:600px)
+{
+    #messagediv
+    {
         width:100%;
     }
 
-    #aggdiv{
+    #aggdiv
+    {
         width:100%;
     }
-
-
 }
-
-
