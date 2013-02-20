@@ -48,7 +48,7 @@ window.EQTreeBuilder = do ->
 
         instr = table[cstate][index]
 
-        if (not instr?) or instr.charAt(0)  is "e"
+        if (not instr?) or instr.charAt(0)  is "e" or instr is ""
           errorcode = instr ? "e00"
           errorinfo = errors[parseInt errorcode.substring(1)]
           calculationException =
@@ -246,17 +246,16 @@ window.EQTreeBuilder = do ->
       @numChildren = arglist.length
 
   class DigitNode
-    val = null
     constructor: (ref)->
       #Digit Node
       @type = "d"
       @name = ref.value
       @numChildren = 0
-      val= new NumberValue(this.name)
+      @val= new NumberValue(this.name)
       @priority = 100
 
-    value: -> val
-    toString: -> ref.value
+    value: -> @val
+    toString: -> @name
       
   
   class VarNode 

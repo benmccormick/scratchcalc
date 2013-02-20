@@ -1,4 +1,4 @@
-/**
+/**e
 * Editor Class: Contains the code for defining a custom text editor
 * and calculator hybrid.  
 **/
@@ -23,6 +23,7 @@
     function fitToWindow(){
         var outwidth;
         var inwidth = $(".snapped").width() - $("#out").width() - $("#nums").width();
+        $(".inln").width(inwidth);
         LINEWIDTH = Math.floor(inwidth/FONTWIDTH);
         outwidth = Math.floor($("#out").width()/FONTWIDTH);
 
