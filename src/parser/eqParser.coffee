@@ -17,7 +17,7 @@ window.EQParser = do ->
     EQScanner.init varMap, unitMap
 
   EQP.parse = (expression,precision,currentLine) ->
-    tokens = EQTokenizer.tokenize "#"+expression+"#", currentLine.getVar.bind(currentLine)
+    tokens = EQTokenizer.tokenize("#"+expression+"#", currentLine.getVar.bind(currentLine))
     if not tokens? 
       tokenException =
         message: errorInfo[3].message
