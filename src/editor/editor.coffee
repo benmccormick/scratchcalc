@@ -4,7 +4,7 @@
 ###
 
 LINEWIDTH = 50
-FONTWIDTH = 112
+FONTWIDTH = 11
 LINEHEIGHT = 25
 currentline = 0
 currentindex = 0
@@ -21,7 +21,7 @@ $(document).unbind("keydown").bind "keydown", (event) =>
     event.preventDefault()
 
 
-$("#in").on "mouseup",".inln",(e) =>
+$("#in").on "mouseup",".inln",(e) ->
   loc = getMouseLoc(e)
   highlightData[2] = loc.line
   highlightData[3] = loc.position
@@ -29,7 +29,7 @@ $("#in").on "mouseup",".inln",(e) =>
   moveCursor(highlightData[2], highlightData[3])
 
 
-$("#in").on "mousedown", ".inln", (e) =>
+$("#in").on "mousedown", ".inln", (e) ->
   loc = getMouseLoc(e)
   highlightData[0] = loc.line
   highlightData[1] = loc.position
@@ -58,9 +58,9 @@ adjustHighlightIndices = ->
   #at least in Chrome, Highlighting always floors on the start
   highlightData[1] = Math.floor(highlightData[1])
   h3 = highlightData[3]
-  h3 = if bigStart || endhalfway then Math.floor(h3) else Math.ceil(h3)
+  highlightData[3] = if (bigStart or endhalfway) then Math.floor(h3) else Math.ceil(h3)
 
-$(document).keydown (e) =>
+$(document).keydown (e) ->
   cline =  calcFramework.getLine(currentline)
   input = cline.input()
   registered = true
@@ -131,9 +131,9 @@ $(document).keydown (e) =>
      registered = false
   if registered
     removeHighlight()
-    setTimeout(0,calcFramework.saveToStorage())
+  setTimeout(0,calcFramework.saveToStorage())
 
-$(document).keypress (e) =>
+$(document).keypress (e) ->
   if e.keyCode is 13
     return null
   cline =  calcFramework.getLine(currentline)
@@ -179,7 +179,8 @@ addLine = (line) ->
 
 isHighlighted = ->
   hd = highlightData
-  hd.length > 0 and !(hd[0] is hd[2] and hd[1] is hd[3])
+  samepoints = (hd[0] is hd[2] and hd[1] is hd[3])
+  hd.length > 0 and not samepoints
 
 removeHighlight = ->
   highlightData = []
@@ -215,7 +216,6 @@ isHighlightStartGreater = ->
   [h0,h1,h2,h3] = highlightData
   (h0 > h2) or ((h0 is h2) and (h1 > h3))
 
-
 moveCursor = (line, index) ->
   #Move the cursor to the specified line and index, and update
   #the line and index variables.  if index is undefined, move to end 
@@ -225,7 +225,7 @@ moveCursor = (line, index) ->
     line = numlines
     index = null  #we'll go to the end of the last line
   lineLength = getLineLength line
-  if not index? or index > lineLength
+  if (not index?) or index > lineLength
     #If the index is undefined or longer than line, make line length
     index = lineLength
 
@@ -237,6 +237,7 @@ moveCursor = (line, index) ->
     getLineDiv(line).addClass("currentline")
     getLineNumDiv(line).addClass("currentnum")
     getOutLineDiv(line).addClass("currentout")
+  
   currentline = line
   currentindex = index
   calcFramework.setCurrentLine(line)
@@ -277,7 +278,7 @@ fitToWindow = ->
   moveCursor(currentline,currentindex)
 
 #set up resizing page elements when the window size changes and onload
-$(window).resize fitToWindow
+$(window).resize(fitToWindow)
 fitToWindow()
 
 #Sync Scrolling
@@ -298,5 +299,5 @@ keydownfunc = (e) ->
 keyupfunc = (e) ->
   keys[e.keyCode] = false
 
-$(window).keydown(keydownfunc,false)
-$(window).keyup(keyupfunc,false)
+window.addEventListener("keydown",keydownfunc, false)
+window.addEventListener("keyup",keyupfunc, false)
