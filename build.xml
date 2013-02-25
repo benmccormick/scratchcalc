@@ -1,0 +1,41 @@
+<project name="scratchcalc" default="debug">
+
+	<loadproperties srcfile="build.properties" />
+	<target name="debug" depends="copy,concatenatejs">
+		<echo>ScratchCalc Version ${version}</echo>
+	</target>
+
+	<target name="copy" description="Compiles coffeescript files">
+		<echo>Copying Coffeescript Files</echo>
+
+		 <copy todir="${build.dir}">
+		 	<fileset dir="${src.dir}" includes="**/*.html,**/*.css,**/*.js" />
+		 </copy>
+		 <exec executable="coffee">
+			  <arg value="--compile"/>
+			  <arg value="--output" />
+			  <arg value="${build.dir}" />
+			  <arg value="${src.dir}" />
+		 </exec>
+	</target>
+
+	<target name="concatenatejs" description="Concatenate All the JS together">
+		<echo>Concatenating the JS</echo>
+
+		 <concat destfile="${scratchjs}">
+		 	  <filelist dir ="${build.dir}" files="lib/jquery.js,lib/knockout.js,lib/BigDecimal.js,editor/toolkit.js,editor/markupGen.js,parser/eqTreeBuilder.js,parser/NumberValue.js,parser/eqScanner.js,parser/eqTokenizer.js,parser/tablePlaceHolder.js,parser/EQParser.js,parser/calcFramework.js" />
+
+			  <fileset dir="${build.dir}" includes="**/*.js" excludes="scratch.js,lib/BigDecimal.js,lib/jquery.js,parser/calcFramework.js,parser/EQParser.js,parser/tablePlaceHolder.js,parser/NumberValue.js,parser/eqTokenizer.js,parser/eqTreeBuilder.js,parser/eqScanner.js,lib/knockout.js,editor/toolkit.js,editor/markupGen.js" />
+		 </concat>
+
+	</target>
+
+	<target name= "init">
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+</project>
