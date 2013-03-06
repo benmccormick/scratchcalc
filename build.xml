@@ -15,8 +15,8 @@
 			  <arg value="--compile"/>
 			  <arg value="--map" />
 			  <arg value="--output" />
-			  <arg value="${build.dir}" />
-			  <arg value="${src.dir}" />
+			  <arg value="${build.script.dir}" />
+			  <arg value="${src.script.dir}" />
 		 </exec>
 		 <mkdir dir="${build.styles.dir}" />
 		 <apply executable="sass" dest="${build.dir}" verbose="true" force="true" failonerror="true">
@@ -33,9 +33,9 @@
 		<echo>Concatenating the JS</echo>
 
 		 <concat destfile="${scratchjs}">
-		 	  <filelist dir ="${build.dir}" files="lib/jquery.js,lib/knockout.js,lib/BigDecimal.js,editor/toolkit.js,editor/markupGen.js,parser/eqTreeBuilder.js,parser/NumberValue.js,parser/eqScanner.js,parser/eqTokenizer.js,parser/tablePlaceHolder.js,parser/EQParser.js,parser/calcFramework.js" />
+		 	  <filelist dir ="${build.script.dir}" files="lib/jquery.js,lib/knockout.js,lib/BigDecimal.js,editor/toolkit.js,editor/markupGen.js,parser/eqTreeBuilder.js,parser/NumberValue.js,parser/eqScanner.js,parser/eqTokenizer.js,parser/tablePlaceHolder.js,parser/EQParser.js,parser/calcFramework.js" />
 
-			  <fileset dir="${build.dir}" includes="**/*.js" excludes="scratch.js,lib/BigDecimal.js,lib/jquery.js,parser/calcFramework.js,parser/EQParser.js,parser/tablePlaceHolder.js,parser/NumberValue.js,parser/eqTokenizer.js,parser/eqTreeBuilder.js,parser/eqScanner.js,lib/knockout.js,editor/toolkit.js,editor/markupGen.js" />
+			  <fileset dir="${build.script.dir}" includes="**/*.js" excludes="scratch.js,lib/BigDecimal.js,lib/jquery.js,parser/calcFramework.js,parser/EQParser.js,parser/tablePlaceHolder.js,parser/NumberValue.js,parser/eqTokenizer.js,parser/eqTreeBuilder.js,parser/eqScanner.js,lib/knockout.js,editor/toolkit.js,editor/markupGen.js" />
 		 </concat>
 
 	</target>
