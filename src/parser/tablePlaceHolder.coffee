@@ -1,7 +1,8 @@
 #Hold"s the table for now.  Will be replaced when we move to working in windows
 
+root = exports ? this
 
-window.tablePlaceHolder = do ->
+root.tablePlaceHolder = do ->
     
   table =[
     ["s1","","","","","","","","","","","","",2,"",""]

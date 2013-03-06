@@ -1,0 +1,40 @@
+@import colors
+@import fonts
+@import syntax
+@import editor
+
+body
+    background-color:  $white
+
+
+
+
+.cursor
+    width: 1px
+    height: 25px
+    background-color: $black
+    position: absolute
+
+::-webkit-scrollbar-thumb:vertical 
+    height: 9px
+    background: #000
+
+::-webkit-scrollbar 
+    width: 8px
+    height: 10px
+    background-color:  $white
+    margin-right: 5px
+
+.clear
+    height: 0px
+    width: 100%
+    display: block
+    float: left
+
+.buffer
+    float: left
+    width: 10%
+    height: 500px
+    background-color: $white
+
+@import media

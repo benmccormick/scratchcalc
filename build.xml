@@ -5,7 +5,7 @@
 		<echo>ScratchCalc Version ${version}</echo>
 	</target>
 
-	<target name="copy" description="Compiles coffeescript files">
+	<target name="copy" description="Compiles coffeescript and SASS files,copies the rest">
 		<echo>Copying Coffeescript Files</echo>
 
 		 <copy todir="${build.dir}">
@@ -13,10 +13,20 @@
 		 </copy>
 		 <exec executable="coffee">
 			  <arg value="--compile"/>
+			  <arg value="--map" />
 			  <arg value="--output" />
 			  <arg value="${build.dir}" />
 			  <arg value="${src.dir}" />
 		 </exec>
+		 <mkdir dir="${build.styles.dir}" />
+		 <apply executable="sass" dest="${build.dir}" verbose="true" force="true" failonerror="true">
+	        <arg value="--unix-newlines" />
+	        <srcfile />
+	        <targetfile />
+	        <filelist dir ="${src.dir}" files="styles/scratch.sass" />
+	        <!--<fileset dir="${src.dir}" includes="**/*.sass"  />-->
+	        <mapper type="glob" from="*.sass" to="*.css"/>
+    	</apply>
 	</target>
 
 	<target name="concatenatejs" description="Concatenate All the JS together">

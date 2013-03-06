@@ -1,0 +1,174 @@
+body
+    background-color:  #FFFFFF
+
+.snapped
+    width:  100%
+    height:  500px
+    left: 0px
+    display: block 
+    float: right
+
+
+#nums
+    width: 50px
+    margin-right: -50px
+    height: 500px
+    overflow: hidden
+    border:  0
+    background-color: rgba(255, 255, 255, 0.7)
+    float: left
+
+#inwrapper
+    display: block
+    float: right
+    width: 100%
+
+#inwrapper2
+    float: left
+    margin: 0 30% 0 50px
+
+#in
+    height: 500px
+    margin-right: 10px
+    float: right
+    overflow-y: hidden
+    overflow-x: hidden
+    border:  0
+
+#out
+    width: 30%
+    margin-right: -100%
+    height: 500px
+    overflow: hidden
+    background-color:  rgba(255, 255, 255, 0.7)
+    float:  right
+
+.linenum
+    width: 100%
+    min-height: 25px
+    display: block
+
+.outln
+    width: 100%
+    height: auto
+    min-height: 25px
+    display: block
+
+
+.inln 
+    width: 100%
+    min-height: 25px
+    display: block
+
+.empty
+    height: 100%
+    width: 100%
+
+.cursor
+    width: 1px
+    height: 25px
+    background-color: black
+    position: absolute
+
+#messagediv
+    background-color: rgba(255,0,0,.6)
+    width: 70%
+    height: 50px
+    display: block
+    float: left
+    overflow-y: hidden
+    font-family:  Consolas,Monaco,Fixed-width
+    font-size: 20px
+    color: white
+    vertical-align-center
+
+#aggdiv
+    width: 30%
+    height: 50px
+    float: right
+    background-color:  rgba(64, 64, 64, 0.7)
+    overflow-y: hidden
+    font-family:  Consolas,Monaco,Fixed-width
+    font-size: 20px
+    color: white
+    vertical-align: center
+
+.header    
+    float: right
+    margin: 0
+    height: 50px
+    display: block
+    margin-top: 5px
+    margin-bottom: 20px
+
+.header h3
+    font-family:  "Segoe UI Light",Helvetica,"Sans Serif"
+    font-size:  48px
+    height: 50px
+    margin: 0
+
+.calcspace
+    font:  20px/25px "Consolas"
+    color: black
+
+
+.number
+    color:  green
+
+.operator
+    color:  blue
+
+
+.function
+    color: orange
+
+.variable
+    color: purple
+
+/** Plain text**/
+.inln
+    color: grey
+
+
+.currentline
+    background:  rgba(128, 255, 64, 0.2)
+
+.currentout
+    font-style: bold
+    /*background:  rgba(128, 64, 255, 0.2)*/
+    color:  rgba(64,192,0,1)
+
+.currentnum
+    color: teal
+    font-style:  bold
+    background:  rgba(128, 64, 64, 0.2)
+
+::-webkit-scrollbar-thumb:vertical 
+    height: 9px
+    background: #000
+
+::-webkit-scrollbar 
+    width: 8px
+    height: 10px
+    background-color:  #FFF
+    margin-right: 5px
+
+.clear
+    height: 0px
+    width: 100%
+    display: block
+    float: left
+
+.buffer
+    float: left
+    width: 10%
+    height: 500px
+    background-color: #FFFFFF
+
+@media (max-width: 600px)
+    #messagediv
+        width: 100%
+
+
+    #aggdiv
+        width: 100%

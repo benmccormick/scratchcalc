@@ -1,6 +1,9 @@
 # Number Value Class - a general class for representing numbers
 
-class window.NumberValue
+
+root = exports ? this
+
+class root.NumberValue
     constructor: (value,@units,divisor) ->
         @num = new BigDecimal value
         @divisor = divisor ? new BigDecimal 1
@@ -72,6 +75,7 @@ class window.NumberValue
         trimZeros(decVal) + unitstr
 
 
+
 ###
 * Converts units for when units need to be synced up
 * If the units are the same type, but different value, it will work to convert 
@@ -104,3 +108,4 @@ trimZeros = (numString) ->
 
 getDecimalVal = (number) ->
     number.num.divide(number.divisor,20, RoundingMode.HALF_DOWN())
+

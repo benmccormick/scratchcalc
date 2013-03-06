@@ -108,7 +108,7 @@ $(document).keydown (e) ->
         moveCursor(currentline,currentindex-1)
     when 38 #up arrow
       if currentline > 0
-        moveCursor(currentline -1, currentindex)
+        moveCursor(currentline-1, currentindex)
     when 39 #right arrow
       if currentindex is getLineLength(currentline)
         if !isLastLine

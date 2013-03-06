@@ -1,0 +1,61 @@
+.snapped
+    width:  100%
+    height:  500px
+    left: 0px
+    display: block 
+    float: right
+
+@mixin blocks
+    height: 500px
+    overflow: hidden
+    border:  0
+    background-color: $transparentwhite
+
+#nums
+    @include blocks
+    width: 50px
+    margin-right: -50px
+    float: left
+
+#inwrapper
+    display: block
+    float: right
+    width: 100%
+
+#inwrapper2
+    float: left
+    margin: 0 30% 0 50px
+
+#in
+    @include blocks
+    margin-right: 10px
+    float: right
+
+#out
+    @include blocks
+    width: 30%
+    margin-right: -100%
+    float:  right
+
+@mixin line
+    width: 100%
+    min-height: 25px
+    display: block
+
+.linenum
+    @include line 
+
+.outln
+    @include line
+    height: auto
+
+.inln 
+    @include line
+
+.empty
+    height: 100%
+    width: 100%
+
+.calcspace
+    font:   $editorfont
+    color: black

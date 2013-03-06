@@ -3,8 +3,12 @@
  @author Ben McCormick
  ###
 
-window.EQParser = do ->
-  EQP ={};
+
+
+root = exports ? this
+
+root.EQParser = do ->
+  EQP = {}
   errorInfo = tablePlaceHolder.errors
   unitMap = tablePlaceHolder.units
   varMap = 
@@ -17,7 +21,8 @@ window.EQParser = do ->
     EQScanner.init varMap, unitMap
 
   EQP.parse = (expression,precision,currentLine) ->
-    tokens = EQTokenizer.tokenize("#"+expression+"#", currentLine.getVar.bind(currentLine))
+    getVar = if currentLine? then currentLine.getVar.bind(currentLine) else -> null
+    tokens = EQTokenizer.tokenize("#"+expression+"#", getVar)
     if not tokens? 
       tokenException =
         message: errorInfo[3].message

@@ -4,10 +4,14 @@
  * @author Ben McCormick
  ###
 
-window.EQTokenizer = do ->
-  EQT ={};
-  tokenlist = [];
-  units = {};
+
+
+root = exports ? this
+
+root.EQTokenizer = do ->
+  EQT = {}
+  tokenlist = []
+  units = {}
 
   EQT.init = (varMap, unitMap) -> units = unitMap ? {}
 
@@ -23,12 +27,12 @@ window.EQTokenizer = do ->
     varx = /^[a-zA-Z]+\d*[\:\-\'\?\.]?/
     assignnext = /^\s*=/
     ZERO = new NumberValue "0" 
-    #Goes through the expression and splits it using the regexs
+
+        #Goes through the expression and splits it using the regexs
     while expression.length > 0
       last = null
       if tokenlist.length > 0
-        last=tokenlist[tokenlist.length-1]
-
+        last= tokenlist[tokenlist.length-1]
       numres = numx.exec(expression)
       if numres
         number = new NumberValue numres[0]
