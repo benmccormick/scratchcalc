@@ -1,8 +1,16 @@
 # An abstract representation of the scratch document as a whole
+#
 # Uses knockout.js bindings to connect data to GUI
+#
 # Author: Ben McCormick
+#
+#**TODOS:** 
+#
+#- Need to fix ans handling 
+#- line variables don't get initialized when pulled from storage
+#- line variables don't publish (use setVar)
 
-#calcFramework is the global namespace for the model
+#calcFramework is the global namespace for the view-model
 window.calcFramework = do ->
   EQParser.init()
   cF = {}
@@ -61,7 +69,7 @@ window.calcFramework = do ->
           xdistance:4
           ydistance:0 
         throw exc;
-    
+    ###### Gets the variable if its defined, moving recursively backwards through the lines
     getVar: (varName, subscribe, notCurrentLine) ->
       if not varName?
         return null
@@ -78,26 +86,27 @@ window.calcFramework = do ->
         nextLine?.getVar varName, false,true 
       else   
         cF.varMap[varName] #eventually go to global
-
+    ##### Sets the var for the current line
     setVar: (varName,value) ->
       @varMap[varName] = value
       @publish varName 
-
+    ##### Publish that this variable has changed for this line
     publish: (varName) ->
       that = this
       pub = -> $(window).trigger(varName+"event",that.linenum())
       setTimeout(pub,0)
-
+    ##### Subscribe to a variable and listen to see if it has changed
     subscribe: (varName) ->
       if not (varName of @subscriptions)
         $(window).bind(varName+"event", @subscriptionHandler)
         @subscriptions[varName] = @subscriptionHandler;
-    
+    ##### Unsubscribe to a variable
     unsubscribe: ->
       for varName,handle of @subscriptions
             $(window).unbind varName+"event", handle
       @subscriptions = {}
 
+  ##### Generates the output of the expression
   outputFunction = (self,input) ->
     try
       self.addPreviousAnswerHandling()
@@ -115,24 +124,28 @@ window.calcFramework = do ->
       cF.outputs.splice(self.linenum(),1,0);
       self.errormessage(formatErrorMessage(ex,self.adjlinenum()));
       return ""
-
+  ##### Gets the formatted version of the input with syntax highlighting and line breaks
   formatted = (line) ->
     getVar = line.getVar.bind line
     output = line.input().chunk(cF.lineWidth()).join("<br>");
     markupGen.markup output, getVar 
 
+  ##### Formats the error message for a line
   formatErrorMessage = (exception, linenum) ->
     #Maybe add something to differentiate between warnings and errors later
     "Line #" + linenum+":"+exception.message
   
+  # We create one line to start and add it to the array
   line1 = new Line 0, true 
   
   cF.lines = ko.observableArray()
   cF.lines.push line1
   cF.currentLine = cF.lines()[0]
 
+  ##### Function to access the line at `index`
   cF.getLine = (index) -> cF.lines()[index];
 
+  ##### Function to add a line at `index`
   cF.addLine = (index) ->
     newLine = new Line index
     if (not index?) or (index >= cF.lines().length)
@@ -142,6 +155,7 @@ window.calcFramework = do ->
       for line, i in cF.lines() when i >index
          line.linenum(line.linenum()+1)
 
+  ##### Function to remove a line at `index`
   cF.removeLine = (index) ->
     newLine = new Line index
     if (index?) and (index <= cF.lines().length)
@@ -150,6 +164,7 @@ window.calcFramework = do ->
       for line, i in cF.lines() when i >=index
          line.linenum(line.linenum()-1)
 
+  ###### Function to append the next line to the line at index
   cF.appendNextLine = (index) ->
     #Adds the next line into the current 1 and deletes the next line
     line1 = cF.lines()[index]
@@ -172,11 +187,13 @@ window.calcFramework = do ->
     cF.currentLine= cF.lines()[newCurrentLine]
     cF.currentLine.isCurrentLine true
   
+  ###### Saves the view-model to local storage
   cF.saveToStorage = ->
     inputArray=[];
     inputArray.push line.input() for line in cF.lines()
     localStorage["calcInputs"] = JSON.stringify inputArray
   
+  ###### Recovers the view-model from local storage
   cF.restoreFromStorage = ->
     storageString = localStorage["calcInputs"]
     if not storageString?
@@ -187,7 +204,8 @@ window.calcFramework = do ->
       if i >= numlines
         cF.addLine i
       cF.lines()[i].input line
-    
+  
+  ##### Gets the aggregate value of the outputs  
   cF.getAggregate = ko.computed( 
     read: ->
       switch cF.type
