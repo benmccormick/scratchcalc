@@ -1,9 +1,8 @@
-###
- * calcFramework - An abstract representation of the scratch document as a whole
- * Uses knockout.js bindings to connect data to GUI
- * @author Ben McCormick
- ###
+# An abstract representation of the scratch document as a whole
+# Uses knockout.js bindings to connect data to GUI
+# Author: Ben McCormick
 
+#calcFramework is the global namespace for the model
 window.calcFramework = do ->
   EQParser.init()
   cF = {}
@@ -13,6 +12,9 @@ window.calcFramework = do ->
   cF.type = "Total"
   cF.lineWidth = ko.observable(50) 
   cF.outWidth = ko.observable(25)
+  ##### The Line class represents a line in the calculator 
+  # This includes linenum, input and output.  
+  # These are included into an obserableArray and bound to the DOM using knockout
   class Line
     constructor: (linenum,currline)->
       self = this
@@ -23,49 +25,35 @@ window.calcFramework = do ->
       @subscriptionHandler = (event,linenum) ->
         if self.linenum() > linenum 
           self.trigger(true)
-      @formattedInput = ko.computed(
-        read: ->
+      @formattedInput = ko.computed(->
           formatted(self)
-        write: ->
-          #noop
-        owner: self
       )
       @linenum = ko.observable(linenum)
       @errormessage = ko.observable()
       #set currentline, if not specified make it false
       @isCurrentLine = ko.observable(currline ? false)
       @trigger = ko.observable(false)
-      @adjlinenum = ko.computed(
-        read:->
+      @adjlinenum = ko.computed(->
           return self.linenum() + 1
-        write: ->
-          #noop
-        owner:self
       )
-      @lnOutput = ko.computed(
-        read:->
+      @lnOutput = ko.computed(->
           self.unsubscribe()
           result = outputFunction(self,self.input(),self.trigger())
           self.trigger(false)
           result
-        write: ->
-          #noop
-        owner:self
-      )
-      @lineheight = ko.computed(
-        read: ->
+        )
+      @lineheight = ko.computed(->
           #get integer output for max height
           (Math.ceil(Math.max(self.input().length/cF.lineWidth(),self.lnOutput().split("<br>").length))|0)*25+"" 
-        write: ->
-          #noop
-        owner:self
-      )
+        )
 
+    ##### Adds handling for the previous variable
     addPreviousAnswerHandling: ->
-      ans = if @linenum() > 1 then cF.varMap["line"+(this.linenum()-1)] else new NumberValue 0
+      #`@linenum` starts at 0, the variables start at 1, so no need to -1 on linenums to get last
+      ans = if @linenum() > 0 then cF.varMap["line"+(@linenum()-1)] else new NumberValue 0
       @varMap["ans"] = ans
       opers = /^\s*[\+\-\*\/!%\^&|]/
-      isoperator = opers.exec(@input)
+      isoperator = opers.exec(@input())
       if isoperator and @input().length and @linenum() > 1
         @input(@input().splice(0,0,"ans "))
         exc =
@@ -114,7 +102,7 @@ window.calcFramework = do ->
     try
       self.addPreviousAnswerHandling()
     catch movecursor
-      return "movecursor"
+      throw movecursor
       #throw movecursor #try again with updated line         
     try
       self.errormessage(null);

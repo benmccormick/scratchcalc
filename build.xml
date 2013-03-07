@@ -40,6 +40,15 @@
 
 	</target>
 
+	<target name="documentation" description="Generate Docco Documentation for coffee files">
+		<apply executable="docco" verbose="true" force="true" failonerror="true">
+	        <srcfile />
+	        <fileset dir ="${src.script.dir}" >
+	        	<include name="**/*.coffee"/>
+	        </fileset>
+    	</apply>
+	</target>
+
 	<target name= "init">
 		<mkdir dir="${build.dir}" />
 	</target>

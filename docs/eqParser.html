@@ -1,0 +1,52 @@
+<!DOCTYPE html>  <html> <head>   <title>eqParser.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               eqParser.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>#</h1>             </td>             <td class="code">               <div class="highlight"><pre> <span class="nx">EQParser</span> <span class="o">-</span> <span class="nx">An</span> <span class="nx">Equation</span> <span class="nx">Parser</span> <span class="k">for</span> <span class="nx">Javascript</span>
+ <span class="nx">@author</span> <span class="nx">Ben</span> <span class="nx">McCormick</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h1>#</h1>             </td>             <td class="code">               <div class="highlight"><pre><span class="nv">root = </span><span class="nx">exports</span> <span class="o">?</span> <span class="k">this</span>
+
+<span class="nv">root.EQParser = </span><span class="nx">do</span> <span class="nf">-&gt;</span>
+  <span class="nv">EQP = </span><span class="p">{}</span>
+  <span class="nv">errorInfo = </span><span class="nx">tablePlaceHolder</span><span class="p">.</span><span class="nx">errors</span>
+  <span class="nv">unitMap = </span><span class="nx">tablePlaceHolder</span><span class="p">.</span><span class="nx">units</span>
+  <span class="nv">varMap = </span>
+    <span class="s">&quot;pi&quot;</span><span class="o">:</span><span class="k">new</span> <span class="nx">NumberValue</span> <span class="s">&quot;3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679&quot;</span>
+  <span class="nv">result = </span><span class="p">{}</span>
+
+  <span class="nv">EQP.init = </span><span class="nf">-&gt;</span>
+    <span class="nx">EQTokenizer</span><span class="p">.</span><span class="nx">init</span> <span class="nx">unitMap</span>
+    <span class="nx">EQTreeBuilder</span><span class="p">.</span><span class="nx">init</span> <span class="nx">unitMap</span>
+    <span class="nx">EQScanner</span><span class="p">.</span><span class="nx">init</span> <span class="nx">varMap</span><span class="p">,</span> <span class="nx">unitMap</span>
+
+  <span class="nv">EQP.parse = </span><span class="nf">(expression,precision,currentLine) -&gt;</span>
+    <span class="nv">getVar = </span><span class="k">if</span> <span class="nx">currentLine</span><span class="o">?</span> <span class="k">then</span> <span class="nx">currentLine</span><span class="p">.</span><span class="nx">getVar</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">currentLine</span><span class="p">)</span> <span class="k">else</span> <span class="nf">-&gt;</span> <span class="kc">null</span>
+    <span class="nv">tokens = </span><span class="nx">EQTokenizer</span><span class="p">.</span><span class="nx">tokenize</span><span class="p">(</span><span class="s">&quot;</span><span class="err">#</span><span class="s">&quot;</span><span class="o">+</span><span class="nx">expression</span><span class="o">+</span><span class="s">&quot;</span><span class="err">#</span><span class="s">&quot;</span><span class="p">,</span> <span class="nx">getVar</span><span class="p">)</span>
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">tokens</span><span class="o">?</span> 
+      <span class="nv">tokenException =</span>
+        <span class="nv">message: </span><span class="nx">errorInfo</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="nx">message</span>
+        <span class="nv">type: </span><span class="nx">errorInfo</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="nx">type</span>
+        <span class="nv">errorcode: </span><span class="s">&quot;E03&quot;</span>
+      <span class="k">throw</span> <span class="nx">tokenException</span>
+    <span class="k">if</span> <span class="nx">precision</span><span class="o">?</span>
+      <span class="nx">EQP</span><span class="p">.</span><span class="nx">setPrecision</span> <span class="nx">precision</span>
+    <span class="nx">EQScanner</span><span class="p">.</span><span class="nx">newExpression</span><span class="p">(</span><span class="nx">tokens</span><span class="p">)</span>
+    <span class="k">try</span>
+      <span class="nv">result = </span><span class="nx">EQTreeBuilder</span><span class="p">.</span><span class="nx">process</span> <span class="nx">EQScanner</span><span class="p">,</span> <span class="nx">currentLine</span>
+      <span class="k">if</span> <span class="o">not</span> <span class="nx">result</span><span class="o">?</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span> <span class="c1">#Invalid Expression</span>
+      <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">();</span>
+    <span class="k">catch</span> <span class="nx">ex</span>
+      <span class="k">throw</span> <span class="nx">ex</span><span class="p">;</span>   <span class="c1">#if there was an exception throw it for the GUI</span>
+
+  <span class="nv">EQP.setPrecision = </span><span class="nf">(prec) -&gt;</span>
+    <span class="nx">EQTreeBuilder</span><span class="p">.</span><span class="nx">setPrecision</span> <span class="nx">prec</span> 
+
+  <span class="nv">EQP.getResult = </span><span class="nf">-&gt;</span>
+    <span class="nx">result</span><span class="p">;</span>
+
+  <span class="nv">EQP.setVar = </span><span class="nf">(variable, value) -&gt;</span> 
+    <span class="nx">varMap</span><span class="p">[</span><span class="nx">variable</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span>
+
+  <span class="nv">EQP.getVar = </span><span class="nf">(variable) -&gt;</span> <span class="nx">varMap</span><span class="p">[</span><span class="nx">variable</span><span class="p">]</span>
+
+  <span class="nv">EQP.getUnitInfo = </span><span class="nf">(unit) -&gt;</span> <span class="k">return</span> <span class="nx">unitMap</span><span class="p">[</span><span class="nx">unit</span><span class="p">]</span>
+
+  <span class="nx">EQP</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
