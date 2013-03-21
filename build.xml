@@ -1,13 +1,17 @@
 <project name="scratchcalc" default="debug">
 
 	<loadproperties srcfile="build.properties" />
+
 	<target name="debug" depends="copy,concatenatejs">
+		<echo>ScratchCalc Version ${version} (Debug Version)</echo>
+	</target>
+
+	<target name="production" depends="copy,concatenatejs,minify,documentation,test">
 		<echo>ScratchCalc Version ${version}</echo>
 	</target>
 
 	<target name="copy" description="Compiles coffeescript and SASS files,copies the rest">
 		<echo>Copying Coffeescript Files</echo>
-
 		 <copy todir="${build.dir}">
 		 	<fileset dir="${src.dir}" includes="**/*.html,**/*.css,**/*.js" />
 		 </copy>
@@ -30,22 +34,55 @@
 	</target>
 
 	<target name="concatenatejs" description="Concatenate All the JS together">
+		<!-- Instead of concatenating the JS files directly, use coffee to preserve the source map -->
 		<echo>Concatenating the JS</echo>
+		<concat destfile="${build.libs}">
+		 	 <filelist dir ="${build.script.dir}" files="lib/jquery.js,lib/knockout.js,lib/BigDecimal.js" />
 
-		 <concat destfile="${scratchjs}">
-		 	  <filelist dir ="${build.script.dir}" files="lib/jquery.js,lib/knockout.js,lib/BigDecimal.js,editor/toolkit.js,editor/markupGen.js,parser/eqTreeBuilder.js,parser/NumberValue.js,parser/eqScanner.js,parser/eqTokenizer.js,parser/tablePlaceHolder.js,parser/EQParser.js,parser/calcFramework.js" />
-
-			  <fileset dir="${build.script.dir}" includes="**/*.js" excludes="scratch.js,lib/BigDecimal.js,lib/jquery.js,parser/calcFramework.js,parser/EQParser.js,parser/tablePlaceHolder.js,parser/NumberValue.js,parser/eqTokenizer.js,parser/eqTreeBuilder.js,parser/eqScanner.js,lib/knockout.js,editor/toolkit.js,editor/markupGen.js" />
-		 </concat>
-
+			  <fileset dir="${build.script.dir}/lib" includes="**/*.js"/>
+		</concat>
+		<apply executable="coffee"  verbose="true" force="true" failonerror="true" parallel="true">
+	    <arg value="--compile" />
+	    <arg value="--map" />
+	    <arg value="--join" />
+	    <arg value="${build.script.output}" />
+	    <srcfile />
+	    <filelist dir ="${src.script.dir}" files="editor/toolkit.coffee,editor/markupGen.coffee,parser/eqTreeBuilder.coffee,parser/NumberValue.coffee,parser/eqScanner.coffee,parser/eqTokenizer.coffee,parser/tablePlaceHolder.coffee,parser/EQParser.coffee,parser/calcFramework.coffee,editor/editor.coffee" />
+    </apply>
+    <delete file="${build.script.local}"/>
 	</target>
 
 	<target name="documentation" description="Generate Docco Documentation for coffee files">
+		<echo>Generating Documentation with Docco</echo>
 		<apply executable="docco" verbose="true" force="true" failonerror="true">
 	        <srcfile />
 	        <fileset dir ="${src.script.dir}" >
 	        	<include name="**/*.coffee"/>
 	        </fileset>
+    	</apply>
+	</target>
+
+	<target name="test" description="Generate the JS for testing with Jasmine">
+		<!-- Ideally this would run a server side jasmine test, but that requires better dependency management than we have right now-->
+		<echo>Generating the Test JS with jasmine</echo>
+		<apply executable="coffee"  verbose="true" force="true" failonerror="true" parallel="true">
+	    <arg value="--compile" />
+	    <arg value="--join" />
+	    <arg value="${test.output}" />
+	    <srcfile />
+	    <fileset dir ="${test.dir}" >
+	    	<include name="**/*.coffee"/>
+	    </fileset>
+    </apply>
+	</target>
+
+	<target name="minify" description="Minify the JS for Production">
+		<echo>Minifying the JS For Production</echo>
+		<apply executable="uglifyjs" verbose="true" force="true" failonerror="true">
+	        <srcfile />
+	        <arg value="--output" />
+	        <arg value="${build.script.output}" />
+	        <filelist  files ="${build.script.output}"/>
     	</apply>
 	</target>
 
