@@ -1,5 +1,9 @@
-# Number Value Class - a general class for representing numbers
+# A general class for representing numbers
 
+# TODOS: 
+#- Be consistent about whether an operation transforms the current value or creates a new one
+#- Add Permutation and combination here.  All the functions should be in this file I think
+#- Remove the dependency on eqParser 
 
 root = exports ? this
 
@@ -51,17 +55,25 @@ class root.NumberValue
         number = @num.floatValue()
         div = @divisor.floatValue()
         ceil = Math.ceil(number/div)
-        @num = new BigDecimal ceil
-        @divisor = new BigDecimal "1"
-        this
+        num = new BigDecimal ceil
+        divisor = new BigDecimal "1"
+        new NumberValue num, @units, divisor
 
     floor: ->
         number = @num.floatValue()
         div = @divisor.floatValue()
         floor = Math.floor(number/div)
-        @num = new BigDecimal floor
-        @divisor = new BigDecimal "1"
-        this
+        num = new BigDecimal floor
+        divisor = new BigDecimal "1"
+        new NumberValue num, @units, divisor
+
+    factorial: ->
+        #gets the factorial of a number
+        limit = @floor()
+        num = new NumberValue 1
+        for i in [1..limit] by 1
+          num= num.multiply(new NumberValue i)
+        num
 
     compareTo: (othernumber)->
         nums = convertUnits this, othernumber
@@ -71,8 +83,11 @@ class root.NumberValue
 
     toString: ->
         unitstr = if @units? then " "+@units else ""
-        decVal = getDecimalVal(this).toString()
-        trimZeros(decVal) + unitstr
+        decVal = getDecimalVal(this)
+        if decVal.floatValue() is 0  
+            "0"+unitstr 
+        else  
+            trimZeros(decVal.toString()) + unitstr
 
 
 

@@ -220,19 +220,19 @@ window.EQTreeBuilder = do ->
             child2 = arg1.value()
             if (child1.compareTo(child2) > 0) then child1 else child2
           when "min(" 
-            child1 =arg0.value()
-            child2 =arg1.value()
+            child1 = arg0.value()
+            child2 = arg1.value()
             if (child1.compareTo(child2) < 0) then child1 else child2
           when "perm("
-            numerator = factorial(arg0.value())
+            numerator = arg0.value().factorial()
             difference = arg0.value().subtract arg1.value()
-            denominator = factorial difference
+            denominator = difference.factorial()
             numerator.divide(denominator,precision, RoundingMode.DOWN())
           when "comb("
-            numerator =  factorial(arg0.value())
+            numerator =  arg0.value().factorial()
             difference = arg0.value().subtract arg1.value()
-            fact1 = factorial(arg1.value());
-            fact2 = factorial(difference)
+            fact1 = arg1.value().factorial()
+            fact2 = difference.factorial()
             numerator.divide(fact.multiply(fact2),precision,RoundingMode.DOWN())
           when "ceil(" then arg0.value().ceil()
           when "floor(" then arg0.value().floor()
@@ -284,7 +284,7 @@ window.EQTreeBuilder = do ->
     setChild: (cnode) -> @child = cnode
     value: ->
       switch @name
-        when "!" then factorial @child.value()
+        when "!" then @child.value().factorial()
         when "%" 
           #Consider throwing an error if the child 
           #is not a var or digit
@@ -328,11 +328,6 @@ window.EQTreeBuilder = do ->
       @lchild = left
       @rchild = right
 
-  factorial = (val) ->
-    #gets the factorial of a number
-    num = new NumberValue 1
-    for i in [0..val] by 1
-      num=num.multiply(new NumberValue i)
-    num
+  
 
   EQB
