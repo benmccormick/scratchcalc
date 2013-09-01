@@ -2,4 +2,5 @@
 build/
 docs/
 # SASS cache files should be ignored
+*.sublime-workspace
 *.sassc
