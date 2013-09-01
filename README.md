@@ -17,3 +17,4 @@ So for instance, the following operations are valid
     3 apples + 2 oranges // 5
 
 
+Check out a live demo at [benmccormick.org/scratchcalc](http://benmccormick.org/scratchcalc)
