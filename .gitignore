@@ -1,4 +1,5 @@
 # Build directory
 build/
+docs/
 # SASS cache files should be ignored
 *.sassc

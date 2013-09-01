@@ -2,11 +2,11 @@
 
 	<loadproperties srcfile="build.properties" />
 
-	<target name="debug" depends="copy,concatenatejs">
+	<target name="debug" depends="clean, init, copy,concatenatejs">
 		<echo>ScratchCalc Version ${version} (Debug Version)</echo>
 	</target>
 
-	<target name="production" depends="copy,concatenatejs,minify,documentation,test">
+	<target name="production" depends="clean, init, copy,concatenatejs,minify,documentation,test">
 		<echo>ScratchCalc Version ${version}</echo>
 	</target>
 
@@ -49,7 +49,6 @@
 	    <srcfile />
 	    <filelist dir ="${src.script.dir}" files="editor/toolkit.coffee,editor/markupGen.coffee,parser/eqTreeBuilder.coffee,parser/NumberValue.coffee,parser/eqScanner.coffee,parser/eqTokenizer.coffee,parser/tablePlaceHolder.coffee,parser/EQParser.coffee,parser/calcFramework.coffee,editor/editor.coffee" />
     </apply>
-    <delete file="${build.script.local}"/>
 	</target>
 
 	<target name="documentation" description="Generate Docco Documentation for coffee files">
@@ -77,7 +76,7 @@
 	</target>
 
 	<target name="minify" description="Minify the JS for Production">
-		<echo>Minifying the JS For Production</echo>
+		<echo>Minifying the JS For Production with UglifyJS</echo>
 		<apply executable="uglifyjs" verbose="true" force="true" failonerror="true">
 	        <srcfile />
 	        <arg value="--output" />
